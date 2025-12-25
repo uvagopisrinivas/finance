@@ -1,0 +1,41 @@
+networks:
+  app_network:
+    driver: bridge
+
+services:
+  retirement-tools:
+    image: ghcr.io/uvagopisrinivas/finance:latest
+    container_name: retirement-tools
+    ports:
+      - "6021:80"
+    volumes:
+      - /myWebsites/logs:/var/log/nginx
+    environment:
+      - TZ=America/New_York
+      - NGINX_HOST=${DOMAIN:-retirement.local}
+      - NGINX_PORT=80
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: retirement-tools-watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=3600
+      - WATCHTOWER_LABEL_ENABLE=true
+      - DOCKER_API_VERSION=1.44
+    networks:
+      - app_network
+    restart: unless-stopped

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Uva Kondisetty — SEPP Tools</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="src/styles/global.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header__inner">
+        <div class="brand">
+          <div class="brand__icon" aria-hidden="true">UK</div>
+          <div class="brand__text">
+            <h1 class="brand__title">Uva Kondisetty</h1>
+            <p class="brand__subtitle">Sr.Developer - financial tools</p>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav__tab" data-tab="about">About</button>
+          <button class="nav__tab" data-tab="sepp">SEPP</button>
+          <button class="nav__tab" data-tab="401k">401k</button>
+          <button id="globalThemeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="main">
+    <div class="container" id="mainContainer">
+      <section id="about" class="tab-content">
+        <div class="card card--elevated">
+          <div class="card__header">
+            <h1 class="card__title">About This Platform</h1>
+            <p class="card__subtitle">Professional retirement planning tools for early withdrawal strategies and long-term projections</p>
+          </div>
+          
+          <div class="about-grid">
+            <div class="about-section">
+              <h2 class="about-section__title">🎯 Purpose</h2>
+              <p>This platform provides sophisticated financial calculators designed to help individuals plan for early retirement and optimize their withdrawal strategies. Whether you're considering a 72(t) SEPP plan or projecting your 401k growth, these tools offer detailed analysis with professional-grade calculations.</p>
+            </div>
+            
+            <div class="about-section">
+              <h2 class="about-section__title">🛠️ Available Tools</h2>
+              <div class="tool-cards">
+                <div class="tool-card">
+                  <div class="tool-card__icon">📊</div>
+                  <h3 class="tool-card__title">SEPP Calculator</h3>
+                  <p class="tool-card__description">Calculate substantially equal periodic payments (SEPP) under IRS Section 72(t) for penalty-free early withdrawals from retirement accounts. Compare all three IRS-approved methods with detailed projections.</p>
+                  <ul class="tool-card__features">
+                    <li>✓ Method 1: RMD (Variable payments)</li>
+                    <li>✓ Method 2: Amortization (Fixed payments)</li>
+                    <li>✓ Method 3: Annuitization (Fixed payments)</li>
+                    <li>✓ 21-year projection analysis</li>
+                    <li>✓ Tax impact calculations</li>
+                    <li>✓ Comprehensive comparison summary</li>
+                  </ul>
+                </div>
+                
+                <div class="tool-card">
+                  <div class="tool-card__icon">💰</div>
+                  <h3 class="tool-card__title">401k Projector</h3>
+                  <p class="tool-card__description">Advanced 401k projection calculator with dynamic contribution optimization, employer matching, and multi-account tracking. Perfect for long-term retirement planning.</p>
+                  <ul class="tool-card__features">
+                    <li>✓ Dynamic contribution percentage calculation</li>
+                    <li>✓ Automatic employer matching (up to 6%)</li>
+                    <li>✓ 401a and 401k account tracking</li>
+                    <li>✓ Bonus contribution optimization</li>
+                    <li>✓ Annual salary increase projections</li>
+                    <li>✓ Colorful summary analytics</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="about-section">
+              <h2 class="about-section__title">🔬 Technical Features</h2>
+              <div class="feature-grid">
+                <div class="feature-item">
+                  <h4>📱 Responsive Design</h4>
+                  <p>Fully responsive interface that works seamlessly on desktop, tablet, and mobile devices.</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🌙 Dark Mode</h4>
+                  <p>Toggle between light and dark themes for comfortable viewing in any environment.</p>
+                </div>
+                <div class="feature-item">
+                  <h4>📊 Interactive Tables</h4>
+                  <p>Sortable, scrollable data tables with color-coded values for easy analysis.</p>
+                </div>
+                <div class="feature-item">
+                  <h4>ℹ️ Contextual Help</h4>
+                  <p>Built-in information modals explaining calculation methods and formulas.</p>
+                </div>
+                <div class="feature-item">
+                  <h4>🎨 Visual Analytics</h4>
+                  <p>Color-coded summary panels with gradient effects and hover interactions.</p>
+                </div>
+                <div class="feature-item">
+                  <h4>⚡ Real-time Updates</h4>
+                  <p>Instant recalculation as you adjust input parameters.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="about-section">
+              <h2 class="about-section__title">📚 How to Use</h2>
+              <div class="usage-steps">
+                <div class="usage-step">
+                  <div class="usage-step__number">1</div>
+                  <div class="usage-step__content">
+                    <h4>Choose Your Tool</h4>
+                    <p>Navigate to the <strong>SEPP</strong> tab for early withdrawal planning or the <strong>401k</strong> tab for retirement projections.</p>
+                  </div>
+                </div>
+                <div class="usage-step">
+                  <div class="usage-step__number">2</div>
+                  <div class="usage-step__content">
+                    <h4>Enter Your Data</h4>
+                    <p>Input your current financial information, including account balances, age, expected returns, and tax rates.</p>
+                  </div>
+                </div>
+                <div class="usage-step">
+                  <div class="usage-step__number">3</div>
+                  <div class="usage-step__content">
+                    <h4>Generate Projections</h4>
+                    <p>Click the calculate button to generate detailed projections and analysis tables.</p>
+                  </div>
+                </div>
+                <div class="usage-step">
+                  <div class="usage-step__number">4</div>
+                  <div class="usage-step__content">
+                    <h4>Analyze Results</h4>
+                    <p>Review the colorful summary panels and detailed tables to understand your options and make informed decisions.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="about-section">
+              <h2 class="about-section__title">⚠️ Important Disclaimers</h2>
+              <div class="disclaimer-box">
+                <h4>🎓 Educational Purpose</h4>
+                <p>These calculators are designed for educational and planning purposes only. They provide estimates based on the inputs you provide and should not be considered as financial advice.</p>
+                
+                <h4>👨‍💼 Professional Consultation</h4>
+                <p>Before implementing any early withdrawal strategy or making significant retirement planning decisions, consult with qualified financial advisors, tax professionals, and estate planning attorneys.</p>
+                
+                <h4>📋 IRS Compliance</h4>
+                <p>SEPP calculations are based on current IRS regulations and life expectancy tables. Tax laws and regulations may change, affecting the accuracy of projections.</p>
+                
+                <h4>📈 Market Assumptions</h4>
+                <p>All projections assume consistent growth rates and do not account for market volatility, economic downturns, or other unforeseen circumstances that could affect actual returns.</p>
+              </div>
+            </div>
+            
+            <div class="about-section">
+              <h2 class="about-section__title">🚀 Getting Started</h2>
+              <p>Ready to explore your retirement options? Choose a tool above to begin your financial planning journey. Each calculator includes built-in help and detailed explanations to guide you through the process.</p>
+              
+              <div class="cta-buttons">
+                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;sepp&quot;]').click()">
+                  📊 Try SEPP Calculator
+                </button>
+                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;401k&quot;]').click()">
+                  💰 Try 401k Projector
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="sepp" class="tab-content" style="display:none">
+        <div id="seppContainer">Loading…</div>
+      </section>
+      <section id="401k" class="tab-content" style="display:none">
+        <div id="401kContainer">Loading…</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© <span id="year"></span> Uva Kondisetty — Built with plain HTML/CSS/JS</div>
+  </footer>
+
+  <script>
+    // Tabs logic and lazy-load SEPP widget
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const tabs = document.querySelectorAll('.nav__tab');
+    function setActive(tabName){
+      tabs.forEach(t=>t.classList.toggle('nav__tab--active', t.dataset.tab===tabName));
+      document.querySelectorAll('.tab-content').forEach(s=> s.style.display = s.id===tabName ? '' : 'none');
+      
+      // Use full width for 401k tab, normal width for others
+      const mainContainer = document.getElementById('mainContainer');
+      if (mainContainer) {
+        if (tabName === '401k') {
+          mainContainer.className = 'container--full';
+        } else {
+          mainContainer.className = 'container';
+        }
+      }
+    }
+    tabs.forEach(t=> t.addEventListener('click', async ()=>{
+      const name = t.dataset.tab; setActive(name);
+      if(name==='sepp'){
+        // load widget html
+        const container = document.getElementById('seppContainer');
+        if(!container.dataset.loaded){
+          // Load the JavaScript first, then the HTML
+          const script = document.createElement('script'); 
+          script.src='src/SEPP/sepp_calculator.js';
+          script.onload = async function() {
+            // Now load the HTML after the script is loaded
+            const html = await fetch('src/SEPP/sepp_widget.html').then(r=>r.text());
+            container.innerHTML = html;
+            container.dataset.loaded = 'true';
+            // Trigger initial calculation after HTML is loaded
+            if (typeof window.calculateSEPP === 'function') {
+              try {
+                window.calculateSEPP();
+              } catch(e) {
+                console.log('Initial SEPP calculation skipped:', e);
+              }
+            }
+          };
+          document.body.appendChild(script);
+        }
+      }
+      if(name==='401k'){
+        // load 401k widget html (if not already loaded)
+        const container = document.getElementById('401kContainer');
+        if(!container.dataset.loaded){
+          try {
+            const html = await fetch('src/401K/401k_widget.html').then(r=>r.text());
+            container.innerHTML = html;
+            
+            // Load JavaScript with proper callback
+            const script = document.createElement('script'); 
+            script.src='src/401K/401k_calculator.js';
+            script.onload = function() {
+              console.log('401k calculator script loaded via tab click');
+            };
+            script.onerror = function() {
+              console.error('Failed to load 401k calculator script via tab click');
+            };
+            document.body.appendChild(script);
+            container.dataset.loaded = 'true';
+          } catch(e) {
+            console.error('Failed to load 401k widget:', e);
+            container.innerHTML = '<div class="card"><div class="card__header"><h3>Error</h3></div><p>Failed to load 401k calculator. Please refresh the page.</p></div>';
+          }
+        }
+      }
+    }));
+
+    // Theme: read/persist and apply site-wide
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme);
+      const btn = document.getElementById('globalThemeToggle');
+      if(btn){ btn.textContent = theme === 'dark' ? '🌙' : '☀'; btn.setAttribute('aria-pressed', theme === 'dark'); }
+    }
+    function toggleTheme(){
+      const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    }
+    // wire global toggle
+    const gbtn = document.getElementById('globalThemeToggle');
+    if(gbtn) gbtn.addEventListener('click', toggleTheme);
+    // initialize theme from storage (or default to light for landing)
+    const saved = localStorage.getItem('theme');
+    applyTheme(saved === 'dark' ? 'dark' : (saved === 'light' ? 'light' : 'light'));
+
+    // default to About but also preload 401k widget
+    setActive('about');
+    
+    // Preload 401k widget so info button is available immediately
+    (async function preload401k() {
+      const container = document.getElementById('401kContainer');
+      if (!container.dataset.loaded) {
+        try {
+          const html = await fetch('src/401K/401k_widget.html').then(r=>r.text());
+          container.innerHTML = html;
+          // inject JS for 401k calculator
+          const script = document.createElement('script'); 
+          script.src='src/401K/401k_calculator.js'; 
+          document.body.appendChild(script);
+          container.dataset.loaded = 'true';
+        } catch(e) {
+          console.log('Failed to preload 401k widget:', e);
+        }
+      }
+    })();
+
+    // Remove any BrowserSync injected nodes that may still appear (defensive)
+    (function removeBS(){
+      const removeIfBS = (node) => {
+        try{
+          if(!node || !node.textContent) return false;
+          const t = node.textContent.toLowerCase();
+          if(t.includes('browsersync') || t.includes('browser-sync')){ node.remove(); return true; }
+        }catch(e){}
+        return false;
+      };
+      // initial pass
+      document.querySelectorAll('div,span,section,aside').forEach(n=> removeIfBS(n));
+      // observe future insertions
+      const mo = new MutationObserver((mutations)=>{
+        for(const m of mutations){
+          for(const n of m.addedNodes){
+            if(n.nodeType===1) removeIfBS(n);
+          }
+        }
+      });
+      mo.observe(document.documentElement || document.body, { childList: true, subtree: true });
+    })();
+
+    // Clear any injected right-side offsets (padding/margin) applied to html/body
+    (function clearInjectedOffsets(){
+      function clean(){
+        try{
+          const docEl = document.documentElement;
+          const body = document.body;
+          if(docEl && (docEl.style.paddingRight || docEl.style.marginRight)){
+            docEl.style.paddingRight = '';
+            docEl.style.marginRight = '';
+          }
+          if(body && (body.style.paddingRight || body.style.marginRight)){
+            body.style.paddingRight = '';
+            body.style.marginRight = '';
+          }
+        }catch(e){}
+      }
+      // initial clean
+      clean();
+      // also watch for style changes on html/body
+      const mo2 = new MutationObserver((mutations)=>{
+        for(const m of mutations){
+          if(m.type === 'attributes' && (m.attributeName === 'style')) clean();
+        }
+      });
+      mo2.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+      mo2.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+    })();
+  </script>
+</body>
+</html>

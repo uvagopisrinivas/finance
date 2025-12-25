@@ -1,0 +1,40 @@
+{
+  "name": "sepp-calculator",
+  "version": "1.0.0",
+  "description": "Static 72(t) SEPP Withdrawal Planner with scalable CSS architecture",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uvagopisrinivas/finance.git"
+  },
+  "keywords": [
+    "sepp",
+    "401k",
+    "retirement",
+    "calculator",
+    "financial",
+    "planning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --index index.html --no-open --no-notify",
+    "watch": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --ui-port 6021 --index index.html --no-notify",
+    "build:css": "lessc src/styles/global.less src/styles/global.css",
+    "watch:css": "lessc src/styles/global.less src/styles/global.css --watch",
+    "dev": "npm run build:css && npm run start",
+    "clean": "rm -rf node_modules package-lock.json",
+    "fresh-install": "npm run clean && npm install",
+    "docker:build": "docker build -t retirement-planning-tools:latest .",
+    "docker:run": "docker run --rm -p 6021:80 --name retirement-tools retirement-planning-tools:latest",
+    "docker:stop": "docker stop retirement-tools",
+    "compose:up": "docker-compose up -d --build",
+    "compose:down": "docker-compose down",
+    "compose:logs": "docker-compose logs -f",
+    "deploy": "npm run compose:up",
+    "undeploy": "npm run compose:down"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "less": "^4.2.0"
+  }
+}

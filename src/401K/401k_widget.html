@@ -1,0 +1,66 @@
+<!-- 401k Projection Calculator Widget -->
+<div class="card">
+    <div class="card__header">
+        <div style="display: flex; align-items: center; gap: var(--space-sm);">
+            <h2 class="card__title" style="margin: 0;">401k Projection Calculator</h2>
+            <button class="btn btn--info" onclick="show401kInfoModal('401k-overview')" aria-label="Learn about 401k calculations and methodology" title="Learn about 401k calculations and methodology">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+        <p class="card__subtitle">Plan your retirement savings with automatic contribution optimization</p>
+    </div>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label class="form-label">Current Base Salary ($)</label>
+            <input type="number" id="baseSalary" value="101700" class="form-input">
+        </div>
+        <div class="form-group">
+            <label class="form-label">% Increase in Base Salary per Year</label>
+            <input type="number" id="salaryIncrease" value="2.5" step="0.1" class="form-input">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Projection Years</label>
+            <input type="number" id="projectionYears" value="5" min="1" max="30" class="form-input">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Annual Rate of Return (%)</label>
+            <input type="number" id="annualReturn" value="12" step="0.1" class="form-input">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Current 401a Balance ($)</label>
+            <input type="number" id="current401aBalance" value="28567.00" class="form-input">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Current 401k Balance ($)</label>
+            <input type="number" id="current401kBalance" value="160000" class="form-input">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h4>📋 Automatic Calculations:</h4>
+        <ul>
+            <li><strong>Bonus:</strong> Fixed at 10% of base salary annually</li>
+            <li><strong>Bonus Contribution:</strong> 50% of bonus goes to 401k</li>
+            <li><strong>401a Contribution:</strong> 4% of base salary annually</li>
+            <li><strong>401k Max:</strong> $23,500 annual limit (employee + bonus contributions)</li>
+            <li><strong>Employer Match:</strong> 100% match up to 6% of salary</li>
+        </ul>
+    </div>
+
+    <button onclick="calculate401k()" class="btn btn--primary btn--large">Generate 401k Projection</button>
+</div>
+
+<div id="results401kArea"></div>
+
+<!-- Modal for 401k info popups -->
+<div id="info401kModal" class="modal modal--hidden" aria-hidden="true">
+    <div class="modal__content" role="dialog" aria-modal="true" aria-labelledby="info401kTitle">
+        <div class="modal__header">
+            <h3 id="info401kTitle" class="modal__title">Title</h3>
+            <button class="modal__close" id="info401kClose" aria-label="Close">✕</button>
+        </div>
+        <div id="info401kContent">Content</div>
+    </div>
+</div>
+
