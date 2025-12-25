@@ -5,6 +5,7 @@ networks:
 services:
   retirement-tools:
     image: ghcr.io/uvagopisrinivas/finance:latest
+    build: .
     container_name: retirement-tools
     ports:
       - "6021:80"
