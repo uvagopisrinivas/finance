@@ -4,13 +4,12 @@ networks:
 
 services:
   retirement-tools:
-    image: ghcr.io/uvagopisrinivas/finance:latest
-    build: .
+    image: ghcr.io/uvagopisrinivas/401k:latest
     container_name: retirement-tools
     ports:
       - "6021:80"
     volumes:
-      - /myWebsites/logs:/var/log/nginx
+      - /401k_website/logs:/var/log/nginx
     environment:
       - TZ=America/New_York
       - NGINX_HOST=${DOMAIN:-retirement.local}

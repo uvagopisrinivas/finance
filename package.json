@@ -4,7 +4,7 @@
   "description": "Static 72(t) SEPP Withdrawal Planner with scalable CSS architecture",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uvagopisrinivas/finance.git"
+    "url": "https://github.com/your-username/retirement-planning-tools.git"
   },
   "keywords": [
     "sepp",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "scripts": {
     "start": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --index index.html --no-open --no-notify",
-    "watch": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --ui-port 6021 --index index.html --no-notify",
+    "watch": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --ui-port 6022 --index index.html --no-notify",
     "build:css": "lessc src/styles/global.less src/styles/global.css",
     "watch:css": "lessc src/styles/global.less src/styles/global.css --watch",
     "dev": "npm run build:css && npm run start",

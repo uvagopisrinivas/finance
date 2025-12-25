@@ -231,28 +231,14 @@
         }
       }
       if(name==='401k'){
-        // load 401k widget html (if not already loaded)
+        // load 401k widget html
         const container = document.getElementById('401kContainer');
         if(!container.dataset.loaded){
-          try {
-            const html = await fetch('src/401K/401k_widget.html').then(r=>r.text());
-            container.innerHTML = html;
-            
-            // Load JavaScript with proper callback
-            const script = document.createElement('script'); 
-            script.src='src/401K/401k_calculator.js';
-            script.onload = function() {
-              console.log('401k calculator script loaded via tab click');
-            };
-            script.onerror = function() {
-              console.error('Failed to load 401k calculator script via tab click');
-            };
-            document.body.appendChild(script);
-            container.dataset.loaded = 'true';
-          } catch(e) {
-            console.error('Failed to load 401k widget:', e);
-            container.innerHTML = '<div class="card"><div class="card__header"><h3>Error</h3></div><p>Failed to load 401k calculator. Please refresh the page.</p></div>';
-          }
+          const html = await fetch('src/401K/401k_widget.html').then(r=>r.text());
+          container.innerHTML = html;
+          // inject JS for 401k calculator
+          const script = document.createElement('script'); script.src='src/401K/401k_calculator.js'; document.body.appendChild(script);
+          container.dataset.loaded = 'true';
         }
       }
     }));
@@ -276,26 +262,8 @@
     const saved = localStorage.getItem('theme');
     applyTheme(saved === 'dark' ? 'dark' : (saved === 'light' ? 'light' : 'light'));
 
-    // default to About but also preload 401k widget
+    // default to About
     setActive('about');
-    
-    // Preload 401k widget so info button is available immediately
-    (async function preload401k() {
-      const container = document.getElementById('401kContainer');
-      if (!container.dataset.loaded) {
-        try {
-          const html = await fetch('src/401K/401k_widget.html').then(r=>r.text());
-          container.innerHTML = html;
-          // inject JS for 401k calculator
-          const script = document.createElement('script'); 
-          script.src='src/401K/401k_calculator.js'; 
-          document.body.appendChild(script);
-          container.dataset.loaded = 'true';
-        } catch(e) {
-          console.log('Failed to preload 401k widget:', e);
-        }
-      }
-    })();
 
     // Remove any BrowserSync injected nodes that may still appear (defensive)
     (function removeBS(){

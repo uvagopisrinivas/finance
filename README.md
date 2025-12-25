@@ -36,7 +36,7 @@ A comprehensive web-based platform for retirement planning calculations, featuri
 ### Docker Compose Deployment (Recommended)
 ```bash
 # Clone the repository
-git clone https://github.com/uvagopisrinivas/finance.git
+git clone https://github.com/uvagopisrinivas/401k.git
 cd 401k
 
 # Deploy with Docker Compose
@@ -55,7 +55,7 @@ docker-compose logs -f
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd finance
+cd retirement-planning-tools
 
 # Install dependencies
 npm install
@@ -74,7 +74,7 @@ Access at: `http://localhost:8000`
 ## 📁 Project Structure
 
 ```
-finance/
+retirement-planning-tools/
 ├── 📄 index.html              # Main application entry point
 ├── 📁 src/
 │   ├── 📁 SEPP/               # SEPP Calculator module
