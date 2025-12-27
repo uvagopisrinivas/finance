@@ -27,6 +27,54 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireToggle);
     else wireToggle();
 
+    // Input validation for SEPP calculator
+    function setupSEPPInputValidation() {
+        const numberInputs = document.querySelectorAll('#startAge, #balance, #growth, #irsRate, #taxRate');
+        
+        numberInputs.forEach(input => {
+            if (!input) return;
+            
+            // Prevent non-numeric characters
+            input.addEventListener('keypress', function(e) {
+                if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+                    (e.keyCode === 65 && e.ctrlKey === true) ||
+                    (e.keyCode === 67 && e.ctrlKey === true) ||
+                    (e.keyCode === 86 && e.ctrlKey === true) ||
+                    (e.keyCode === 88 && e.ctrlKey === true) ||
+                    (e.keyCode >= 35 && e.keyCode <= 39)) {
+                    return;
+                }
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+
+            // Prevent pasting non-numeric content
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                if (/^\d*\.?\d*$/.test(paste)) {
+                    this.value = paste;
+                }
+            });
+
+            // Clean up invalid values
+            input.addEventListener('blur', function(e) {
+                const value = parseFloat(this.value);
+                if (isNaN(value) || value < 0) {
+                    this.value = this.getAttribute('value') || '0';
+                }
+            });
+        });
+    }
+
+    // Setup validation when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupSEPPInputValidation);
+    } else {
+        setTimeout(setupSEPPInputValidation, 100); // Small delay to ensure inputs are loaded
+    }
+
     // life table and helpers
     const lifeTable = {30:55.3,31:54.4,32:53.4,33:52.5,34:51.5,35:50.5,36:49.6,37:48.6,38:47.7,39:46.7,40:45.7,41:44.8,42:43.8,43:42.9,44:41.9,45:41.0,46:40.0,47:39.0,48:38.1,49:37.1,50:36.2,51:35.3,52:34.3,53:33.4,54:32.5,55:31.6,56:30.6,57:29.8,58:28.9,59:28.0,60:27.1,61:26.2,62:25.4,63:24.5,64:23.7,65:22.9,66:22.0,67:21.2,68:20.4,69:19.6,70:18.8};
     function formatCurr(num){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(num)}

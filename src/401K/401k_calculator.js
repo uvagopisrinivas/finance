@@ -451,3 +451,50 @@
     });
 
 })();
+    // Input validation for 401k calculator
+    function setup401kInputValidation() {
+        const numberInputs = document.querySelectorAll('#baseSalary, #salaryIncrease, #projectionYears, #annualReturn, #current401aBalance, #current401kBalance');
+        
+        numberInputs.forEach(input => {
+            if (!input) return;
+            
+            // Prevent non-numeric characters
+            input.addEventListener('keypress', function(e) {
+                if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+                    (e.keyCode === 65 && e.ctrlKey === true) ||
+                    (e.keyCode === 67 && e.ctrlKey === true) ||
+                    (e.keyCode === 86 && e.ctrlKey === true) ||
+                    (e.keyCode === 88 && e.ctrlKey === true) ||
+                    (e.keyCode >= 35 && e.keyCode <= 39)) {
+                    return;
+                }
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+
+            // Prevent pasting non-numeric content
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                if (/^\d*\.?\d*$/.test(paste)) {
+                    this.value = paste;
+                }
+            });
+
+            // Clean up invalid values
+            input.addEventListener('blur', function(e) {
+                const value = parseFloat(this.value);
+                if (isNaN(value) || value < 0) {
+                    this.value = this.getAttribute('value') || '0';
+                }
+            });
+        });
+    }
+
+    // Setup validation when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setup401kInputValidation);
+    } else {
+        setTimeout(setup401kInputValidation, 100);
+    }

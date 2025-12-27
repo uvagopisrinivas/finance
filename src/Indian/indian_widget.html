@@ -1,0 +1,328 @@
+<!-- Indian Calculators Widget -->
+<div class="card">
+    <div class="card__header">
+        <div style="display: flex; align-items: center; gap: var(--space-sm);">
+            <h2 class="card__title" style="margin: 0;">🇮🇳 Indian Investment Calculators</h2>
+            <button class="btn btn--info" onclick="showIndianInfoModal('indian-overview')" aria-label="Learn about Indian investment calculations" title="Learn about Indian investment calculations">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+        <p class="card__subtitle">Plan your investments with SIP, SWP, and Lumpsum calculators in Indian Rupees (₹)</p>
+    </div>
+
+    <!-- Calculator Type Selector -->
+    <div class="calculator-tabs">
+        <button class="calculator-tab active" data-calculator="sip" onclick="switchIndianCalculator('sip')">
+            <i class="fas fa-chart-line"></i>
+            <span>SIP Calculator</span>
+            <small>Systematic Investment Plan</small>
+        </button>
+        <button class="calculator-tab" data-calculator="swp" onclick="switchIndianCalculator('swp')">
+            <i class="fas fa-hand-holding-usd"></i>
+            <span>SWP Calculator</span>
+            <small>Systematic Withdrawal Plan</small>
+        </button>
+        <button class="calculator-tab" data-calculator="lumpsum" onclick="switchIndianCalculator('lumpsum')">
+            <i class="fas fa-coins"></i>
+            <span>Lumpsum Calculator</span>
+            <small>One-time Investment</small>
+        </button>
+    </div>
+
+    <!-- SIP Calculator -->
+    <div id="sipCalculator" class="calculator-section active">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-chart-line text-primary"></i> SIP Calculator</h3>
+                <p>Invest a fixed amount regularly and watch your wealth grow with the power of compounding. Perfect for building long-term wealth through disciplined investing.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-rupee-sign"></i>
+                    Monthly Investment (₹)
+                </label>
+                <input type="number" id="sipAmount" value="25000" class="form-input" placeholder="Enter monthly SIP amount">
+                <small class="form-hint">Minimum recommended: ₹1,000</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-percentage"></i>
+                    Expected Return Rate (% p.a.)
+                </label>
+                <input type="number" id="sipReturnRate" value="12" step="0.1" class="form-input" placeholder="Expected annual return">
+                <small class="form-hint">Typical range: 8% - 15%</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Time Period (Years)
+                </label>
+                <input type="number" id="sipTimePeriod" value="10" min="1" max="50" class="form-input" placeholder="Investment duration">
+                <small class="form-hint">Longer duration = Better compounding</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-arrow-up"></i>
+                    Annual Step-up (%)
+                </label>
+                <input type="number" id="sipStepUp" value="0" step="0.1" class="form-input" placeholder="Yearly increase in SIP">
+                <small class="form-hint">Optional: Increase SIP annually</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary btn--large" onclick="calculateSIP()">
+                <i class="fas fa-calculator"></i>
+                Calculate SIP Returns
+            </button>
+        </div>
+
+        <div id="sipResults" class="results-area" style="display: none;">
+            <div class="results-header">
+                <h3><i class="fas fa-chart-bar"></i> Your SIP Investment Projection</h3>
+                <p>Here's how your systematic investment plan will grow over time</p>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-section">
+                    <h3 class="summary-title">
+                        <i class="fas fa-piggy-bank"></i>
+                        Investment Summary
+                    </h3>
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Total Investment
+                            </span>
+                            <span class="summary-value" id="sipTotalInvestment">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-chart-line"></i>
+                                Expected Returns
+                            </span>
+                            <span class="summary-value summary-value--success" id="sipExpectedReturns">₹0</span>
+                        </div>
+                        <div class="summary-item summary-item--highlight">
+                            <span class="summary-label">
+                                <i class="fas fa-trophy"></i>
+                                Total Value
+                            </span>
+                            <span class="summary-value summary-value--primary" id="sipTotalValue">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sipTableContainer"></div>
+        </div>
+    </div>
+
+    <!-- SWP Calculator -->
+    <div id="swpCalculator" class="calculator-section">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-hand-holding-usd text-warning"></i> SWP Calculator</h3>
+                <p>Generate regular income from your investments while preserving capital. Ideal for retirement planning and creating steady cash flow.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-wallet"></i>
+                    Total Investment (₹)
+                </label>
+                <input type="number" id="swpTotalInvestment" value="500000" class="form-input" placeholder="Your investment corpus">
+                <small class="form-hint">Your accumulated investment amount</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    Monthly Withdrawal (₹)
+                </label>
+                <input type="number" id="swpWithdrawal" value="10000" class="form-input" placeholder="Monthly income needed">
+                <small class="form-hint">Amount you want to withdraw monthly</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-percentage"></i>
+                    Expected Return Rate (% p.a.)
+                </label>
+                <input type="number" id="swpReturnRate" value="8" step="0.1" class="form-input" placeholder="Expected annual return">
+                <small class="form-hint">Conservative range: 6% - 10%</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Time Period (Years)
+                </label>
+                <input type="number" id="swpTimePeriod" value="5" min="1" max="50" class="form-input" placeholder="Withdrawal duration">
+                <small class="form-hint">How long you need income</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary btn--large" onclick="calculateSWP()">
+                <i class="fas fa-calculator"></i>
+                Calculate SWP Plan
+            </button>
+        </div>
+
+        <div id="swpResults" class="results-area" style="display: none;">
+            <div class="results-header">
+                <h3><i class="fas fa-chart-line-down"></i> Your SWP Withdrawal Plan</h3>
+                <p>Here's how your systematic withdrawal plan will work</p>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-section">
+                    <h3 class="summary-title">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        Withdrawal Summary
+                    </h3>
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-wallet"></i>
+                                Initial Investment
+                            </span>
+                            <span class="summary-value" id="swpInitialInvestment">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Total Withdrawal
+                            </span>
+                            <span class="summary-value summary-value--warning" id="swpTotalWithdrawal">₹0</span>
+                        </div>
+                        <div class="summary-item summary-item--highlight">
+                            <span class="summary-label">
+                                <i class="fas fa-piggy-bank"></i>
+                                Remaining Value
+                            </span>
+                            <span class="summary-value summary-value--primary" id="swpFinalValue">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="swpTableContainer"></div>
+        </div>
+    </div>
+
+    <!-- Lumpsum Calculator -->
+    <div id="lumpsumCalculator" class="calculator-section">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-coins text-info"></i> Lumpsum Calculator</h3>
+                <p>Invest a large amount at once and let compound interest work its magic. Perfect for windfall investments and goal-based planning.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-rupee-sign"></i>
+                    Investment Amount (₹)
+                </label>
+                <input type="number" id="lumpsumAmount" value="25000" class="form-input" placeholder="One-time investment amount">
+                <small class="form-hint">Your lumpsum investment</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-percentage"></i>
+                    Expected Return Rate (% p.a.)
+                </label>
+                <input type="number" id="lumpsumReturnRate" value="12" step="0.1" class="form-input" placeholder="Expected annual return">
+                <small class="form-hint">Typical range: 8% - 15%</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Time Period (Years)
+                </label>
+                <input type="number" id="lumpsumTimePeriod" value="10" min="1" max="50" class="form-input" placeholder="Investment duration">
+                <small class="form-hint">Investment holding period</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-sync-alt"></i>
+                    Compounding Frequency
+                </label>
+                <select id="lumpsumCompounding" class="form-input">
+                    <option value="1">Annually</option>
+                    <option value="2">Half-yearly</option>
+                    <option value="4">Quarterly</option>
+                    <option value="12" selected>Monthly</option>
+                </select>
+                <small class="form-hint">How often returns are compounded</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary btn--large" onclick="calculateLumpsum()">
+                <i class="fas fa-calculator"></i>
+                Calculate Lumpsum Returns
+            </button>
+        </div>
+
+        <div id="lumpsumResults" class="results-area" style="display: none;">
+            <div class="results-header">
+                <h3><i class="fas fa-chart-area"></i> Your Lumpsum Investment Growth</h3>
+                <p>Here's how your one-time investment will grow over time</p>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="summary-section">
+                    <h3 class="summary-title">
+                        <i class="fas fa-coins"></i>
+                        Investment Summary
+                    </h3>
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-money-bill"></i>
+                                Invested Amount
+                            </span>
+                            <span class="summary-value" id="lumpsumInvestedAmount">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-chart-line"></i>
+                                Expected Returns
+                            </span>
+                            <span class="summary-value summary-value--success" id="lumpsumExpectedReturns">₹0</span>
+                        </div>
+                        <div class="summary-item summary-item--highlight">
+                            <span class="summary-label">
+                                <i class="fas fa-gem"></i>
+                                Total Value
+                            </span>
+                            <span class="summary-value summary-value--primary" id="lumpsumTotalValue">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="lumpsumTableContainer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Indian Calculators Info Modal -->
+<div id="indianInfoModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="indianInfoTitle" aria-modal="true" style="display: none;">
+    <div class="modal__backdrop" onclick="closeIndianInfoModal()"></div>
+    <div class="modal__content">
+        <div class="modal__header">
+            <h2 id="indianInfoTitle" class="modal__title">Calculator Information</h2>
+            <button class="modal__close" onclick="closeIndianInfoModal()" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal__body">
+            <div id="indianInfoContent"></div>
+        </div>
+    </div>
+</div>
