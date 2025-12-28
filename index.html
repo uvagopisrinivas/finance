@@ -293,7 +293,7 @@
         if(!container.dataset.loaded){
           // Load the JavaScript first, then the HTML
           const script = document.createElement('script'); 
-          script.src='src/SEPP/sepp_calculator.js';
+          script.src='src/SEPP/sepp_calculator.js?v=' + Date.now();
           script.onload = async function() {
             // Now load the HTML after the script is loaded
             const html = await fetch('src/SEPP/sepp_widget.html').then(r=>r.text());
@@ -318,7 +318,9 @@
           const html = await fetch('src/401K/401k_widget.html').then(r=>r.text());
           container.innerHTML = html;
           // inject JS for 401k calculator
-          const script = document.createElement('script'); script.src='src/401K/401k_calculator.js'; document.body.appendChild(script);
+          const script = document.createElement('script'); 
+          script.src='src/401K/401k_calculator.js?v=' + Date.now(); 
+          document.body.appendChild(script);
           container.dataset.loaded = 'true';
         }
       }
@@ -329,7 +331,9 @@
           const html = await fetch('src/Indian/indian_widget.html').then(r=>r.text());
           container.innerHTML = html;
           // inject JS for Indian calculators
-          const script = document.createElement('script'); script.src='src/Indian/indian_calculators.js'; document.body.appendChild(script);
+          const script = document.createElement('script'); 
+          script.src='src/Indian/indian_calculators.js?v=' + Date.now(); 
+          document.body.appendChild(script);
           container.dataset.loaded = 'true';
           
           // Ensure tab switching works after script loads
