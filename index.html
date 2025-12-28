@@ -392,8 +392,8 @@
               }
               
               // Ensure SIP tab is active
-              const tabs = document.querySelectorAll('.calculator-tab');
-              tabs.forEach(tab => tab.classList.remove('active'));
+              const calculatorTabs = document.querySelectorAll('.calculator-tab');
+              calculatorTabs.forEach(tab => tab.classList.remove('active'));
               const sipTab = document.querySelector('[data-calculator="sip"]');
               if (sipTab) {
                 sipTab.classList.add('active');
@@ -404,6 +404,37 @@
               if (window.switchIndianCalculator) {
                 window.switchIndianCalculator('sip');
               }
+              
+              // Ensure click events are properly bound to tabs
+              const tabElements = document.querySelectorAll('.calculator-tab');
+              tabElements.forEach(tab => {
+                tab.addEventListener('click', function() {
+                  const calculatorType = this.getAttribute('data-calculator');
+                  console.log('Tab clicked:', calculatorType);
+                  
+                  // Remove active class from all tabs
+                  tabElements.forEach(t => t.classList.remove('active'));
+                  // Add active class to clicked tab
+                  this.classList.add('active');
+                  
+                  // Hide all calculator sections
+                  const sections = document.querySelectorAll('.calculator-section');
+                  sections.forEach(section => {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                  });
+                  
+                  // Show selected calculator section
+                  const targetSection = document.getElementById(calculatorType + 'Calculator');
+                  if (targetSection) {
+                    targetSection.classList.add('active');
+                    targetSection.style.display = 'block';
+                    console.log('Switched to:', calculatorType);
+                  }
+                });
+              });
+              
+              console.log('Tab click events bound to', tabElements.length, 'tabs');
             }, 200);
           };
           // Setup input validation after a short delay to ensure DOM is ready
