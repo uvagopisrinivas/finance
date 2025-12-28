@@ -83,6 +83,26 @@
     .calculator-tab.active small {
       color: rgba(255, 255, 255, 0.9);
     }
+    /* Critical CSS for calculator sections */
+    .calculator-section {
+      display: none;
+      animation: fadeInUp 200ms ease;
+      overflow: visible;
+      padding-bottom: 32px;
+    }
+    .calculator-section.active {
+      display: block;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
@@ -354,10 +374,37 @@
           script.onload = function() {
             // Initialize the first calculator as active
             setTimeout(() => {
+              console.log('Initializing Indian calculators...');
+              
+              // Ensure only SIP is visible initially
+              const sections = document.querySelectorAll('.calculator-section');
+              sections.forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+              });
+              
+              // Show only SIP calculator
+              const sipSection = document.getElementById('sipCalculator');
+              if (sipSection) {
+                sipSection.classList.add('active');
+                sipSection.style.display = 'block';
+                console.log('SIP calculator activated');
+              }
+              
+              // Ensure SIP tab is active
+              const tabs = document.querySelectorAll('.calculator-tab');
+              tabs.forEach(tab => tab.classList.remove('active'));
+              const sipTab = document.querySelector('[data-calculator="sip"]');
+              if (sipTab) {
+                sipTab.classList.add('active');
+                console.log('SIP tab activated');
+              }
+              
+              // Call the switch function if available
               if (window.switchIndianCalculator) {
                 window.switchIndianCalculator('sip');
               }
-            }, 100);
+            }, 200);
           };
           // Setup input validation after a short delay to ensure DOM is ready
           setTimeout(() => {
