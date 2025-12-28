@@ -349,6 +349,16 @@
           // inject JS for Indian calculators
           const script = document.createElement('script'); script.src='src/Indian/indian_calculators.js'; document.body.appendChild(script);
           container.dataset.loaded = 'true';
+          
+          // Ensure tab switching works after script loads
+          script.onload = function() {
+            // Initialize the first calculator as active
+            setTimeout(() => {
+              if (window.switchIndianCalculator) {
+                window.switchIndianCalculator('sip');
+              }
+            }, 100);
+          };
           // Setup input validation after a short delay to ensure DOM is ready
           setTimeout(() => {
             if (window.setupInputValidation) window.setupInputValidation();

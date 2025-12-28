@@ -28,17 +28,31 @@
 
     // Calculator switching functionality
     window.switchIndianCalculator = function(calculatorType) {
+        console.log('Switching to calculator:', calculatorType);
+        
         // Update tab states
         document.querySelectorAll('.calculator-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        document.querySelector(`[data-calculator="${calculatorType}"]`).classList.add('active');
+        const activeTab = document.querySelector(`[data-calculator="${calculatorType}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            console.log('Active tab set for:', calculatorType);
+        } else {
+            console.error('Tab not found for:', calculatorType);
+        }
 
         // Update calculator sections
         document.querySelectorAll('.calculator-section').forEach(section => {
             section.classList.remove('active');
         });
-        document.getElementById(`${calculatorType}Calculator`).classList.add('active');
+        const activeSection = document.getElementById(`${calculatorType}Calculator`);
+        if (activeSection) {
+            activeSection.classList.add('active');
+            console.log('Active section set for:', calculatorType);
+        } else {
+            console.error('Section not found for:', calculatorType + 'Calculator');
+        }
     };
 
     // Input validation to prevent text entry
