@@ -6,6 +6,84 @@
   <title>Uva Kondisetty — SEPP Tools</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="src/styles/global.css">
+  <!-- Ensure CSS loads properly with cache busting -->
+  <script>
+    // Verify CSS is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      const cssLink = document.querySelector('link[href="src/styles/global.css"]');
+      if (cssLink) {
+        cssLink.onerror = function() {
+          console.error('Failed to load CSS file');
+          // Fallback: try to reload CSS
+          const newLink = document.createElement('link');
+          newLink.rel = 'stylesheet';
+          newLink.href = 'src/styles/global.css?' + Date.now();
+          document.head.appendChild(newLink);
+        };
+      }
+    });
+  </script>
+  <!-- Critical CSS for Indian calculators - fallback if main CSS fails -->
+  <style>
+    .calculator-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(52, 152, 219, 0.05));
+      border-radius: 12px;
+      border: 1px solid var(--color-border, #e5e7eb);
+    }
+    .calculator-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 32px;
+      border: 2px solid transparent;
+      background: var(--color-surface, #ffffff);
+      color: var(--color-text-secondary, #6b7280);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 200ms ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    .calculator-tab:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      border-color: #27ae60;
+      color: var(--color-text-primary, #111827);
+    }
+    .calculator-tab.active {
+      background: linear-gradient(135deg, #27ae60, #219150);
+      color: white;
+      border-color: #27ae60;
+      box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+      transform: translateY(-2px);
+    }
+    .calculator-tab i {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .calculator-tab span {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .calculator-tab small {
+      font-size: 12px;
+      color: var(--color-text-muted, #9ca3af);
+      text-align: center;
+      line-height: 1.25;
+    }
+    .calculator-tab.active small {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  </style>
 </head>
 <body>
   <header class="header">
