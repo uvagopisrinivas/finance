@@ -19,9 +19,7 @@
   "scripts": {
     "start": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --index index.html --no-open --no-notify",
     "watch": "browser-sync start --server --files \"index.html,src/**\" --port 6021 --ui-port 6022 --index index.html --no-notify",
-    "build:css": "lessc src/styles/global.less src/styles/global.css",
-    "watch:css": "lessc src/styles/global.less src/styles/global.css --watch",
-    "dev": "npm run build:css && npm run start",
+    "dev": "npm run start",
     "clean": "rm -rf node_modules package-lock.json",
     "fresh-install": "npm run clean && npm install",
     "docker:build": "docker build -t retirement-planning-tools:latest .",
@@ -34,7 +32,7 @@
     "undeploy": "npm run compose:down"
   },
   "devDependencies": {
-    "browser-sync": "^3.0.4",
-    "less": "^4.2.0"
-  }
+    "browser-sync": "^3.0.4"
+  },
+  "dependencies": {}
 }

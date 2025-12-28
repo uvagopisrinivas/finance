@@ -9,6 +9,10 @@ package-lock.json
 dist/
 build/
 
+# Legacy files (can be removed after consolidation)
+src/styles/global.less
+src/styles/global.css
+
 # Environment files
 .env
 .env.local

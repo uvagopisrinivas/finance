@@ -1,9 +1,9 @@
 <!-- Indian Calculators Widget -->
 <div class="card">
     <div class="card__header">
-        <div style="display: flex; align-items: center; gap: var(--space-sm);">
-            <h2 class="card__title" style="margin: 0;">🇮🇳 Indian Investment Calculators</h2>
-            <button class="btn btn--info" onclick="showIndianInfoModal('indian-overview')" aria-label="Learn about Indian investment calculations" title="Learn about Indian investment calculations">
+        <div class="flex items-center gap-sm">
+            <h2 class="card__title mb-0">🇮🇳 Indian Investment Calculators</h2>
+            <button class="btn btn--info" aria-label="Learn about Indian investment calculations" title="Learn about Indian investment calculations">
                 <i class="fas fa-info-circle"></i>
             </button>
         </div>
@@ -80,7 +80,7 @@
             </button>
         </div>
 
-        <div id="sipResults" class="results-area" style="display: none;">
+        <div id="sipResults" class="results-area hidden">
             <div class="results-header">
                 <h3><i class="fas fa-chart-bar"></i> Your SIP Investment Projection</h3>
                 <p>Here's how your systematic investment plan will grow over time</p>
@@ -172,7 +172,7 @@
             </button>
         </div>
 
-        <div id="swpResults" class="results-area" style="display: none;">
+        <div id="swpResults" class="results-area hidden">
             <div class="results-header">
                 <h3><i class="fas fa-chart-line-down"></i> Your SWP Withdrawal Plan</h3>
                 <p>Here's how your systematic withdrawal plan will work</p>
@@ -269,7 +269,7 @@
             </button>
         </div>
 
-        <div id="lumpsumResults" class="results-area" style="display: none;">
+        <div id="lumpsumResults" class="results-area hidden">
             <div class="results-header">
                 <h3><i class="fas fa-chart-area"></i> Your Lumpsum Investment Growth</h3>
                 <p>Here's how your one-time investment will grow over time</p>
@@ -312,7 +312,7 @@
 </div>
 
 <!-- Indian Calculators Info Modal -->
-<div id="indianInfoModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="indianInfoTitle" aria-modal="true" style="display: none;">
+<div id="indianInfoModal" class="modal hidden" aria-hidden="true" role="dialog" aria-labelledby="indianInfoTitle" aria-modal="true">
     <div class="modal__backdrop" onclick="closeIndianInfoModal()"></div>
     <div class="modal__content">
         <div class="modal__header">

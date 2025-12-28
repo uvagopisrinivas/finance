@@ -17,7 +17,7 @@ COPY src/ /usr/share/nginx/html/src/
 
 # Ensure CSS file has correct permissions and is accessible
 RUN ls -la /usr/share/nginx/html/src/styles/
-RUN cat /usr/share/nginx/html/src/styles/global.css | head -20
+RUN cat /usr/share/nginx/html/src/styles/consolidated.css | head -20
 
 # Create logs directory
 RUN mkdir -p /var/log/nginx

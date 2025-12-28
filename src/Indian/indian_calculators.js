@@ -455,6 +455,7 @@
             titleEl.textContent = data[id].title;
             contentEl.innerHTML = data[id].content;
             modal.setAttribute('aria-hidden', 'false');
+            modal.classList.remove('hidden');
             modal.style.display = 'flex';
             
             // Focus management
@@ -467,6 +468,7 @@
         const modal = document.getElementById('indianInfoModal');
         modal.setAttribute('aria-hidden', 'true');
         modal.style.display = 'none';
+        modal.classList.add('hidden');
     };
 
     // Keyboard support for modal
@@ -481,9 +483,38 @@
 
     // Setup input validation when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupInputValidation);
+        document.addEventListener('DOMContentLoaded', function() {
+            setupInputValidation();
+            initializeModal();
+        });
     } else {
         setupInputValidation();
+        initializeModal();
+    }
+
+    // Initialize modal to ensure it's properly hidden
+    function initializeModal() {
+        setTimeout(function() {
+            const modal = document.getElementById('indianInfoModal');
+            if (modal) {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                console.log('Indian modal initialized and hidden');
+            }
+            
+            // Add click event listener to info button to ensure it only opens on actual clicks
+            const infoButton = document.querySelector('.btn--info[aria-label*="Learn about Indian investment"]');
+            if (infoButton) {
+                infoButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Info button clicked by user');
+                    showIndianInfoModal('indian-overview');
+                });
+                console.log('Info button event listener added');
+            }
+        }, 100);
     }
 
 })();
