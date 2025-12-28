@@ -1631,19 +1631,38 @@ body {
   
   .header__inner {
     flex-direction: column;
-    gap: var(--space-md);
-    padding: var(--space-sm) 0;
+    gap: var(--space-lg);
+    padding: var(--space-md) 0;
     min-height: auto;
   }
   
   .main {
-    margin-top: calc(var(--header-height) + var(--space-xl));
+    margin-top: calc(var(--header-height) + var(--space-4xl));
     margin-bottom: var(--footer-height);
   }
   
   .nav {
     width: 100%;
     justify-content: center;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+  
+  .nav__tab {
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    min-width: 60px;
+    text-align: center;
+    border-radius: var(--border-radius-lg);
+    flex: 1;
+    max-width: 80px;
+  }
+  
+  .theme-toggle {
+    padding: var(--space-md);
+    border-radius: var(--border-radius-lg);
+    min-width: 50px;
   }
   
   .form-grid {
@@ -1805,6 +1824,35 @@ body {
     font-size: var(--font-size-xs);
   }
   
+  .header__inner {
+    gap: var(--space-xl);
+    padding: var(--space-lg) 0;
+  }
+  
+  .nav {
+    gap: var(--space-xs);
+  }
+  
+  .nav__tab {
+    padding: var(--space-lg) var(--space-md);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    min-width: 50px;
+    max-width: 70px;
+    border-radius: var(--border-radius-xl);
+  }
+  
+  .theme-toggle {
+    padding: var(--space-lg) var(--space-md);
+    font-size: var(--font-size-lg);
+    min-width: 50px;
+    border-radius: var(--border-radius-xl);
+  }
+  
+  .main {
+    margin-top: calc(var(--header-height) + var(--space-5xl));
+  }
+  
   .card__title {
     font-size: var(--font-size-xl);
   }
@@ -1925,5 +1973,128 @@ body {
   .table__body {
     max-height: none;
     overflow: visible;
+  }
+}
+/* ==========================================================================
+   COMPACT METALS LINKS STYLES
+   ========================================================================== */
+
+.metals-links-compact {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.metals-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-lg) 0;
+  text-align: center;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--space-sm);
+}
+
+.metals-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) 0;
+}
+
+.metals-row:last-of-type {
+  margin-bottom: var(--space-lg);
+}
+
+.metals-row-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.metals-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  flex: 1;
+}
+
+.metal-btn {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.2);
+  white-space: nowrap;
+}
+
+.metal-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+}
+
+.metal-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.2);
+}
+
+.metals-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
+  font-style: italic;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Responsive Design for Compact Metals */
+@media (max-width: 768px) {
+  .metals-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+  
+  .metals-row-label {
+    min-width: auto;
+    margin-bottom: var(--space-xs);
+  }
+  
+  .metals-buttons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .metal-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metals-links-compact {
+    padding: var(--space-lg);
+  }
+  
+  .metals-buttons {
+    flex-direction: column;
+  }
+  
+  .metal-btn {
+    width: 100%;
+    text-align: center;
   }
 }

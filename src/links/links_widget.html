@@ -1,0 +1,356 @@
+        <!-- Enhanced Financial Links -->
+        <div class="financial-links-enhanced">
+            <div class="page-header">
+                <h2 class="page-title">
+                    <span class="title-icon">💰</span>
+                    Live Financial Data
+                    <span class="title-sparkle">✨</span>
+                </h2>
+                <p class="page-subtitle">Real-time pricing and conversion rates from trusted financial sources</p>
+            </div>
+            
+            <div class="links-grid">
+                <!-- USA Metals Card -->
+                <div class="financial-card usa-card">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">🇺🇸</div>
+                        <h3 class="card-title">USA Metals</h3>
+                        <p class="card-description">Complete precious & industrial metals pricing from Trading Economics</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Gold</span>
+                            <span class="feature-tag">Silver</span>
+                            <span class="feature-tag">Copper</span>
+                            <span class="feature-tag">+More</span>
+                        </div>
+                        <button class="financial-btn usa-btn" onclick="openMetalPopup('https://tradingeconomics.com/commodity/gold', 'USA_Metals')">
+                            <span class="btn-icon">📊</span>
+                            View USA Metals
+                            <span class="btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- India Metals Card -->
+                <div class="financial-card india-card">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">🇮🇳</div>
+                        <h3 class="card-title">India Metals</h3>
+                        <p class="card-description">Complete metals pricing in Indian Rupees with local market rates</p>
+                        <div class="card-features">
+                            <span class="feature-tag">₹ Gold</span>
+                            <span class="feature-tag">₹ Silver</span>
+                            <span class="feature-tag">Local Rates</span>
+                            <span class="feature-tag">Live</span>
+                        </div>
+                        <button class="financial-btn india-btn" onclick="openMetalPopup('https://www.goodreturns.in/gold-rates/', 'India_Metals')">
+                            <span class="btn-icon">📊</span>
+                            View India Metals
+                            <span class="btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Currency Conversion Card -->
+                <div class="financial-card currency-card">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">💱</div>
+                        <h3 class="card-title">USD to INR</h3>
+                        <p class="card-description">Live currency conversion rates with real-time exchange data</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Live Rates</span>
+                            <span class="feature-tag">$1 = ₹</span>
+                            <span class="feature-tag">RIA Money</span>
+                            <span class="feature-tag">Instant</span>
+                        </div>
+                        <button class="financial-btn currency-btn" onclick="openMetalPopup('https://www.riamoneytransfer.com/en-us/rates-conversion/?From=USD&To=INR&Amount=1', 'USD_INR_Conversion')">
+                            <span class="btn-icon">💱</span>
+                            Check USD/INR Rate
+                            <span class="btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page-footer">
+                <p class="footer-note">
+                    <span class="note-icon">🔗</span>
+                    All links open in new browser tabs for easy comparison and analysis
+                </p>
+            </div>
+        </div>
+
+        <style>
+        .financial-links-enhanced {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05));
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .financial-links-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .title-icon, .title-sparkle {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        .title-sparkle {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .financial-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .financial-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .usa-card .card-background {
+            background: linear-gradient(135deg, #1e40af, #3b82f6, #60a5fa);
+        }
+
+        .india-card .card-background {
+            background: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+        }
+
+        .currency-card .card-background {
+            background: linear-gradient(135deg, #059669, #10b981, #34d399);
+        }
+
+        .financial-card:hover .card-background {
+            opacity: 1;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            padding: 30px;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-align: center;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0 0 20px 0;
+            text-align: center;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .feature-tag {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .financial-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: auto;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .financial-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .financial-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            font-size: 1.1rem;
+        }
+
+        .btn-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .financial-btn:hover .btn-arrow {
+            transform: translateX(5px);
+        }
+
+        .page-footer {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-note {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0.8;
+        }
+
+        .note-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .financial-links-enhanced {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .links-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card-content {
+                padding: 25px 20px;
+            }
+
+            .card-icon {
+                font-size: 2.5rem;
+            }
+
+            .card-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Dark mode adjustments */
+        [data-theme="dark"] .financial-links-enhanced {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+        }
+
+        [data-theme="dark"] .financial-card {
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        </style>

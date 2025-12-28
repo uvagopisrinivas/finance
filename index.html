@@ -40,6 +40,7 @@
           <button class="nav__tab" data-tab="sepp">SEPP</button>
           <button class="nav__tab" data-tab="401k">401k</button>
           <button class="nav__tab" data-tab="indian">INR</button>
+          <button class="nav__tab" data-tab="links">Links</button>
           <button id="globalThemeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
         </nav>
       </div>
@@ -103,6 +104,20 @@
                     <li>✓ Year-wise detailed projections</li>
                     <li>✓ Indian Rupee (₹) formatting</li>
                     <li>✓ Mobile-friendly interface</li>
+                  </ul>
+                </div>
+                
+                <div class="tool-card">
+                  <div class="tool-card__icon">🥇</div>
+                  <h3 class="tool-card__title">Live Metals Prices</h3>
+                  <p class="tool-card__description">Quick access to real-time precious and industrial metals pricing from professional financial data sources. Links open in convenient popup windows.</p>
+                  <ul class="tool-card__features">
+                    <li>✓ Precious metals (Gold, Silver, Platinum, Palladium)</li>
+                    <li>✓ Industrial metals (Copper, Steel, Aluminum, Lithium)</li>
+                    <li>✓ Professional data sources (Trading Economics)</li>
+                    <li>✓ Additional resources and price charts</li>
+                    <li>✓ Popup windows for easy navigation</li>
+                    <li>✓ Expandable for future link categories</li>
                   </ul>
                 </div>
               </div>
@@ -203,6 +218,9 @@
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;indian&quot;]').click()">
                   🇮🇳 Try Indian Calculators
                 </button>
+                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;links&quot;]').click()">
+                  🥇 View Live Metals Prices
+                </button>
               </div>
             </div>
           </div>
@@ -216,6 +234,9 @@
       </section>
       <section id="indian" class="tab-content" style="display:none">
         <div id="indianContainer">Loading…</div>
+      </section>
+      <section id="links" class="tab-content" style="display:none">
+        <div id="linksContainer">Loading…</div>
       </section>
     </div>
   </main>
@@ -362,6 +383,15 @@
           }, 100);
         }
       }
+      if(name==='links'){
+        // load links widget html (expandable links page)
+        const container = document.getElementById('linksContainer');
+        if(!container.dataset.loaded){
+          const html = await fetch('src/links/links_widget.html').then(r=>r.text());
+          container.innerHTML = html;
+          container.dataset.loaded = 'true';
+        }
+      }
     }));
 
     // Theme: read/persist and apply site-wide
@@ -436,6 +466,24 @@
       mo2.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
       mo2.observe(document.body, { attributes: true, attributeFilter: ['style'] });
     })();
+
+    // Simple popup function (deprecated - now handled in links widget)
+    window.openPopup = function(url, title) {
+      console.log('⚠️ openPopup is deprecated');
+      return false;
+    };
+
+    // Simple metal click handler (deprecated - now handled in links widget)
+    window.handleMetalClick = function(url, title, event) {
+      console.log('⚠️ handleMetalClick is deprecated');
+      return false;
+    };
+
+    // Simple function to open metals links in new tab
+    window.openMetalPopup = function(url, name) {
+      console.log('🔗 Opening metal link in new tab:', name, url);
+      window.open(url, '_blank');
+    };
   </script>
 </body>
 </html>
