@@ -83,6 +83,123 @@
     .calculator-tab.active small {
       color: rgba(255, 255, 255, 0.9);
     }
+    /* Critical CSS for Indian calculator tables and summaries */
+    .table--indian {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .table--indian th, .table--indian td {
+      text-align: center;
+      padding: 12px;
+    }
+    .table--indian .table__year {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(52, 152, 219, 0.08));
+      font-weight: 600;
+      color: #3498db;
+    }
+    .table--indian .table__investment {
+      color: #e74c3c;
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), rgba(231, 76, 60, 0.02));
+    }
+    .table--indian .table__balance {
+      color: #2980b9;
+      font-weight: 700;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.08), rgba(52, 152, 219, 0.04));
+    }
+    .table--indian .table__returns {
+      color: #27ae60;
+      font-weight: 700;
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
+    }
+    .table--indian .table__withdrawal {
+      color: #c0392b;
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(192, 57, 43, 0.08), rgba(192, 57, 43, 0.04));
+    }
+    .table--indian tbody tr:hover {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.08), rgba(52, 152, 219, 0.08)) !important;
+      transform: scale(1.01);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    /* Summary sections */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 16px;
+      margin-bottom: 32px;
+    }
+    .summary-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid var(--color-border, #e5e7eb);
+      border-radius: 8px;
+      padding: 32px;
+      backdrop-filter: blur(10px);
+      transition: transform 200ms ease, box-shadow 200ms ease;
+    }
+    .summary-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .summary-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text-primary, #111827);
+      margin: 0 0 32px 0;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #27ae60;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .summary-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+    .summary-label {
+      font-weight: 500;
+      color: var(--color-text-secondary, #6b7280);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .summary-value {
+      font-weight: 700;
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-align: right;
+      min-width: 140px;
+    }
+    .summary-value--primary {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    }
+    .summary-value--success {
+      background: linear-gradient(135deg, #27ae60, #219150);
+      color: white;
+      box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+    }
+    .summary-value--warning {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white;
+      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+    }
     /* Critical CSS for calculator sections */
     .calculator-section {
       display: none;
