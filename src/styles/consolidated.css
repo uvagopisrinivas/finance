@@ -358,9 +358,24 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-xl);
   margin-bottom: var(--space-xl);
+  align-items: start;
+}
+
+/* Specific grid layouts for different screen sizes */
+@media (min-width: 1200px) {
+  .form-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
 }
 
 .form-group {
@@ -1696,12 +1711,18 @@ body {
   
   .form-grid {
     grid-template-columns: 1fr;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-md);
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
   }
   
   .form-group {
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
+    min-height: auto;
+  }
+  
+  /* Hide placeholder on mobile since we use single column */
+  .form-group--placeholder {
+    display: none;
   }
   
   .form-input {
@@ -2361,6 +2382,101 @@ body {
 /* Form group spacing for checkboxes */
 .form-group:has(.checkbox-group) {
   margin-bottom: var(--space-lg);
+}
+
+/* Company Benefits Configuration specific styling */
+.benefits-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.benefit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.benefit-checkbox {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+}
+
+.benefit-input {
+  display: flex;
+  flex-direction: column;
+  min-height: 60px;
+}
+
+.benefit-spacer {
+  min-height: 60px;
+}
+
+/* Responsive behavior for benefits grid */
+@media (max-width: 768px) {
+  .benefit-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  .benefit-checkbox,
+  .benefit-input {
+    min-height: auto;
+  }
+  
+  .benefit-spacer {
+    display: none;
+  }
+}
+
+/* Remove old form-grid styling for benefits */
+.card .form-grid {
+  align-items: start;
+}
+
+/* Placeholder for grid alignment */
+.form-group--placeholder {
+  visibility: hidden;
+  min-height: 0;
+}
+
+/* Ensure consistent form group heights */
+.form-group {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.form-group .checkbox-group {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Better responsive grid for company benefits */
+@media (min-width: 1024px) {
+  .card .form-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .card .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+  
+  .form-group {
+    min-height: 70px;
+  }
 }
 
 /* Hide/show animation for conditional fields */
