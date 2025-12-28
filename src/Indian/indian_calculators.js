@@ -397,6 +397,11 @@
         document.getElementById('lumpsumTableContainer').innerHTML = tableHtml;
     }
 
+    // ========================================================================
+    // MODAL FUNCTIONALITY - TEMPORARILY DISABLED FOR TESTING
+    // ========================================================================
+    
+    /*
     // Modal functionality with production-safe checks
     window.showIndianInfoModal = function(id, userTriggered = false) {
         // Block all modal calls during initialization
@@ -511,18 +516,29 @@
             }
         }
     });
+    */
+    
+    // TEMPORARY STUB FUNCTIONS TO PREVENT ERRORS
+    window.showIndianInfoModal = function(id, userTriggered = false) {
+        console.log('INFO BUTTON DISABLED FOR TESTING - Modal would have opened:', id);
+    };
+    
+    window.closeIndianInfoModal = function() {
+        console.log('INFO BUTTON DISABLED FOR TESTING - Modal would have closed');
+    };
 
     // Setup input validation when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             setupInputValidation();
-            initializeModal();
+            // initializeModal(); // DISABLED FOR TESTING
         });
     } else {
         setupInputValidation();
-        initializeModal();
+        // initializeModal(); // DISABLED FOR TESTING
     }
 
+    /*
     // Initialize modal to ensure it's properly hidden
     function initializeModal() {
         // Set modal as not ready initially
@@ -561,5 +577,6 @@
             
         }, 500); // Increased initial delay
     }
+    */
 
 })();
