@@ -249,7 +249,7 @@
 
             const resultsEl = document.getElementById('results401kArea');
             if (resultsEl) {
-                resultsEl.innerHTML = fullTableHtml + summaryHtml;
+                resultsEl.innerHTML = summaryHtml + fullTableHtml;
             } else {
                 console.error('Results container not found');
             }

@@ -525,7 +525,7 @@
         
         const resultsEl = document.getElementById('resultsArea');
         if(resultsEl) {
-            resultsEl.innerHTML = fullTableHtml + summaryHtml;
+            resultsEl.innerHTML = summaryHtml + fullTableHtml;
         }
 
         } catch (error) {

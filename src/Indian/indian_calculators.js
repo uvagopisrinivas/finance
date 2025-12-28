@@ -18,6 +18,25 @@
         }).format(num);
     }
 
+    // Enhanced INR formatting with readable suffixes
+    function formatINRReadable(num) {
+        const basicFormat = formatINR(num);
+        let suffix = '';
+        
+        if (num >= 10000000) { // 1 Crore or more
+            const crores = num / 10000000;
+            suffix = ` (${crores.toFixed(2)} Cr)`;
+        } else if (num >= 100000) { // 1 Lac or more
+            const lacs = num / 100000;
+            suffix = ` (${lacs.toFixed(2)} Lacs)`;
+        } else if (num >= 1000) { // 1 Thousand or more
+            const thousands = num / 1000;
+            suffix = ` (${thousands.toFixed(2)} K)`;
+        }
+        
+        return basicFormat + suffix;
+    }
+
     function formatPercent(num) {
         return new Intl.NumberFormat('en-IN', {
             style: 'percent',
@@ -164,9 +183,9 @@
             const totalReturns = futureValue - totalInvestment;
 
             // Update summary
-            document.getElementById('sipTotalInvestment').textContent = formatINR(totalInvestment);
-            document.getElementById('sipExpectedReturns').textContent = formatINR(totalReturns);
-            document.getElementById('sipTotalValue').textContent = formatINR(futureValue);
+            document.getElementById('sipTotalInvestment').textContent = formatINRReadable(totalInvestment);
+            document.getElementById('sipExpectedReturns').textContent = formatINRReadable(totalReturns);
+            document.getElementById('sipTotalValue').textContent = formatINRReadable(futureValue);
 
             // Generate table
             generateSIPTable(yearlyData);
@@ -259,9 +278,9 @@
             }
 
             // Update summary
-            document.getElementById('swpInitialInvestment').textContent = formatINR(totalInvestment);
-            document.getElementById('swpTotalWithdrawal').textContent = formatINR(totalWithdrawn);
-            document.getElementById('swpFinalValue').textContent = formatINR(remainingBalance);
+            document.getElementById('swpInitialInvestment').textContent = formatINRReadable(totalInvestment);
+            document.getElementById('swpTotalWithdrawal').textContent = formatINRReadable(totalWithdrawn);
+            document.getElementById('swpFinalValue').textContent = formatINRReadable(remainingBalance);
 
             // Generate table
             generateSWPTable(yearlyData);
@@ -337,9 +356,9 @@
             const totalReturns = finalAmount - principal;
 
             // Update summary
-            document.getElementById('lumpsumInvestedAmount').textContent = formatINR(principal);
-            document.getElementById('lumpsumExpectedReturns').textContent = formatINR(totalReturns);
-            document.getElementById('lumpsumTotalValue').textContent = formatINR(finalAmount);
+            document.getElementById('lumpsumInvestedAmount').textContent = formatINRReadable(principal);
+            document.getElementById('lumpsumExpectedReturns').textContent = formatINRReadable(totalReturns);
+            document.getElementById('lumpsumTotalValue').textContent = formatINRReadable(finalAmount);
 
             // Generate table
             generateLumpsumTable(yearlyData);

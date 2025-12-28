@@ -249,9 +249,15 @@
     // Tabs logic and lazy-load SEPP widget
     document.getElementById('year').textContent = new Date().getFullYear();
     const tabs = document.querySelectorAll('.nav__tab');
-    function setActive(tabName){
+    
+    function setActive(tabName, updateHash = true){
       tabs.forEach(t=>t.classList.toggle('nav__tab--active', t.dataset.tab===tabName));
       document.querySelectorAll('.tab-content').forEach(s=> s.style.display = s.id===tabName ? '' : 'none');
+      
+      // Update URL hash to preserve tab state
+      if (updateHash) {
+        window.history.replaceState(null, null, '#' + tabName);
+      }
       
       // Use full width for 401k tab, normal width for others
       const mainContainer = document.getElementById('mainContainer');
@@ -263,9 +269,25 @@
         }
       }
     }
-    tabs.forEach(t=> t.addEventListener('click', async ()=>{
-      const name = t.dataset.tab; setActive(name);
-      if(name==='sepp'){
+    
+    // Function to get current tab from URL hash or default to 'about'
+    function getCurrentTab() {
+      const hash = window.location.hash.substring(1);
+      const validTabs = ['about', 'sepp', '401k', 'indian', 'links'];
+      return validTabs.includes(hash) ? hash : 'about';
+    }
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', function(event) {
+      const currentTab = getCurrentTab();
+      setActive(currentTab, false); // Don't update hash when handling popstate
+      // Trigger content loading for the current tab
+      loadTabContent(currentTab);
+    });
+    
+    // Function to load tab content (extracted from the click handler)
+    async function loadTabContent(tabName) {
+      if(tabName==='sepp'){
         // load widget html
         const container = document.getElementById('seppContainer');
         if(!container.dataset.loaded){
@@ -289,7 +311,7 @@
           document.body.appendChild(script);
         }
       }
-      if(name==='401k'){
+      if(tabName==='401k'){
         // load 401k widget html
         const container = document.getElementById('401kContainer');
         if(!container.dataset.loaded){
@@ -300,7 +322,7 @@
           container.dataset.loaded = 'true';
         }
       }
-      if(name==='indian'){
+      if(tabName==='indian'){
         // load Indian calculators widget html
         const container = document.getElementById('indianContainer');
         if(!container.dataset.loaded){
@@ -383,7 +405,7 @@
           }, 100);
         }
       }
-      if(name==='links'){
+      if(tabName==='links'){
         // load links widget html (expandable links page)
         const container = document.getElementById('linksContainer');
         if(!container.dataset.loaded){
@@ -392,6 +414,11 @@
           container.dataset.loaded = 'true';
         }
       }
+    }
+    tabs.forEach(t=> t.addEventListener('click', async ()=>{
+      const name = t.dataset.tab; 
+      setActive(name);
+      await loadTabContent(name);
     }));
 
     // Theme: read/persist and apply site-wide
@@ -413,8 +440,11 @@
     const saved = localStorage.getItem('theme');
     applyTheme(saved === 'dark' ? 'dark' : (saved === 'light' ? 'light' : 'light'));
 
-    // default to About
-    setActive('about');
+    // default to current tab from URL hash or About
+    const initialTab = getCurrentTab();
+    setActive(initialTab);
+    // Load content for the initial tab
+    loadTabContent(initialTab);
 
     // Remove any BrowserSync injected nodes that may still appear (defensive)
     (function removeBS(){
@@ -479,10 +509,13 @@
       return false;
     };
 
-    // Simple function to open metals links in new tab
+    // Simple function to open metals links in same tab
     window.openMetalPopup = function(url, name) {
-      console.log('🔗 Opening metal link in new tab:', name, url);
-      window.open(url, '_blank');
+      console.log('🔗 Opening metal link in same tab:', name, url);
+      // Ensure the current tab state is saved in history before navigating
+      const currentTab = getCurrentTab();
+      window.history.pushState({tab: currentTab}, null, '#' + currentTab);
+      window.location.href = url;
     };
   </script>
 </body>
