@@ -31,6 +31,25 @@
     function setupSEPPInputValidation() {
         const numberInputs = document.querySelectorAll('#startAge, #balance, #growth, #irsRate, #taxRate');
         
+        // Function to update button text based on age
+        function updateButtonText() {
+            const startAge = parseInt(document.getElementById('startAge')?.value || 40);
+            const seppDuration = Math.max(5, (59.5 - startAge));
+            const projectionYears = Math.ceil(seppDuration);
+            const button = document.getElementById('seppCalculateBtn');
+            if (button) {
+                button.textContent = `Generate ${projectionYears}-Year Projection`;
+            }
+        }
+        
+        // Update button text initially and when age changes
+        updateButtonText();
+        const ageInput = document.getElementById('startAge');
+        if (ageInput) {
+            ageInput.addEventListener('input', updateButtonText);
+            ageInput.addEventListener('change', updateButtonText);
+        }
+        
         numberInputs.forEach(input => {
             if (!input) return;
             
@@ -63,6 +82,10 @@
                 const value = parseFloat(this.value);
                 if (isNaN(value) || value < 0) {
                     this.value = this.getAttribute('value') || '0';
+                }
+                // Update button text after age validation
+                if (this.id === 'startAge') {
+                    updateButtonText();
                 }
             });
         });
@@ -280,253 +303,261 @@
         try {
             const startAge = parseInt(document.getElementById('startAge').value);
             const startBalance = parseFloat(document.getElementById('balance').value);
-        const growth = parseFloat(document.getElementById('growth').value)/100;
-        const irsRate = parseFloat(document.getElementById('irsRate').value)/100;
-        const taxRate = parseFloat(document.getElementById('tax').value)/100;
-        const factor = lifeTable[startAge];
-        const m2Fixed = (startBalance * irsRate) / (1 - Math.pow(1 + irsRate, -factor));
-        const m3Fixed = startBalance / ( (1 - Math.pow(1 + irsRate, -factor)) / irsRate );
-        const infoBtn = (id) => ` <button class="btn btn--info" onclick="showInfoModal('${id}')" aria-label="More info" title="Learn more about this method"><i class="fas fa-info-circle"></i></button>`;
-        
-        const headerHtml = `
-            <div class="table-container">
-                <table class="table table--sepp">
-                    <colgroup>
-                        <col class="table__age-col">
-                        <col class="table__method-col"><col class="table__method-col"><col class="table__method-col">
-                        <col class="table__method-col"><col class="table__method-col"><col class="table__method-col">
-                        <col class="table__method-col"><col class="table__method-col"><col class="table__method-col">
-                    </colgroup>
-                    <thead class="table__header">
-                        <tr>
-                            <th rowspan="2" class="table__age-header">Age</th>
-                            <th colspan="3" class="table__method-header">Method 1: RMD (Variable)${infoBtn('m1')}</th>
-                            <th colspan="3" class="table__method-header">Method 2: Amortization (Fixed)${infoBtn('m2')}</th>
-                            <th colspan="3" class="table__method-header">Method 3: Annuitization (Fixed)${infoBtn('m3')}</th>
-                        </tr>
-                        <tr>
-                            <th class="table__sub-header">Withdrawn</th><th class="table__sub-header">Net (Tax)</th><th class="table__sub-header">End Balance</th>
-                            <th class="table__sub-header">Withdrawn</th><th class="table__sub-header">Net (Tax)</th><th class="table__sub-header">End Balance</th>
-                            <th class="table__sub-header">Withdrawn</th><th class="table__sub-header">Net (Tax)</th><th class="table__sub-header">End Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody class="table__body">
-        `;
-        
-        let tableBody = '';
-        
-        // Track totals for summary
-        let b1 = startBalance, b2 = startBalance, b3 = startBalance;
-        let totalWithdrawn1 = 0, totalWithdrawn2 = 0, totalWithdrawn3 = 0;
-        let totalNetIncome1 = 0, totalNetIncome2 = 0, totalNetIncome3 = 0;
-        let totalTaxes1 = 0, totalTaxes2 = 0, totalTaxes3 = 0;
-        
-        for(let i=0;i<=20;i++){
-            let age = startAge + i; 
-            let currentFactor = lifeTable[age] || lifeTable[70];
+            const growth = parseFloat(document.getElementById('growth').value)/100;
+            const irsRate = parseFloat(document.getElementById('irsRate').value)/100;
+            const taxRate = parseFloat(document.getElementById('tax').value)/100;
+            const factor = lifeTable[startAge];
             
-            // Method 1 calculations
-            let m1With = b1 / currentFactor; 
-            let m1Net = m1With * (1 - taxRate); 
-            let m1Tax = m1With * taxRate;
-            b1 = (b1 - m1With) * (1 + growth);
+            // Calculate correct SEPP duration: 5 years OR until age 59.5, whichever is LONGER
+            const seppDuration = Math.max(5, (59.5 - startAge));
+            const projectionYears = Math.ceil(seppDuration);
+            const endAge = startAge + projectionYears;
             
-            // Method 2 calculations
-            let m2With = m2Fixed; 
-            let m2Net = m2With * (1 - taxRate); 
-            let m2Tax = m2With * taxRate;
-            b2 = (b2 - m2With) * (1 + growth);
+            // Update button text dynamically
+            const button = document.querySelector('button[onclick="calculateSEPP()"]');
+            if (button) {
+                button.textContent = `Generate ${projectionYears}-Year Projection`;
+            }
             
-            // Method 3 calculations
-            let m3With = m3Fixed; 
-            let m3Net = m3With * (1 - taxRate); 
-            let m3Tax = m3With * taxRate;
-            b3 = (b3 - m3With) * (1 + growth);
+            const m2Fixed = (startBalance * irsRate) / (1 - Math.pow(1 + irsRate, -factor));
+            const m3Fixed = startBalance / ( (1 - Math.pow(1 + irsRate, -factor)) / irsRate );
+            const infoBtn = (id) => ` <button class="btn btn--info" onclick="showInfoModal('${id}')" aria-label="More info" title="Learn more about this method"><i class="fas fa-info-circle"></i></button>`;
             
-            // Track totals
-            totalWithdrawn1 += m1With;
-            totalWithdrawn2 += m2With;
-            totalWithdrawn3 += m3With;
-            totalNetIncome1 += m1Net;
-            totalNetIncome2 += m2Net;
-            totalNetIncome3 += m3Net;
-            totalTaxes1 += m1Tax;
-            totalTaxes2 += m2Tax;
-            totalTaxes3 += m3Tax;
-            
-            tableBody += `
-                <tr class="table__data-row">
-                    <td class="table__age-cell"><strong>${age}</strong></td>
-                    <td class="table__cell--withdraw">${formatCurr(m1With)}</td>
-                    <td class="table__net-cell">${formatCurr(m1Net)}</td>
-                    <td class="table__cell--balance">${formatCurr(b1)}</td>
-                    <td class="table__cell--withdraw">${formatCurr(m2With)}</td>
-                    <td class="table__net-cell">${formatCurr(m2Net)}</td>
-                    <td class="table__cell--balance">${formatCurr(b2)}</td>
-                    <td class="table__cell--withdraw">${formatCurr(m3With)}</td>
-                    <td class="table__net-cell">${formatCurr(m3Net)}</td>
-                    <td class="table__cell--balance">${formatCurr(b3)}</td>
-                </tr>
+            const headerHtml = `
+                <div class="table-container">
+                    <table class="table table--sepp">
+                        <colgroup>
+                            <col class="table__age-col">
+                            <col class="table__method-col"><col class="table__method-col"><col class="table__method-col">
+                            <col class="table__method-col"><col class="table__method-col"><col class="table__method-col">
+                            <col class="table__method-col"><col class="table__method-col"><col class="table__method-col">
+                        </colgroup>
+                        <thead class="table__header">
+                            <tr>
+                                <th rowspan="2" class="table__age-header">Age</th>
+                                <th colspan="3" class="table__method-header">Method 1: RMD (Variable)${infoBtn('m1')}</th>
+                                <th colspan="3" class="table__method-header">Method 2: Amortization (Fixed)${infoBtn('m2')}</th>
+                                <th colspan="3" class="table__method-header">Method 3: Annuitization (Fixed)${infoBtn('m3')}</th>
+                            </tr>
+                            <tr>
+                                <th class="table__sub-header">Withdrawn</th><th class="table__sub-header">Net (Tax)</th><th class="table__sub-header">End Balance</th>
+                                <th class="table__sub-header">Withdrawn</th><th class="table__sub-header">Net (Tax)</th><th class="table__sub-header">End Balance</th>
+                                <th class="table__sub-header">Withdrawn</th><th class="table__sub-header">Net (Tax)</th><th class="table__sub-header">End Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table__body">
             `;
-        }
-        
-        const fullTableHtml = headerHtml + tableBody + `
-                    </tbody>
-                </table>
-            </div>
-        `;
-        
-        // Calculate summary metrics
-        const endAge = startAge + 20;
-        const seppDuration = Math.max(5, (59.5 - startAge));
-        const actualDuration = Math.min(21, seppDuration + 1);
-        
-        // Enhanced summary with colorful layout
-        const summaryHtml = `
-            <div class="card mt-xl card--elevated">
-                <div class="card__header">
-                    <h3 class="card__title">📊 SEPP Analysis Summary (21 Years)</h3>
-                    <p class="card__subtitle">Comparison of three IRS-approved withdrawal methods from age ${startAge} to ${endAge}</p>
-                </div>
-                <div class="summary-grid">
-                    <div class="summary-section">
-                        <h4 class="summary-section__title">🔄 Method 1: RMD (Variable)</h4>
-                        <div class="summary-item">
-                            <label class="summary-label">💰 Total Withdrawn</label>
-                            <div class="summary-value summary-value--warning">${formatCurr(totalWithdrawn1)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💵 Net After Tax</label>
-                            <div class="summary-value summary-value--success">${formatCurr(totalNetIncome1)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">🏦 Final Balance</label>
-                            <div class="summary-value summary-value--primary">${formatCurr(b1)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">📈 Total Value</label>
-                            <div class="summary-value summary-value--info">${formatCurr(totalNetIncome1 + b1)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💸 Taxes Paid</label>
-                            <div class="summary-value summary-value--error">${formatCurr(totalTaxes1)}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-section">
-                        <h4 class="summary-section__title">📈 Method 2: Amortization (Fixed)</h4>
-                        <div class="summary-item">
-                            <label class="summary-label">💰 Total Withdrawn</label>
-                            <div class="summary-value summary-value--warning">${formatCurr(totalWithdrawn2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💵 Net After Tax</label>
-                            <div class="summary-value summary-value--success">${formatCurr(totalNetIncome2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">🏦 Final Balance</label>
-                            <div class="summary-value summary-value--primary">${formatCurr(b2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">📈 Total Value</label>
-                            <div class="summary-value summary-value--info">${formatCurr(totalNetIncome2 + b2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💸 Taxes Paid</label>
-                            <div class="summary-value summary-value--error">${formatCurr(totalTaxes2)}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-section">
-                        <h4 class="summary-section__title">💰 Method 3: Annuitization (Fixed)</h4>
-                        <div class="summary-item">
-                            <label class="summary-label">💰 Total Withdrawn</label>
-                            <div class="summary-value summary-value--warning">${formatCurr(totalWithdrawn3)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💵 Net After Tax</label>
-                            <div class="summary-value summary-value--success">${formatCurr(totalNetIncome3)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">🏦 Final Balance</label>
-                            <div class="summary-value summary-value--primary">${formatCurr(b3)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">📈 Total Value</label>
-                            <div class="summary-value summary-value--info">${formatCurr(totalNetIncome3 + b3)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💸 Taxes Paid</label>
-                            <div class="summary-value summary-value--error">${formatCurr(totalTaxes3)}</div>
-                        </div>
-                    </div>
-                </div>
+            
+            let tableBody = '';
+            
+            // Track totals for summary
+            let b1 = startBalance, b2 = startBalance, b3 = startBalance;
+            let totalWithdrawn1 = 0, totalWithdrawn2 = 0, totalWithdrawn3 = 0;
+            let totalNetIncome1 = 0, totalNetIncome2 = 0, totalNetIncome3 = 0;
+            let totalTaxes1 = 0, totalTaxes2 = 0, totalTaxes3 = 0;
+            
+            for(let i=0; i<=projectionYears; i++){
+                let age = startAge + i; 
+                let currentFactor = lifeTable[age] || lifeTable[70];
                 
-                <div class="summary-grid mt-xl">
-                    <div class="summary-section">
-                        <h4 class="summary-section__title">🎯 Key Insights</h4>
-                        <div class="summary-item">
-                            <label class="summary-label">🏆 Highest Income</label>
-                            <div class="summary-value summary-value--success">${
-                                totalNetIncome3 > totalNetIncome2 && totalNetIncome3 > totalNetIncome1 ? 'Method 3 (Annuitization)' :
-                                totalNetIncome2 > totalNetIncome1 ? 'Method 2 (Amortization)' : 'Method 1 (RMD)'
-                            }</div>
+                // Method 1 calculations
+                let m1With = b1 / currentFactor; 
+                let m1Net = m1With * (1 - taxRate); 
+                let m1Tax = m1With * taxRate;
+                b1 = (b1 - m1With) * (1 + growth);
+                
+                // Method 2 calculations
+                let m2With = m2Fixed; 
+                let m2Net = m2With * (1 - taxRate); 
+                let m2Tax = m2With * taxRate;
+                b2 = (b2 - m2With) * (1 + growth);
+                
+                // Method 3 calculations
+                let m3With = m3Fixed; 
+                let m3Net = m3With * (1 - taxRate); 
+                let m3Tax = m3With * taxRate;
+                b3 = (b3 - m3With) * (1 + growth);
+                
+                // Track totals
+                totalWithdrawn1 += m1With;
+                totalWithdrawn2 += m2With;
+                totalWithdrawn3 += m3With;
+                totalNetIncome1 += m1Net;
+                totalNetIncome2 += m2Net;
+                totalNetIncome3 += m3Net;
+                totalTaxes1 += m1Tax;
+                totalTaxes2 += m2Tax;
+                totalTaxes3 += m3Tax;
+                
+                tableBody += `
+                    <tr class="table__data-row">
+                        <td class="table__age-cell"><strong>${age}</strong></td>
+                        <td class="table__cell--withdraw">${formatCurr(m1With)}</td>
+                        <td class="table__net-cell">${formatCurr(m1Net)}</td>
+                        <td class="table__cell--balance">${formatCurr(b1)}</td>
+                        <td class="table__cell--withdraw">${formatCurr(m2With)}</td>
+                        <td class="table__net-cell">${formatCurr(m2Net)}</td>
+                        <td class="table__cell--balance">${formatCurr(b2)}</td>
+                        <td class="table__cell--withdraw">${formatCurr(m3With)}</td>
+                        <td class="table__net-cell">${formatCurr(m3Net)}</td>
+                        <td class="table__cell--balance">${formatCurr(b3)}</td>
+                    </tr>
+                `;
+            }
+            
+            const fullTableHtml = headerHtml + tableBody + `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Enhanced summary with colorful layout
+            const summaryHtml = `
+                <div class="card mt-xl card--elevated">
+                    <div class="card__header">
+                        <h3 class="card__title">📊 SEPP Analysis Summary (${projectionYears + 1} Years)</h3>
+                        <p class="card__subtitle">Comparison of three IRS-approved withdrawal methods from age ${startAge} to ${endAge}</p>
+                        <p class="card__subtitle"><strong>SEPP Duration:</strong> ${seppDuration.toFixed(1)} years (${seppDuration >= 5 ? 'until age 59½' : '5-year minimum'})</p>
+                    </div>
+                    <div class="summary-grid">
+                        <div class="summary-section">
+                            <h4 class="summary-section__title">🔄 Method 1: RMD (Variable)</h4>
+                            <div class="summary-item">
+                                <label class="summary-label">💰 Total Withdrawn</label>
+                                <div class="summary-value summary-value--warning">${formatCurr(totalWithdrawn1)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💵 Net After Tax</label>
+                                <div class="summary-value summary-value--success">${formatCurr(totalNetIncome1)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🏦 Final Balance</label>
+                                <div class="summary-value summary-value--primary">${formatCurr(b1)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">📈 Total Value</label>
+                                <div class="summary-value summary-value--info">${formatCurr(totalNetIncome1 + b1)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💸 Taxes Paid</label>
+                                <div class="summary-value summary-value--error">${formatCurr(totalTaxes1)}</div>
+                            </div>
                         </div>
-                        <div class="summary-item">
-                            <label class="summary-label">🛡️ Best Preservation</label>
-                            <div class="summary-value summary-value--primary">${
-                                b1 > b2 && b1 > b3 ? 'Method 1 (RMD)' :
-                                b2 > b3 ? 'Method 2 (Amortization)' : 'Method 3 (Annuitization)'
-                            }</div>
+                        
+                        <div class="summary-section">
+                            <h4 class="summary-section__title">📈 Method 2: Amortization (Fixed)</h4>
+                            <div class="summary-item">
+                                <label class="summary-label">💰 Total Withdrawn</label>
+                                <div class="summary-value summary-value--warning">${formatCurr(totalWithdrawn2)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💵 Net After Tax</label>
+                                <div class="summary-value summary-value--success">${formatCurr(totalNetIncome2)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🏦 Final Balance</label>
+                                <div class="summary-value summary-value--primary">${formatCurr(b2)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">📈 Total Value</label>
+                                <div class="summary-value summary-value--info">${formatCurr(totalNetIncome2 + b2)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💸 Taxes Paid</label>
+                                <div class="summary-value summary-value--error">${formatCurr(totalTaxes2)}</div>
+                            </div>
                         </div>
-                        <div class="summary-item">
-                            <label class="summary-label">⚖️ Best Balance</label>
-                            <div class="summary-value summary-value--info">${
-                                (totalNetIncome2 + b2) > (totalNetIncome1 + b1) && (totalNetIncome2 + b2) > (totalNetIncome3 + b3) ? 'Method 2 (Amortization)' :
-                                (totalNetIncome3 + b3) > (totalNetIncome1 + b1) ? 'Method 3 (Annuitization)' : 'Method 1 (RMD)'
-                            }</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">📅 SEPP Duration</label>
-                            <div class="summary-value summary-value--warning">${seppDuration.toFixed(1)} years</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">🎂 End Age</label>
-                            <div class="summary-value summary-value--info">${endAge} years</div>
+                        
+                        <div class="summary-section">
+                            <h4 class="summary-section__title">💰 Method 3: Annuitization (Fixed)</h4>
+                            <div class="summary-item">
+                                <label class="summary-label">💰 Total Withdrawn</label>
+                                <div class="summary-value summary-value--warning">${formatCurr(totalWithdrawn3)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💵 Net After Tax</label>
+                                <div class="summary-value summary-value--success">${formatCurr(totalNetIncome3)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🏦 Final Balance</label>
+                                <div class="summary-value summary-value--primary">${formatCurr(b3)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">📈 Total Value</label>
+                                <div class="summary-value summary-value--info">${formatCurr(totalNetIncome3 + b3)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💸 Taxes Paid</label>
+                                <div class="summary-value summary-value--error">${formatCurr(totalTaxes3)}</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="summary-section">
-                        <h4 class="summary-section__title">📊 Annual Averages</h4>
-                        <div class="summary-item">
-                            <label class="summary-label">Method 1 Avg</label>
-                            <div class="summary-value summary-value--warning">${formatCurr(totalNetIncome1 / 21)}</div>
+                    <div class="summary-grid mt-xl">
+                        <div class="summary-section">
+                            <h4 class="summary-section__title">🎯 Key Insights</h4>
+                            <div class="summary-item">
+                                <label class="summary-label">🏆 Highest Income</label>
+                                <div class="summary-value summary-value--success">${
+                                    totalNetIncome3 > totalNetIncome2 && totalNetIncome3 > totalNetIncome1 ? 'Method 3 (Annuitization)' :
+                                    totalNetIncome2 > totalNetIncome1 ? 'Method 2 (Amortization)' : 'Method 1 (RMD)'
+                                }</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🛡️ Best Preservation</label>
+                                <div class="summary-value summary-value--primary">${
+                                    b1 > b2 && b1 > b3 ? 'Method 1 (RMD)' :
+                                    b2 > b3 ? 'Method 2 (Amortization)' : 'Method 3 (Annuitization)'
+                                }</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">⚖️ Best Balance</label>
+                                <div class="summary-value summary-value--info">${
+                                    (totalNetIncome2 + b2) > (totalNetIncome1 + b1) && (totalNetIncome2 + b2) > (totalNetIncome3 + b3) ? 'Method 2 (Amortization)' :
+                                    (totalNetIncome3 + b3) > (totalNetIncome1 + b1) ? 'Method 3 (Annuitization)' : 'Method 1 (RMD)'
+                                }</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">📅 SEPP Duration</label>
+                                <div class="summary-value summary-value--warning">${seppDuration.toFixed(1)} years</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🎂 End Age</label>
+                                <div class="summary-value summary-value--info">${endAge} years</div>
+                            </div>
                         </div>
-                        <div class="summary-item">
-                            <label class="summary-label">Method 2 Avg</label>
-                            <div class="summary-value summary-value--warning">${formatCurr(totalNetIncome2 / 21)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">Method 3 Avg</label>
-                            <div class="summary-value summary-value--warning">${formatCurr(totalNetIncome3 / 21)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">💼 Starting Balance</label>
-                            <div class="summary-value summary-value--primary">${formatCurr(startBalance)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <label class="summary-label">📈 Growth Rate</label>
-                            <div class="summary-value summary-value--success">${(growth * 100).toFixed(1)}%</div>
+                        
+                        <div class="summary-section">
+                            <h4 class="summary-section__title">📊 Annual Averages</h4>
+                            <div class="summary-item">
+                                <label class="summary-label">Method 1 Avg</label>
+                                <div class="summary-value summary-value--warning">${formatCurr(totalNetIncome1 / (projectionYears + 1))}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">Method 2 Avg</label>
+                                <div class="summary-value summary-value--warning">${formatCurr(totalNetIncome2 / (projectionYears + 1))}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">Method 3 Avg</label>
+                                <div class="summary-value summary-value--warning">${formatCurr(totalNetIncome3 / (projectionYears + 1))}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💼 Starting Balance</label>
+                                <div class="summary-value summary-value--primary">${formatCurr(startBalance)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">📈 Growth Rate</label>
+                                <div class="summary-value summary-value--success">${(growth * 100).toFixed(1)}%</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
-        
-        const resultsEl = document.getElementById('resultsArea');
-        if(resultsEl) {
-            resultsEl.innerHTML = summaryHtml + fullTableHtml;
-        }
+            `;
+            
+            const resultsEl = document.getElementById('resultsArea');
+            if(resultsEl) {
+                resultsEl.innerHTML = summaryHtml + fullTableHtml;
+            }
 
         } catch (error) {
             console.error('Error in calculateSEPP:', error);

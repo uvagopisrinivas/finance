@@ -25,38 +25,87 @@
             const salaryIncrease = parseFloat(document.getElementById('salaryIncrease').value) / 100;
             const projectionYears = parseInt(document.getElementById('projectionYears').value);
             const annualReturn = parseFloat(document.getElementById('annualReturn').value) / 100;
-            const current401aBalance = parseFloat(document.getElementById('current401aBalance').value);
             const current401kBalance = parseFloat(document.getElementById('current401kBalance').value);
+            
+            // Get company benefit configuration
+            const hasBonus = document.getElementById('hasBonus').checked;
+            const bonusPercentage = hasBonus ? parseFloat(document.getElementById('bonusPercent').value) / 100 : 0;
+            const bonusContributionPercent = hasBonus ? parseFloat(document.getElementById('bonusContribPercent').value) / 100 : 0;
+            
+            const hasEmployerMatch = document.getElementById('hasEmployerMatch').checked;
+            const employerMatchPercent = hasEmployerMatch ? parseFloat(document.getElementById('employerMatchPercent').value) / 100 : 0;
+            
+            const has401a = document.getElementById('has401a').checked;
+            const employee401aPercent = has401a ? parseFloat(document.getElementById('contrib401aPercent').value) / 100 : 0;
+            const current401aBalance = has401a ? parseFloat(document.getElementById('current401aBalance').value) : 0;
 
-            // Fixed parameters as per requirements
-            const bonusPercentage = 0.10; // Fixed 10% bonus
-            const bonusContributionPercent = 0.50; // Fixed 50% of bonus to 401k
-            const employee401aPercent = 0.04; // Fixed 4% to 401a
+            // Fixed parameters
             const annual401kLimit = 23500; // 2025 limit (employee + bonus contributions only)
             const startYear = new Date().getFullYear();
 
-            // Create table structure
+            // Create table structure - dynamic columns based on enabled features
+            let tableHeaders = `
+                                <th class="table__year-col">Year</th>
+                                <th class="table__salary-col">Base Salary</th>`;
+            
+            if (hasBonus) {
+                tableHeaders += `
+                                <th class="table__bonus-col">Bonus (${(bonusPercentage * 100).toFixed(1)}%)</th>`;
+            }
+            
+            tableHeaders += `
+                                <th class="table__percent-col">401k %</th>
+                                <th class="table__contrib-col">Employee 401k</th>`;
+            
+            if (hasBonus) {
+                tableHeaders += `
+                                <th class="table__contrib-col">Bonus Contrib (${(bonusContributionPercent * 100).toFixed(0)}%)</th>`;
+            }
+            
+            if (hasEmployerMatch) {
+                tableHeaders += `
+                                <th class="table__contrib-col">Employer Match</th>`;
+            }
+            
+            if (has401a) {
+                tableHeaders += `
+                                <th class="table__contrib-col">401a (${(employee401aPercent * 100).toFixed(1)}%)</th>`;
+            }
+            
+            tableHeaders += `
+                                <th class="table__total-col">Total Contrib</th>
+                                <th class="table__balance-col">401k Start</th>`;
+            
+            if (has401a) {
+                tableHeaders += `
+                                <th class="table__balance-col">401a Start</th>`;
+            }
+            
+            tableHeaders += `
+                                <th class="table__return-col">401k Returns</th>`;
+            
+            if (has401a) {
+                tableHeaders += `
+                                <th class="table__return-col">401a Returns</th>`;
+            }
+            
+            tableHeaders += `
+                                <th class="table__balance-col">401k End</th>`;
+            
+            if (has401a) {
+                tableHeaders += `
+                                <th class="table__balance-col">401a End</th>`;
+            }
+            
+            tableHeaders += `
+                                <th class="table__grand-total-col">Grand Total</th>`;
+
             const tableHtml = `
                 <div class="table-container">
                     <table class="table table--401k">
                         <thead class="table__header">
                             <tr>
-                                <th class="table__year-col">Year</th>
-                                <th class="table__salary-col">Base Salary</th>
-                                <th class="table__bonus-col">Bonus (10%)</th>
-                                <th class="table__percent-col">401k %</th>
-                                <th class="table__contrib-col">Employee 401k</th>
-                                <th class="table__contrib-col">Bonus Contrib (50%)</th>
-                                <th class="table__contrib-col">Employer Match</th>
-                                <th class="table__contrib-col">401a (4%)</th>
-                                <th class="table__total-col">Total Contrib</th>
-                                <th class="table__balance-col">401k Start</th>
-                                <th class="table__balance-col">401a Start</th>
-                                <th class="table__return-col">401k Returns</th>
-                                <th class="table__return-col">401a Returns</th>
-                                <th class="table__balance-col">401k End</th>
-                                <th class="table__balance-col">401a End</th>
-                                <th class="table__grand-total-col">Grand Total</th>
+                                ${tableHeaders}
                             </tr>
                         </thead>
                         <tbody class="table__body">
@@ -74,10 +123,10 @@
                 // Calculate salary for this year with annual increases
                 const currentSalary = baseSalary * Math.pow(1 + salaryIncrease, i);
                 
-                // Calculate bonus (fixed 10% of salary)
+                // Calculate bonus (configurable percentage of salary)
                 const bonus = currentSalary * bonusPercentage;
                 
-                // Calculate bonus contribution (fixed 50% of bonus)
+                // Calculate bonus contribution (configurable percentage of bonus)
                 const bonusContrib = bonus * bonusContributionPercent;
                 
                 // Calculate dynamic contribution percentage for this year
@@ -91,12 +140,12 @@
                 const finalEmployee401k = employee401kContrib;
                 const finalBonusContrib = bonusContrib;
                 
-                // Calculate employer match (100% up to 6% of salary, only on regular contributions)
-                const maxEmployerMatch = currentSalary * 0.06; // 6% of salary
-                const employerMatch = Math.min(finalEmployee401k, maxEmployerMatch);
+                // Calculate employer match (configurable percentage of salary, only on regular contributions)
+                const maxEmployerMatch = hasEmployerMatch ? currentSalary * employerMatchPercent : 0;
+                const employerMatch = hasEmployerMatch ? Math.min(finalEmployee401k, maxEmployerMatch) : 0;
                 
-                // Calculate 401a contribution (fixed 4% of salary)
-                const employee401aContrib = currentSalary * employee401aPercent;
+                // Calculate 401a contribution (configurable percentage of salary)
+                const employee401aContrib = has401a ? currentSalary * employee401aPercent : 0;
                 
                 // Total contributions for the year
                 const total401kContrib = finalEmployee401k + finalBonusContrib + employerMatch;
@@ -129,26 +178,67 @@
                 current401k = end401k;
                 current401a = end401a;
                 
-                tableBody += `
+                // Build table row with dynamic columns
+                let tableRow = `
                     <tr class="table__data-row">
                         <td class="table__year-cell"><strong>${year}</strong></td>
-                        <td class="table__salary-cell">${formatCurrency(currentSalary)}</td>
-                        <td class="table__bonus-cell">${formatCurrency(bonus)}</td>
+                        <td class="table__salary-cell">${formatCurrency(currentSalary)}</td>`;
+                
+                if (hasBonus) {
+                    tableRow += `
+                        <td class="table__bonus-cell">${formatCurrency(bonus)}</td>`;
+                }
+                
+                tableRow += `
                         <td class="table__percent-cell"><strong>${formatPercent(contributionPercentThisYear * 100)}</strong></td>
-                        <td class="table__contrib-cell">${formatCurrency(finalEmployee401k)}</td>
-                        <td class="table__contrib-cell">${formatCurrency(finalBonusContrib)}</td>
-                        <td class="table__contrib-cell">${formatCurrency(employerMatch)}</td>
-                        <td class="table__contrib-cell">${formatCurrency(employee401aContrib)}</td>
+                        <td class="table__contrib-cell">${formatCurrency(finalEmployee401k)}</td>`;
+                
+                if (hasBonus) {
+                    tableRow += `
+                        <td class="table__contrib-cell">${formatCurrency(finalBonusContrib)}</td>`;
+                }
+                
+                if (hasEmployerMatch) {
+                    tableRow += `
+                        <td class="table__contrib-cell">${formatCurrency(employerMatch)}</td>`;
+                }
+                
+                if (has401a) {
+                    tableRow += `
+                        <td class="table__contrib-cell">${formatCurrency(employee401aContrib)}</td>`;
+                }
+                
+                tableRow += `
                         <td class="table__total-cell"><strong>${formatCurrency(totalYearContrib)}</strong></td>
-                        <td class="table__balance-cell">${formatCurrency(start401k)}</td>
-                        <td class="table__balance-cell">${formatCurrency(start401a)}</td>
-                        <td class="table__return-cell">${formatCurrency(returns401k)}</td>
-                        <td class="table__return-cell">${formatCurrency(returns401a)}</td>
-                        <td class="table__balance-cell"><strong>${formatCurrency(end401k)}</strong></td>
-                        <td class="table__balance-cell"><strong>${formatCurrency(end401a)}</strong></td>
+                        <td class="table__balance-cell">${formatCurrency(start401k)}</td>`;
+                
+                if (has401a) {
+                    tableRow += `
+                        <td class="table__balance-cell">${formatCurrency(start401a)}</td>`;
+                }
+                
+                tableRow += `
+                        <td class="table__return-cell">${formatCurrency(returns401k)}</td>`;
+                
+                if (has401a) {
+                    tableRow += `
+                        <td class="table__return-cell">${formatCurrency(returns401a)}</td>`;
+                }
+                
+                tableRow += `
+                        <td class="table__balance-cell"><strong>${formatCurrency(end401k)}</strong></td>`;
+                
+                if (has401a) {
+                    tableRow += `
+                        <td class="table__balance-cell"><strong>${formatCurrency(end401a)}</strong></td>`;
+                }
+                
+                tableRow += `
                         <td class="table__grand-total-cell"><strong>${formatCurrency(grandTotal)}</strong></td>
                     </tr>
                 `;
+                
+                tableBody += tableRow;
             }
 
             const fullTableHtml = tableHtml + tableBody + `
@@ -180,6 +270,68 @@
             }
             const avgContribPercent = totalContribPercent / projectionYears;
 
+            // Build dynamic summary sections
+            let finalBalancesSection = `
+                            <div class="summary-item">
+                                <label class="summary-label">💼 401k Balance</label>
+                                <div class="summary-value summary-value--primary">${formatCurrency(current401k)}</div>
+                            </div>`;
+            
+            if (has401a) {
+                finalBalancesSection += `
+                            <div class="summary-item">
+                                <label class="summary-label">🏦 401a Balance</label>
+                                <div class="summary-value summary-value--primary">${formatCurrency(current401a)}</div>
+                            </div>`;
+            }
+            
+            finalBalancesSection += `
+                            <div class="summary-item summary-item--highlight">
+                                <label class="summary-label">🎯 Total Portfolio</label>
+                                <div class="summary-value summary-value--success">${formatCurrency(finalTotal)}</div>
+                            </div>`;
+
+            // Build contribution details section
+            let contributionDetailsSection = `
+                            <div class="summary-item">
+                                <label class="summary-label">💰 Starting Salary</label>
+                                <div class="summary-value summary-value--info">${formatCurrency(baseSalary)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">📊 Final Salary</label>
+                                <div class="summary-value summary-value--info">${formatCurrency(finalSalary)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🎯 Avg 401k Contribution Rate</label>
+                                <div class="summary-value summary-value--warning">${formatPercent(avgContribPercent * 100)}</div>
+                            </div>`;
+            
+            if (hasBonus) {
+                contributionDetailsSection += `
+                            <div class="summary-item">
+                                <label class="summary-label">🎁 Annual Bonus Rate</label>
+                                <div class="summary-value summary-value--info">${formatPercent(bonusPercentage * 100)}</div>
+                            </div>`;
+            }
+            
+            if (hasEmployerMatch) {
+                contributionDetailsSection += `
+                            <div class="summary-item">
+                                <label class="summary-label">🤝 Employer Match Rate</label>
+                                <div class="summary-value summary-value--info">${formatPercent(employerMatchPercent * 100)}</div>
+                            </div>`;
+            }
+            
+            contributionDetailsSection += `
+                            <div class="summary-item">
+                                <label class="summary-label">⚡ Effective Total Rate</label>
+                                <div class="summary-value summary-value--warning">${formatPercent(effectiveContribRate * 100)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🔥 Growth Multiple</label>
+                                <div class="summary-value summary-value--success">${(finalTotal / initialTotal).toFixed(2)}x</div>
+                            </div>`;
+
             // Enhanced summary with better layout
             const summaryHtml = `
                 <div class="card mt-xl card--elevated">
@@ -190,18 +342,7 @@
                     <div class="summary-grid">
                         <div class="summary-section">
                             <h4 class="summary-section__title">Final Balances</h4>
-                            <div class="summary-item">
-                                <label class="summary-label">💼 401k Balance</label>
-                                <div class="summary-value summary-value--primary">${formatCurrency(current401k)}</div>
-                            </div>
-                            <div class="summary-item">
-                                <label class="summary-label">🏦 401a Balance</label>
-                                <div class="summary-value summary-value--primary">${formatCurrency(current401a)}</div>
-                            </div>
-                            <div class="summary-item summary-item--highlight">
-                                <label class="summary-label">🎯 Total Portfolio</label>
-                                <div class="summary-value summary-value--success">${formatCurrency(finalTotal)}</div>
-                            </div>
+                            ${finalBalancesSection}
                         </div>
                         
                         <div class="summary-section">
@@ -222,26 +363,7 @@
                         
                         <div class="summary-section">
                             <h4 class="summary-section__title">Contribution Details</h4>
-                            <div class="summary-item">
-                                <label class="summary-label">💰 Starting Salary</label>
-                                <div class="summary-value summary-value--info">${formatCurrency(baseSalary)}</div>
-                            </div>
-                            <div class="summary-item">
-                                <label class="summary-label">📊 Final Salary</label>
-                                <div class="summary-value summary-value--info">${formatCurrency(finalSalary)}</div>
-                            </div>
-                            <div class="summary-item">
-                                <label class="summary-label">🎯 Avg 401k Contribution Rate</label>
-                                <div class="summary-value summary-value--warning">${formatPercent(avgContribPercent * 100)}</div>
-                            </div>
-                            <div class="summary-item">
-                                <label class="summary-label">⚡ Effective Total Rate</label>
-                                <div class="summary-value summary-value--warning">${formatPercent(effectiveContribRate * 100)}</div>
-                            </div>
-                            <div class="summary-item">
-                                <label class="summary-label">🔥 Growth Multiple</label>
-                                <div class="summary-value summary-value--success">${(finalTotal / initialTotal).toFixed(2)}x</div>
-                            </div>
+                            ${contributionDetailsSection}
                         </div>
                     </div>
                 </div>
@@ -315,14 +437,15 @@
                         </div>
                         
                         <div class="method-section">
-                            <h5>🏢 Employer Benefits Integration</h5>
-                            <p><strong>Automatic Calculations:</strong></p>
+                            <h5>🏢 Flexible Employer Benefits</h5>
+                            <p><strong>Configurable Options:</strong></p>
                             <ul>
-                                <li><strong>Annual Bonus:</strong> 10% of base salary</li>
-                                <li><strong>Bonus to 401k:</strong> 50% of bonus amount</li>
-                                <li><strong>Employer Match:</strong> 100% match up to 6% of salary</li>
-                                <li><strong>401a Contribution:</strong> 4% of salary (automatic)</li>
+                                <li><strong>Annual Bonus:</strong> Optional - set your company's bonus percentage (0-50%)</li>
+                                <li><strong>Bonus to 401k:</strong> Optional - choose what percentage of bonus goes to 401k (0-100%)</li>
+                                <li><strong>Employer Match:</strong> Optional - configure your company's matching policy (0-15%)</li>
+                                <li><strong>401a Contribution:</strong> Optional - only for companies that offer 401a plans (0-10%)</li>
                             </ul>
+                            <p><strong>Why This Matters:</strong> Not all companies offer the same benefits. This calculator adapts to your specific employer's benefit structure for accurate projections.</p>
                         </div>
                         
                         <div class="method-section">
@@ -393,13 +516,24 @@
                             <li><strong>Current Balances:</strong> Starting amounts in your 401k and 401a accounts</li>
                         </ul>
                         
+                        <h4>🏢 Company Benefits Configuration</h4>
+                        <ul>
+                            <li><strong>Annual Bonus:</strong> Check if your company offers bonuses, set percentage (0-50%)</li>
+                            <li><strong>Bonus to 401k:</strong> What percentage of your bonus you want to contribute (0-100%)</li>
+                            <li><strong>Employer Match:</strong> Check if your company matches 401k contributions, set match percentage (0-15%)</li>
+                            <li><strong>401a Plan:</strong> Check if your company offers 401a, set contribution percentage (0-10%)</li>
+                        </ul>
+                        
+                        <p class="text-info"><strong>💡 Pro Tip:</strong> Uncheck benefits your company doesn't offer to get accurate projections specific to your situation.</p>
+                        
                         <h4>⚠️ Important Notes</h4>
                         <ul>
+                            <li><strong>Company-Specific:</strong> Configure benefits to match your specific employer's offerings</li>
                             <li><strong>Projections:</strong> Based on assumptions and may not reflect actual results</li>
                             <li><strong>Market Risk:</strong> Investment returns can vary significantly</li>
                             <li><strong>Contribution Limits:</strong> IRS limits may change annually</li>
                             <li><strong>Tax Implications:</strong> Consult a tax professional for tax planning</li>
-                            <li><strong>Employer Benefits:</strong> Verify your specific employer's benefit structure</li>
+                            <li><strong>Benefit Verification:</strong> Verify your specific employer's benefit structure with HR</li>
                         </ul>
                         
                         <p class="disclaimer"><strong>Disclaimer:</strong> This calculator is for educational and planning purposes only. Consult with qualified financial advisors for personalized retirement planning advice.</p>
@@ -453,7 +587,7 @@
 })();
     // Input validation for 401k calculator
     function setup401kInputValidation() {
-        const numberInputs = document.querySelectorAll('#baseSalary, #salaryIncrease, #projectionYears, #annualReturn, #current401aBalance, #current401kBalance');
+        const numberInputs = document.querySelectorAll('#baseSalary, #salaryIncrease, #projectionYears, #annualReturn, #current401aBalance, #current401kBalance, #bonusPercent, #bonusContribPercent, #employerMatchPercent, #contrib401aPercent');
         
         numberInputs.forEach(input => {
             if (!input) return;

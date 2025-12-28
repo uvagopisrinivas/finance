@@ -28,24 +28,75 @@
             <input type="number" id="annualReturn" value="12" step="0.1" class="form-input">
         </div>
         <div class="form-group">
+            <label class="form-label">Current 401k Balance ($)</label>
+            <input type="number" id="current401kBalance" value="160000" class="form-input">
+        </div>
+        <div class="form-group">
             <label class="form-label">Current 401a Balance ($)</label>
             <input type="number" id="current401aBalance" value="28567.00" class="form-input">
         </div>
-        <div class="form-group">
-            <label class="form-label">Current 401k Balance ($)</label>
-            <input type="number" id="current401kBalance" value="160000" class="form-input">
+    </div>
+
+    <!-- Company Benefits Configuration -->
+    <div class="card mt-md">
+        <div class="card__header">
+            <h3 class="card__title">Company Benefits Configuration</h3>
+            <p class="card__subtitle">Configure your employer's specific benefits (varies by company)</p>
+        </div>
+        
+        <div class="form-grid">
+            <!-- Bonus Configuration -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hasBonus" checked>
+                    <label for="hasBonus" class="checkbox-label">My company offers annual bonus</label>
+                </div>
+            </div>
+            <div class="form-group" id="bonusPercentGroup">
+                <label class="form-label">Annual Bonus (% of salary)</label>
+                <input type="number" id="bonusPercent" value="10" step="0.1" min="0" max="50" class="form-input">
+            </div>
+            <div class="form-group" id="bonusContribGroup">
+                <label class="form-label">Bonus to 401k (% of bonus)</label>
+                <input type="number" id="bonusContribPercent" value="50" step="1" min="0" max="100" class="form-input">
+            </div>
+
+            <!-- Employer Match Configuration -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hasEmployerMatch" checked>
+                    <label for="hasEmployerMatch" class="checkbox-label">My company offers 401k matching</label>
+                </div>
+            </div>
+            <div class="form-group" id="employerMatchGroup">
+                <label class="form-label">Employer Match (% of salary)</label>
+                <input type="number" id="employerMatchPercent" value="6" step="0.1" min="0" max="15" class="form-input">
+            </div>
+
+            <!-- 401a Configuration -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="has401a" checked>
+                    <label for="has401a" class="checkbox-label">My company offers 401a plan</label>
+                </div>
+            </div>
+            <div class="form-group" id="contrib401aGroup">
+                <label class="form-label">401a Contribution (% of salary)</label>
+                <input type="number" id="contrib401aPercent" value="4" step="0.1" min="0" max="10" class="form-input">
+            </div>
         </div>
     </div>
 
     <div class="info-panel">
-        <h4>📋 Automatic Calculations:</h4>
+        <h4>📋 Dynamic Configuration:</h4>
         <ul>
-            <li><strong>Bonus:</strong> Fixed at 10% of base salary annually</li>
-            <li><strong>Bonus Contribution:</strong> 50% of bonus goes to 401k</li>
-            <li><strong>401a Contribution:</strong> 4% of base salary annually</li>
+            <li><strong>Bonus:</strong> Optional - configure your company's bonus structure</li>
+            <li><strong>Bonus Contribution:</strong> Optional - set what percentage of bonus goes to 401k</li>
+            <li><strong>401a Contribution:</strong> Optional - only available at certain employers</li>
             <li><strong>401k Max:</strong> $23,500 annual limit (employee + bonus contributions)</li>
-            <li><strong>Employer Match:</strong> 100% match up to 6% of salary</li>
+            <li><strong>Employer Match:</strong> Optional - configure your company's matching policy</li>
         </ul>
+        <p class="text-sm text-muted mt-sm">💡 <strong>Tip:</strong> Uncheck benefits your company doesn't offer to get accurate projections</p>
     </div>
 
     <button onclick="calculate401k()" class="btn btn--primary btn--large">Generate 401k Projection</button>
@@ -64,3 +115,63 @@
     </div>
 </div>
 
+
+<script>
+// Dynamic form controls for company benefits
+document.addEventListener('DOMContentLoaded', function() {
+    // Bonus configuration toggle
+    const hasBonusCheckbox = document.getElementById('hasBonus');
+    const bonusPercentGroup = document.getElementById('bonusPercentGroup');
+    const bonusContribGroup = document.getElementById('bonusContribGroup');
+    
+    function toggleBonusFields() {
+        const isChecked = hasBonusCheckbox.checked;
+        bonusPercentGroup.style.display = isChecked ? 'block' : 'none';
+        bonusContribGroup.style.display = isChecked ? 'block' : 'none';
+    }
+    
+    hasBonusCheckbox.addEventListener('change', toggleBonusFields);
+    toggleBonusFields(); // Initial state
+    
+    // Employer match configuration toggle
+    const hasEmployerMatchCheckbox = document.getElementById('hasEmployerMatch');
+    const employerMatchGroup = document.getElementById('employerMatchGroup');
+    
+    function toggleEmployerMatchFields() {
+        const isChecked = hasEmployerMatchCheckbox.checked;
+        employerMatchGroup.style.display = isChecked ? 'block' : 'none';
+    }
+    
+    hasEmployerMatchCheckbox.addEventListener('change', toggleEmployerMatchFields);
+    toggleEmployerMatchFields(); // Initial state
+    
+    // 401a configuration toggle
+    const has401aCheckbox = document.getElementById('has401a');
+    const contrib401aGroup = document.getElementById('contrib401aGroup');
+    
+    function toggle401aFields() {
+        const isChecked = has401aCheckbox.checked;
+        contrib401aGroup.style.display = isChecked ? 'block' : 'none';
+        
+        // Also show/hide the 401a balance input in the main form
+        const current401aGroup = document.querySelector('label[for="current401aBalance"]').parentElement;
+        current401aGroup.style.display = isChecked ? 'block' : 'none';
+    }
+    
+    has401aCheckbox.addEventListener('change', toggle401aFields);
+    toggle401aFields(); // Initial state
+    
+    // Auto-recalculate when any input changes
+    const allInputs = document.querySelectorAll('input[type="number"], input[type="checkbox"]');
+    allInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Small delay to allow UI updates
+            setTimeout(() => {
+                if (typeof window.calculate401k === 'function') {
+                    window.calculate401k();
+                }
+            }, 100);
+        });
+    });
+});
+</script>
