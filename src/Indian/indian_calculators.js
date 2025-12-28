@@ -1,6 +1,21 @@
 // Indian Investment Calculators - SIP, SWP, Lumpsum
 (function(){
     
+    // Global flag to prevent modal opening during initialization
+    window.indianInitializing = true;
+    
+    // Create a safe wrapper for the modal function
+    const originalShowModal = window.showIndianInfoModal;
+    window.showIndianInfoModal = function() {
+        if (window.indianInitializing) {
+            console.log('Blocked showIndianInfoModal during initialization');
+            return;
+        }
+        if (originalShowModal) {
+            return originalShowModal.apply(this, arguments);
+        }
+    };
+    
     // Utility functions for Indian Rupee formatting
     function formatINR(num) {
         return new Intl.NumberFormat('en-IN', {
@@ -382,8 +397,20 @@
         document.getElementById('lumpsumTableContainer').innerHTML = tableHtml;
     }
 
-    // Modal functionality
-    window.showIndianInfoModal = function(id) {
+    // Modal functionality with production-safe checks
+    window.showIndianInfoModal = function(id, userTriggered = false) {
+        // Block all modal calls during initialization
+        if (window.indianInitializing && !userTriggered) {
+            console.log('Blocking modal during initialization');
+            return;
+        }
+        
+        // Add extra protection for production environment
+        if (!userTriggered && !window.indianModalReady) {
+            console.log('Modal not ready or not user-triggered, ignoring call');
+            return;
+        }
+        
         const modal = document.getElementById('indianInfoModal');
         const titleEl = document.getElementById('indianInfoTitle');
         const contentEl = document.getElementById('indianInfoContent');
@@ -456,7 +483,9 @@
             contentEl.innerHTML = data[id].content;
             modal.setAttribute('aria-hidden', 'false');
             modal.classList.remove('hidden');
+            modal.classList.add('modal--show');
             modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
             
             // Focus management
             const closeBtn = modal.querySelector('.modal__close');
@@ -467,8 +496,10 @@
     window.closeIndianInfoModal = function() {
         const modal = document.getElementById('indianInfoModal');
         modal.setAttribute('aria-hidden', 'true');
-        modal.style.display = 'none';
         modal.classList.add('hidden');
+        modal.classList.remove('modal--show');
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
     };
 
     // Keyboard support for modal
@@ -494,12 +525,18 @@
 
     // Initialize modal to ensure it's properly hidden
     function initializeModal() {
+        // Set modal as not ready initially
+        window.indianModalReady = false;
+        
         setTimeout(function() {
             const modal = document.getElementById('indianInfoModal');
             if (modal) {
+                // Force hide the modal with multiple methods
                 modal.setAttribute('aria-hidden', 'true');
                 modal.classList.add('hidden');
+                modal.classList.remove('modal--show');
                 modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
                 console.log('Indian modal initialized and hidden');
             }
             
@@ -510,11 +547,19 @@
                     e.preventDefault();
                     e.stopPropagation();
                     console.log('Info button clicked by user');
-                    showIndianInfoModal('indian-overview');
+                    showIndianInfoModal('indian-overview', true); // Pass userTriggered = true
                 });
                 console.log('Info button event listener added');
             }
-        }, 100);
+            
+            // Set modal as ready after a longer delay to ensure production stability
+            setTimeout(function() {
+                window.indianModalReady = true;
+                window.indianInitializing = false; // Clear initialization flag
+                console.log('Indian modal ready for user interaction');
+            }, 2000); // 2 second delay for production
+            
+        }, 500); // Increased initial delay
     }
 
 })();

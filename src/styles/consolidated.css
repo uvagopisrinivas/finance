@@ -770,7 +770,7 @@ body {
 .modal {
   position: fixed;
   inset: 0;
-  display: none;
+  display: none !important; /* Force hide initially */
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.5);
@@ -779,15 +779,26 @@ body {
 }
 
 .modal--show {
-  display: flex;
+  display: flex !important;
 }
 
 .modal:not(.modal--hidden) {
-  display: flex;
+  display: flex !important;
 }
 
 .modal--hidden {
-  display: none;
+  display: none !important;
+}
+
+/* Specific override for Indian modal to prevent auto-showing */
+#indianInfoModal {
+  display: none !important;
+  visibility: hidden;
+}
+
+#indianInfoModal.modal--show {
+  display: flex !important;
+  visibility: visible;
 }
 .modal__content {
   background: var(--color-surface);

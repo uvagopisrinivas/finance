@@ -291,6 +291,9 @@
           
           // Ensure tab switching works after script loads
           script.onload = function() {
+            // Block any modal calls during initialization
+            window.indianInitializing = true;
+            
             // Initialize the first calculator as active
             setTimeout(() => {
               console.log('Initializing Indian calculators...');
