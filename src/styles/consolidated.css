@@ -1672,11 +1672,11 @@ body {
   }
   
   .brand__title {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg); /* Increased from base */
   }
   
   .brand__subtitle {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base); /* Increased from sm */
   }
   
   .main {
@@ -1694,7 +1694,7 @@ body {
   
   .nav__tab {
     padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base); /* Increased from sm */
     font-weight: var(--font-weight-semibold);
     min-width: 55px;
     text-align: center;
@@ -1726,27 +1726,31 @@ body {
   }
   
   .form-input {
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-base);
+    padding: var(--space-md) var(--space-lg); /* Increased padding */
+    font-size: var(--font-size-lg); /* Increased from base */
   }
   
   .form-label {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base); /* Increased from sm */
     margin-bottom: var(--space-xs);
   }
   
+  .form-hint {
+    font-size: var(--font-size-sm); /* Increased from xs */
+  }
+  
   .card {
-    padding: var(--space-md);
+    padding: var(--space-lg); /* Increased from md */
     margin-bottom: var(--space-md);
   }
   
   .card__title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-2xl); /* Increased from xl */
     margin-bottom: var(--space-sm);
   }
   
   .card__subtitle {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg); /* Increased from base */
   }
   
   .card__header {
@@ -1755,16 +1759,16 @@ body {
   
   .card.mt-md {
     margin-top: var(--space-md);
-    padding: var(--space-md);
+    padding: var(--space-lg); /* Increased from md */
   }
   
   .card.mt-md .card__header {
-    padding: var(--space-md);
+    padding: var(--space-lg); /* Increased from md */
     margin-bottom: var(--space-sm);
   }
   
   .table-container {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm); /* Increased from xs */
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin: 0 calc(-1 * var(--space-md));
@@ -1782,8 +1786,8 @@ body {
   
   .table--401k th,
   .table--401k td {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
+    padding: var(--space-sm) var(--space-md); /* Increased padding */
+    font-size: var(--font-size-sm); /* Increased from xs */
     white-space: nowrap;
   }
   
@@ -1951,11 +1955,11 @@ body {
   }
   
   .brand__title {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base); /* Increased from sm */
   }
   
   .brand__subtitle {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm); /* Increased from xs */
   }
   
   .header__inner {
@@ -1968,18 +1972,18 @@ body {
   }
   
   .nav__tab {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
+    padding: var(--space-sm) var(--space-md); /* Increased padding */
+    font-size: var(--font-size-sm); /* Increased from xs */
     font-weight: var(--font-weight-bold);
-    min-width: 45px;
-    max-width: 60px;
+    min-width: 50px; /* Increased from 45px */
+    max-width: 70px; /* Increased from 60px */
     border-radius: var(--border-radius-md);
   }
   
   .theme-toggle {
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-sm) var(--space-md); /* Increased padding */
     font-size: var(--font-size-base);
-    min-width: 45px;
+    min-width: 50px; /* Increased from 45px */
     border-radius: var(--border-radius-md);
   }
   
@@ -1989,17 +1993,17 @@ body {
   }
   
   .card {
-    padding: var(--space-sm);
+    padding: var(--space-md); /* Increased from sm */
     margin-bottom: var(--space-md);
   }
   
   .card__title {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl); /* Increased from lg */
     margin-bottom: var(--space-xs);
   }
   
   .card__subtitle {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base); /* Increased from sm */
   }
   
   .card__header {
@@ -2007,38 +2011,42 @@ body {
   }
   
   .form-grid {
-    gap: var(--space-xs);
-    margin-bottom: var(--space-sm);
+    gap: var(--space-md); /* Increased from xs */
+    margin-bottom: var(--space-lg); /* Increased from sm */
   }
   
   .form-group {
-    margin-bottom: var(--space-xs);
+    margin-bottom: var(--space-md); /* Increased from xs */
   }
   
   .form-input {
-    padding: var(--space-sm);
-    font-size: var(--font-size-sm);
+    padding: var(--space-md) var(--space-lg); /* Increased padding */
+    font-size: var(--font-size-base); /* Increased from sm */
   }
   
   .form-label {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm); /* Increased from xs */
     margin-bottom: var(--space-xs);
+  }
+  
+  .form-hint {
+    font-size: var(--font-size-xs); /* Added explicit size */
   }
   
   .card.mt-md {
     margin-top: var(--space-sm);
-    padding: var(--space-sm);
+    padding: var(--space-md); /* Increased from sm */
   }
   
   .card.mt-md .card__header {
-    padding: var(--space-sm);
+    padding: var(--space-md); /* Increased from sm */
     margin-bottom: var(--space-xs);
   }
   
   .table-container {
     margin: 0 calc(-1 * var(--space-sm));
     border-radius: 0;
-    font-size: 10px;
+    font-size: var(--font-size-xs); /* Changed from 10px to use CSS variable */
   }
   
   .table--401k {
@@ -2047,8 +2055,8 @@ body {
   
   .table--401k th,
   .table--401k td {
-    padding: var(--space-xs);
-    font-size: 10px;
+    padding: var(--space-xs) var(--space-sm); /* Increased padding */
+    font-size: var(--font-size-xs); /* Changed from 10px to use CSS variable */
     white-space: nowrap;
   }
   
@@ -2072,13 +2080,13 @@ body {
   }
   
   .info-panel li {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm); /* Increased from xs */
     margin-bottom: var(--space-xs);
   }
   
   .summary-value {
     min-width: 100px;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg); /* Increased from base */
     text-align: center;
     padding: var(--space-sm) var(--space-md);
   }
@@ -2136,8 +2144,8 @@ body {
   .form-actions .btn {
     min-width: auto;
     width: 100%;
-    padding: var(--space-md) var(--space-lg);
-    font-size: var(--font-size-sm);
+    padding: var(--space-lg) var(--space-xl); /* Increased padding */
+    font-size: var(--font-size-base); /* Increased from sm */
   }
   
   .cta-buttons {
@@ -2150,7 +2158,7 @@ body {
     width: 100%;
     max-width: none;
     padding: var(--space-lg) var(--space-xl);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg); /* Increased from base */
     font-weight: var(--font-weight-semibold);
   }
   
@@ -2160,13 +2168,13 @@ body {
   
   .table--indian {
     min-width: 500px;
-    font-size: 10px;
+    font-size: var(--font-size-xs); /* Changed from 10px to use CSS variable */
   }
   
   .table--indian th,
   .table--indian td {
-    padding: var(--space-xs);
-    font-size: 10px;
+    padding: var(--space-xs) var(--space-sm); /* Increased padding */
+    font-size: var(--font-size-xs); /* Changed from 10px to use CSS variable */
   }
   
   .table--indian th:nth-child(1) { min-width: 50px; }
