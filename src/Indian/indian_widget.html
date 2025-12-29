@@ -154,11 +154,32 @@
             </div>
             <div class="form-group">
                 <label class="form-label">
+                    <i class="fas fa-receipt"></i>
+                    Tax Rate on Capital Gains (%)
+                </label>
+                <input type="number" id="swpTaxRate" value="10" step="0.1" min="0" max="50" class="form-input" placeholder="Tax rate on gains">
+                <small class="form-hint">LTCG: 10%, STCG: 15-30%</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
                     <i class="fas fa-calendar-alt"></i>
                     Time Period (Years)
                 </label>
                 <input type="number" id="swpTimePeriod" value="5" min="1" max="50" class="form-input" placeholder="Withdrawal duration">
                 <small class="form-hint">How long you need income</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-chart-line"></i>
+                    Active Trading Strategy
+                </label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="swpActiveTrading">
+                    <label for="swpActiveTrading" class="checkbox-label">
+                        Enable active trading tax calculation
+                    </label>
+                </div>
+                <small class="form-hint">If checked: Tax on all capital gains. If unchecked: Tax only on withdrawal gains</small>
             </div>
         </div>
 
@@ -192,9 +213,23 @@
                         <div class="summary-item">
                             <span class="summary-label">
                                 <i class="fas fa-money-bill-wave"></i>
-                                Total Withdrawal
+                                Total Withdrawal (Gross)
                             </span>
                             <span class="summary-value summary-value--warning" id="swpTotalWithdrawal">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-receipt"></i>
+                                Total Tax Paid
+                            </span>
+                            <span class="summary-value summary-value--danger" id="swpTotalTax">₹0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-hand-holding-heart"></i>
+                                Net Amount Received
+                            </span>
+                            <span class="summary-value summary-value--success" id="swpNetReceived">₹0</span>
                         </div>
                         <div class="summary-item summary-item--highlight">
                             <span class="summary-label">
@@ -243,19 +278,6 @@
                 </label>
                 <input type="number" id="lumpsumTimePeriod" value="10" min="1" max="50" class="form-input" placeholder="Investment duration">
                 <small class="form-hint">Investment holding period</small>
-            </div>
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-sync-alt"></i>
-                    Compounding Frequency
-                </label>
-                <select id="lumpsumCompounding" class="form-input">
-                    <option value="1">Annually</option>
-                    <option value="2">Half-yearly</option>
-                    <option value="4">Quarterly</option>
-                    <option value="12" selected>Monthly</option>
-                </select>
-                <small class="form-hint">How often returns are compounded</small>
             </div>
         </div>
 

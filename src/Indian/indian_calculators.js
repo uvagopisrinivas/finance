@@ -114,15 +114,36 @@
                 if (isNaN(value) || value < 0) {
                     this.value = this.getAttribute('value') || '0'; // Reset to default
                 }
+                
+                // Special validation for tax rate (max 50%)
+                if (this.id === 'swpTaxRate' && value > 50) {
+                    this.value = '50';
+                }
             });
 
-            // Prevent negative values
+            // Prevent negative values and enforce max for tax rate
             input.addEventListener('input', function(e) {
                 if (this.value < 0) {
                     this.value = 0;
                 }
+                if (this.id === 'swpTaxRate' && this.value > 50) {
+                    this.value = 50;
+                }
             });
         });
+
+        // Auto-recalculate when active trading checkbox changes
+        const activeTrading = document.getElementById('swpActiveTrading');
+        if (activeTrading) {
+            activeTrading.addEventListener('change', function() {
+                // Small delay to allow UI updates
+                setTimeout(() => {
+                    if (typeof window.calculateSWP === 'function') {
+                        window.calculateSWP();
+                    }
+                }, 100);
+            });
+        }
     }
 
     // SIP Calculator
@@ -234,17 +255,20 @@
             const totalInvestment = parseFloat(document.getElementById('swpTotalInvestment').value);
             const monthlyWithdrawal = parseFloat(document.getElementById('swpWithdrawal').value);
             const annualRate = parseFloat(document.getElementById('swpReturnRate').value) / 100;
+            const taxRate = parseFloat(document.getElementById('swpTaxRate').value) / 100;
             const years = parseInt(document.getElementById('swpTimePeriod').value);
+            const isActiveTrading = document.getElementById('swpActiveTrading').checked;
 
-            if (isNaN(totalInvestment) || isNaN(monthlyWithdrawal) || isNaN(annualRate) || isNaN(years) || 
-                totalInvestment <= 0 || monthlyWithdrawal <= 0 || annualRate < 0 || years <= 0) {
+            if (isNaN(totalInvestment) || isNaN(monthlyWithdrawal) || isNaN(annualRate) || isNaN(taxRate) || isNaN(years) || 
+                totalInvestment <= 0 || monthlyWithdrawal <= 0 || annualRate < 0 || taxRate < 0 || years <= 0) {
                 throw new Error('Please enter valid positive values');
             }
 
             const monthlyRate = annualRate / 12;
-            const totalMonths = years * 12;
             let remainingBalance = totalInvestment;
             let totalWithdrawn = 0;
+            let totalTaxPaid = 0;
+            let totalNetReceived = 0;
 
             // Calculate year-wise data
             const yearlyData = [];
@@ -252,26 +276,74 @@
             for (let year = 1; year <= years; year++) {
                 let yearStartBalance = remainingBalance;
                 let yearWithdrawal = 0;
+                let yearTaxPaid = 0;
+                let yearNetReceived = 0;
+                let yearGains = 0;
 
-                for (let month = 1; month <= 12; month++) {
-                    if (remainingBalance <= 0) break;
-
-                    // Apply monthly return
-                    remainingBalance = remainingBalance * (1 + monthlyRate);
+                if (isActiveTrading) {
+                    // Active Trading: Tax on all capital gains for the year
+                    // Calculate annual gains first
+                    const annualGains = yearStartBalance * annualRate;
+                    yearGains = annualGains;
                     
-                    // Withdraw amount (but not more than remaining balance)
-                    const withdrawal = Math.min(monthlyWithdrawal, remainingBalance);
-                    remainingBalance -= withdrawal;
-                    yearWithdrawal += withdrawal;
-                    totalWithdrawn += withdrawal;
+                    // Tax on all gains
+                    const annualTax = annualGains * taxRate;
+                    yearTaxPaid = annualTax;
+                    
+                    // Net gains after tax
+                    const netGains = annualGains - annualTax;
+                    
+                    // Update balance with net gains
+                    remainingBalance = yearStartBalance + netGains;
+                    
+                    // Now handle withdrawals (no additional tax since already paid)
+                    const annualWithdrawal = Math.min(monthlyWithdrawal * 12, remainingBalance);
+                    yearWithdrawal = annualWithdrawal;
+                    yearNetReceived = annualWithdrawal; // No additional tax on withdrawal
+                    
+                    remainingBalance -= annualWithdrawal;
+                    
+                } else {
+                    // Regular SWP: Tax only on gains portion of withdrawals
+                    for (let month = 1; month <= 12; month++) {
+                        if (remainingBalance <= 0) break;
+
+                        // Apply monthly return
+                        const monthlyReturn = remainingBalance * monthlyRate;
+                        remainingBalance += monthlyReturn;
+                        yearGains += monthlyReturn;
+                        
+                        // Withdraw amount (but not more than remaining balance)
+                        const grossWithdrawal = Math.min(monthlyWithdrawal, remainingBalance);
+                        
+                        // Calculate tax on the gains portion of withdrawal
+                        const gainsRatio = Math.max(0, (remainingBalance - totalInvestment) / remainingBalance);
+                        const taxableGains = grossWithdrawal * gainsRatio;
+                        const monthlyTax = taxableGains * taxRate;
+                        const netWithdrawal = grossWithdrawal - monthlyTax;
+                        
+                        remainingBalance -= grossWithdrawal;
+                        yearWithdrawal += grossWithdrawal;
+                        yearTaxPaid += monthlyTax;
+                        yearNetReceived += netWithdrawal;
+                    }
                 }
+
+                totalWithdrawn += yearWithdrawal;
+                totalTaxPaid += yearTaxPaid;
+                totalNetReceived += yearNetReceived;
 
                 yearlyData.push({
                     year: year,
                     startBalance: yearStartBalance,
                     yearlyWithdrawal: yearWithdrawal,
+                    yearlyTax: yearTaxPaid,
+                    yearlyNetReceived: yearNetReceived,
                     endBalance: remainingBalance,
-                    cumulativeWithdrawal: totalWithdrawn
+                    cumulativeWithdrawal: totalWithdrawn,
+                    cumulativeTax: totalTaxPaid,
+                    cumulativeNetReceived: totalNetReceived,
+                    isActiveTrading: isActiveTrading
                 });
 
                 if (remainingBalance <= 0) break;
@@ -280,6 +352,8 @@
             // Update summary
             document.getElementById('swpInitialInvestment').textContent = formatINRReadable(totalInvestment);
             document.getElementById('swpTotalWithdrawal').textContent = formatINRReadable(totalWithdrawn);
+            document.getElementById('swpTotalTax').textContent = formatINRReadable(totalTaxPaid);
+            document.getElementById('swpNetReceived').textContent = formatINRReadable(totalNetReceived);
             document.getElementById('swpFinalValue').textContent = formatINRReadable(remainingBalance);
 
             // Generate table
@@ -301,9 +375,10 @@
                         <tr>
                             <th><i class="fas fa-calendar-alt"></i> Year</th>
                             <th><i class="fas fa-wallet"></i> Start Balance</th>
-                            <th><i class="fas fa-hand-holding-usd"></i> Yearly Withdrawal</th>
+                            <th><i class="fas fa-hand-holding-usd"></i> Gross Withdrawal</th>
+                            <th><i class="fas fa-receipt"></i> Tax Paid</th>
+                            <th><i class="fas fa-hand-holding-heart"></i> Net Received</th>
                             <th><i class="fas fa-piggy-bank"></i> End Balance</th>
-                            <th><i class="fas fa-money-bill-wave"></i> Cumulative Withdrawal</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -312,8 +387,9 @@
                                 <td class="table__year">${row.year}</td>
                                 <td class="table__balance">${formatINR(row.startBalance)}</td>
                                 <td class="table__withdrawal">${formatINR(row.yearlyWithdrawal)}</td>
+                                <td class="table__tax">${formatINR(row.yearlyTax)}</td>
+                                <td class="table__net">${formatINR(row.yearlyNetReceived)}</td>
                                 <td class="table__balance">${formatINR(row.endBalance)}</td>
-                                <td class="table__withdrawal">${formatINR(row.cumulativeWithdrawal)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -329,9 +405,10 @@
             const principal = parseFloat(document.getElementById('lumpsumAmount').value);
             const annualRate = parseFloat(document.getElementById('lumpsumReturnRate').value) / 100;
             const years = parseInt(document.getElementById('lumpsumTimePeriod').value);
-            const compoundingFreq = parseInt(document.getElementById('lumpsumCompounding').value);
+            // Use annual compounding since lumpsum is calculated annually
+            const compoundingFreq = 1;
 
-            if (isNaN(principal) || isNaN(annualRate) || isNaN(years) || isNaN(compoundingFreq) || 
+            if (isNaN(principal) || isNaN(annualRate) || isNaN(years) || 
                 principal <= 0 || annualRate < 0 || years <= 0) {
                 throw new Error('Please enter valid positive values');
             }

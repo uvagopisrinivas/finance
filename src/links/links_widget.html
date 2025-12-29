@@ -107,6 +107,46 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- USA Tax Brackets Card -->
+                <div class="financial-card usa-tax-card" onclick="openMetalPopup('https://www.fidelity.com/learning-center/personal-finance/tax-brackets', 'USA_Tax_Brackets')">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">🇺🇸</div>
+                        <h3 class="card-title">USA Tax Brackets</h3>
+                        <p class="card-description">Federal tax brackets joint & single</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Joint</span>
+                            <span class="feature-tag">Single</span>
+                            <span class="feature-tag">2024</span>
+                        </div>
+                        <div class="financial-btn usa-tax-btn">
+                            <span class="btn-icon">📋</span>
+                            View Brackets
+                            <span class="btn-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- India Tax Slabs Card -->
+                <div class="financial-card india-tax-card" onclick="openMetalPopup('https://incometaxindia.gov.in/charts%20%20tables/tax%20rates.htm', 'India_Tax_Slabs')">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">🇮🇳</div>
+                        <h3 class="card-title">India Tax Slabs</h3>
+                        <p class="card-description">Income tax rates & slabs</p>
+                        <div class="card-features">
+                            <span class="feature-tag">Old</span>
+                            <span class="feature-tag">New</span>
+                            <span class="feature-tag">₹ Slabs</span>
+                        </div>
+                        <div class="financial-btn india-tax-btn">
+                            <span class="btn-icon">📋</span>
+                            View Slabs
+                            <span class="btn-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="page-footer">
@@ -172,6 +212,14 @@
 
         .mortgage-card .card-background {
             background: linear-gradient(135deg, #f97316, #ea580c);
+        }
+
+        .usa-tax-card .card-background {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+        }
+
+        .india-tax-card .card-background {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
         }
 
         .financial-card:hover .card-background {
