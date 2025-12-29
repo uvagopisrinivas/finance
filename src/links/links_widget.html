@@ -147,6 +147,26 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- FedRate Cut Calendar Card -->
+                <div class="financial-card fedrate-card" onclick="openMetalPopup('https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html', 'FedRate_Calendar')">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">📅</div>
+                        <h3 class="card-title">FedRate Calendar</h3>
+                        <p class="card-description">Fed rate cut predictions & calendar</p>
+                        <div class="card-features">
+                            <span class="feature-tag">CME</span>
+                            <span class="feature-tag">Rates</span>
+                            <span class="feature-tag">Live</span>
+                        </div>
+                        <div class="financial-btn fedrate-btn">
+                            <span class="btn-icon">📊</span>
+                            View Calendar
+                            <span class="btn-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="page-footer">
@@ -220,6 +240,10 @@
 
         .india-tax-card .card-background {
             background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .fedrate-card .card-background {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
         }
 
         .financial-card:hover .card-background {
