@@ -31,6 +31,11 @@
             <label class="form-label">Current 401k Balance ($)</label>
             <input type="number" id="current401kBalance" value="160000" class="form-input">
         </div>
+        <div class="form-group">
+            <label class="form-label">401k Contributed So Far This Year ($)</label>
+            <input type="number" id="current401kContributed" value="0" min="0" max="23500" class="form-input">
+            <small class="form-help">Enter total 401k contributions made in 2025 (including regular payroll and any bonus contributions)</small>
+        </div>
     </div>
 
     <!-- Company Benefits Configuration -->
@@ -97,13 +102,14 @@
     <div class="info-panel">
         <h4>📋 Dynamic Configuration:</h4>
         <ul>
+            <li><strong>Current Year (2025):</strong> Special handling - calculates contributions and returns based on days remaining in the year</li>
             <li><strong>Bonus:</strong> Optional - configure your company's bonus structure</li>
             <li><strong>Bonus Contribution:</strong> Optional - set what percentage of bonus goes to 401k</li>
             <li><strong>401a Contribution:</strong> Optional - only available at certain employers</li>
             <li><strong>401k Max:</strong> $23,500 annual limit (employee + bonus contributions)</li>
             <li><strong>Employer Match:</strong> Optional - configure your company's matching policy</li>
         </ul>
-        <p class="text-sm text-muted mt-sm">💡 <strong>Tip:</strong> Uncheck benefits your company doesn't offer to get accurate projections</p>
+        <p class="text-sm text-muted mt-sm">💡 <strong>Tip:</strong> For 2025, enter your total 401k contributions including any bonus contributions already made (bonuses are typically paid in March)</p>
     </div>
 
     <button onclick="calculate401k()" class="btn btn--primary btn--large">Generate 401k Projection</button>

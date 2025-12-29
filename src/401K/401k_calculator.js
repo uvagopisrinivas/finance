@@ -26,6 +26,7 @@
             const projectionYears = parseInt(document.getElementById('projectionYears').value);
             const annualReturn = parseFloat(document.getElementById('annualReturn').value) / 100;
             const current401kBalance = parseFloat(document.getElementById('current401kBalance').value);
+            const current401kContributed = parseFloat(document.getElementById('current401kContributed').value) || 0;
             
             // Get company benefit configuration
             const hasBonus = document.getElementById('hasBonus').checked;
@@ -119,6 +120,7 @@
 
             for (let i = 0; i < projectionYears; i++) {
                 const year = startYear + i;
+                const isCurrentYear = (year === startYear); // 2025 is the current year
                 
                 // Calculate salary for this year with annual increases
                 const currentSalary = baseSalary * Math.pow(1 + salaryIncrease, i);
@@ -129,49 +131,169 @@
                 // Calculate bonus contribution (configurable percentage of bonus)
                 const bonusContrib = bonus * bonusContributionPercent;
                 
-                // Calculate dynamic contribution percentage for this year
-                const remainingLimitThisYear = annual401kLimit - bonusContrib;
-                const contributionPercentThisYear = Math.min(remainingLimitThisYear / currentSalary, 0.50); // Cap at 50%
+                let contributionPercentThisYear;
+                let employee401kContrib;
+                let finalEmployee401k;
+                let finalBonusContrib;
                 
-                // Calculate employee 401k contribution (based on dynamic percentage)
-                const employee401kContrib = currentSalary * contributionPercentThisYear;
-                
-                // Since we calculated dynamically, these should already be within limits
-                const finalEmployee401k = employee401kContrib;
-                const finalBonusContrib = bonusContrib;
+                if (isCurrentYear) {
+                    // Special case for current year (2025)
+                    // current401kContributed represents regular employee contributions only (not bonus)
+                    const totalContributedSoFar = current401kContributed; // Regular contributions only
+                    const remainingLimit = annual401kLimit - totalContributedSoFar;
+                    
+                    // Calculate days remaining in the year for prorated contributions
+                    const currentDate = new Date();
+                    const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+                    const daysRemaining = Math.ceil((endOfYear - currentDate) / (1000 * 60 * 60 * 24));
+                    const daysInYear = 365;
+                    const remainingYearFraction = daysRemaining / daysInYear;
+                    
+                    // Check if we're past bonus season (March)
+                    const currentMonth = currentDate.getMonth(); // 0-based, so March = 2
+                    const bonusAlreadyPaid = currentMonth >= 2; // March or later
+                    
+                    if (remainingLimit <= 0) {
+                        // Already maxed out for the year with regular contributions
+                        contributionPercentThisYear = 0;
+                        employee401kContrib = 0; // No additional contributions
+                        finalEmployee401k = current401kContributed;
+                        finalBonusContrib = 0; // No bonus contribution (already accounted for or maxed out)
+                    } else {
+                        // Calculate prorated contributions for remaining days
+                        // Prorate the salary for remaining days
+                        const proratedSalary = currentSalary * remainingYearFraction;
+                        
+                        // For bonus: if already past March, bonus was already paid and contributed
+                        // It should be included in the "current401kContributed" field by the user
+                        let proratedBonusContrib = 0;
+                        if (!bonusAlreadyPaid) {
+                            // Only calculate bonus contribution if we haven't reached bonus season yet
+                            const proratedBonus = bonus * remainingYearFraction;
+                            proratedBonusContrib = proratedBonus * bonusContributionPercent;
+                        }
+                        
+                        const maxBonusContrib = Math.min(proratedBonusContrib, remainingLimit);
+                        const remainingAfterBonus = remainingLimit - maxBonusContrib;
+                        
+                        // Calculate additional regular contribution for remaining days
+                        const maxAdditionalRegular = Math.min(remainingAfterBonus, proratedSalary * 0.50);
+                        contributionPercentThisYear = proratedSalary > 0 ? maxAdditionalRegular / proratedSalary : 0;
+                        
+                        employee401kContrib = maxAdditionalRegular;
+                        finalEmployee401k = current401kContributed + employee401kContrib; // Total regular for the year
+                        finalBonusContrib = maxBonusContrib;
+                    }
+                } else {
+                    // Regular calculation for future years
+                    const remainingLimitThisYear = annual401kLimit - bonusContrib;
+                    contributionPercentThisYear = Math.min(remainingLimitThisYear / currentSalary, 0.50); // Cap at 50%
+                    
+                    // Calculate employee 401k contribution (based on dynamic percentage)
+                    employee401kContrib = currentSalary * contributionPercentThisYear;
+                    
+                    // Since we calculated dynamically, these should already be within limits
+                    finalEmployee401k = employee401kContrib;
+                    finalBonusContrib = bonusContrib;
+                }
                 
                 // Calculate employer match (configurable percentage of salary, only on regular contributions)
-                const maxEmployerMatch = hasEmployerMatch ? currentSalary * employerMatchPercent : 0;
-                const employerMatch = hasEmployerMatch ? Math.min(finalEmployee401k, maxEmployerMatch) : 0;
+                let maxEmployerMatch, employerMatch;
+                if (isCurrentYear) {
+                    // For current year, prorate employer match based on remaining days
+                    const currentDate = new Date();
+                    const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+                    const daysRemaining = Math.ceil((endOfYear - currentDate) / (1000 * 60 * 60 * 24));
+                    const remainingYearFraction = daysRemaining / 365;
+                    
+                    maxEmployerMatch = hasEmployerMatch ? currentSalary * employerMatchPercent * remainingYearFraction : 0;
+                    employerMatch = hasEmployerMatch ? Math.min(employee401kContrib, maxEmployerMatch) : 0;
+                } else {
+                    maxEmployerMatch = hasEmployerMatch ? currentSalary * employerMatchPercent : 0;
+                    employerMatch = hasEmployerMatch ? Math.min(finalEmployee401k, maxEmployerMatch) : 0;
+                }
                 
                 // Calculate 401a contribution (configurable percentage of salary)
-                const employee401aContrib = has401a ? currentSalary * employee401aPercent : 0;
+                let employee401aContrib;
+                if (isCurrentYear) {
+                    // For current year, prorate 401a contribution
+                    const currentDate = new Date();
+                    const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+                    const daysRemaining = Math.ceil((endOfYear - currentDate) / (1000 * 60 * 60 * 24));
+                    const remainingYearFraction = daysRemaining / 365;
+                    
+                    employee401aContrib = has401a ? currentSalary * employee401aPercent * remainingYearFraction : 0;
+                } else {
+                    employee401aContrib = has401a ? currentSalary * employee401aPercent : 0;
+                }
                 
                 // Total contributions for the year
-                const total401kContrib = finalEmployee401k + finalBonusContrib + employerMatch;
-                const totalYearContrib = total401kContrib + employee401aContrib;
+                let total401kContrib, totalYearContrib;
+                if (isCurrentYear) {
+                    // For current year, only count additional contributions for remaining days
+                    total401kContrib = employee401kContrib + finalBonusContrib + employerMatch;
+                    totalYearContrib = total401kContrib + employee401aContrib;
+                } else {
+                    // For future years, use full year amounts
+                    total401kContrib = finalEmployee401k + finalBonusContrib + employerMatch;
+                    totalYearContrib = total401kContrib + employee401aContrib;
+                }
                 
                 // Starting balances for this year
                 const start401k = current401k;
                 const start401a = current401a;
                 
-                // Calculate returns: (starting balance + half of contributions) * return rate
-                // This assumes contributions are made throughout the year
-                const midYearBalance401k = start401k + (total401kContrib / 2);
-                const midYearBalance401a = start401a + (employee401aContrib / 2);
+                // Calculate returns: different logic for current year vs future years
+                let returns401k, returns401a;
                 
-                const returns401k = midYearBalance401k * annualReturn;
-                const returns401a = midYearBalance401a * annualReturn;
+                if (isCurrentYear) {
+                    // For current year (2025), calculate returns based on days remaining
+                    const currentDate = new Date();
+                    const endOfYear = new Date(currentDate.getFullYear(), 11, 31); // Dec 31
+                    const daysRemaining = Math.ceil((endOfYear - currentDate) / (1000 * 60 * 60 * 24));
+                    const dailyReturn = Math.pow(1 + annualReturn, 1/365) - 1; // Daily compound rate
+                    const remainingYearReturn = Math.pow(1 + dailyReturn, daysRemaining) - 1;
+                    
+                    // For current year, assume contributions are made at the beginning of remaining period
+                    const midPeriodBalance401k = start401k + (total401kContrib / 2);
+                    const midPeriodBalance401a = start401a + (employee401aContrib / 2);
+                    
+                    returns401k = midPeriodBalance401k * remainingYearReturn;
+                    returns401a = midPeriodBalance401a * remainingYearReturn;
+                } else {
+                    // For future years, use full annual return
+                    // This assumes contributions are made throughout the year
+                    const midYearBalance401k = start401k + (total401kContrib / 2);
+                    const midYearBalance401a = start401a + (employee401aContrib / 2);
+                    
+                    returns401k = midYearBalance401k * annualReturn;
+                    returns401a = midYearBalance401a * annualReturn;
+                }
                 
                 // End balances
-                const end401k = start401k + total401kContrib + returns401k;
-                const end401a = start401a + employee401aContrib + returns401a;
+                let end401k, end401a;
+                if (isCurrentYear) {
+                    // For current year, only add the additional contributions for remaining days
+                    // Don't double-count the already contributed amount
+                    end401k = start401k + employee401kContrib + finalBonusContrib + employerMatch + returns401k;
+                    end401a = start401a + employee401aContrib + returns401a;
+                } else {
+                    // For future years, use the standard calculation
+                    end401k = start401k + total401kContrib + returns401k;
+                    end401a = start401a + employee401aContrib + returns401a;
+                }
                 
                 // Grand total
                 const grandTotal = end401k + end401a;
                 
                 // Track totals
-                totalContributions += totalYearContrib;
+                if (isCurrentYear) {
+                    // For current year, only track the additional contributions made during remaining days
+                    totalContributions += employee401kContrib + finalBonusContrib + employerMatch + employee401aContrib;
+                } else {
+                    // For future years, track full year contributions
+                    totalContributions += totalYearContrib;
+                }
                 totalReturns += returns401k + returns401a;
                 
                 // Update for next iteration
@@ -181,17 +303,53 @@
                 // Build table row with dynamic columns
                 let tableRow = `
                     <tr class="table__data-row">
-                        <td class="table__year-cell"><strong>${year}</strong></td>
-                        <td class="table__salary-cell">${formatCurrency(currentSalary)}</td>`;
+                        <td class="table__year-cell"><strong>${year}${isCurrentYear ? ' (Current)' : ''}</strong></td>`;
+                
+                // For current year, show prorated salary, for future years show full salary
+                if (isCurrentYear) {
+                    const currentDate = new Date();
+                    const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+                    const daysRemaining = Math.ceil((endOfYear - currentDate) / (1000 * 60 * 60 * 24));
+                    const remainingYearFraction = daysRemaining / 365;
+                    const proratedSalary = currentSalary * remainingYearFraction;
+                    
+                    tableRow += `<td class="table__salary-cell">${formatCurrency(proratedSalary)} (${daysRemaining} days)</td>`;
+                } else {
+                    tableRow += `<td class="table__salary-cell">${formatCurrency(currentSalary)}</td>`;
+                }
                 
                 if (hasBonus) {
+                    const currentMonth = new Date().getMonth(); // 0-based
+                    const bonusAlreadyPaid = currentMonth >= 2; // March or later
+                    
+                    let displayBonus, bonusLabel;
+                    if (isCurrentYear) {
+                        if (bonusAlreadyPaid) {
+                            displayBonus = 0; // Show $0 since bonus was already paid and should be in "contributed so far"
+                            bonusLabel = ' (already paid)';
+                        } else {
+                            displayBonus = bonus * (Math.ceil((new Date(new Date().getFullYear(), 11, 31) - new Date()) / (1000 * 60 * 60 * 24)) / 365);
+                            bonusLabel = ' (prorated)';
+                        }
+                    } else {
+                        displayBonus = bonus;
+                        bonusLabel = '';
+                    }
+                    
                     tableRow += `
-                        <td class="table__bonus-cell">${formatCurrency(bonus)}</td>`;
+                        <td class="table__bonus-cell">${formatCurrency(displayBonus)}${bonusLabel}</td>`;
                 }
                 
                 tableRow += `
-                        <td class="table__percent-cell"><strong>${formatPercent(contributionPercentThisYear * 100)}</strong></td>
-                        <td class="table__contrib-cell">${formatCurrency(finalEmployee401k)}</td>`;
+                        <td class="table__percent-cell"><strong>${formatPercent(contributionPercentThisYear * 100)}</strong></td>`;
+                
+                // For current year, show the breakdown more clearly
+                if (isCurrentYear) {
+                    // Show only additional contribution for remaining days
+                    tableRow += `<td class="table__contrib-cell">${formatCurrency(employee401kContrib)} (additional)</td>`;
+                } else {
+                    tableRow += `<td class="table__contrib-cell">${formatCurrency(finalEmployee401k)}</td>`;
+                }
                 
                 if (hasBonus) {
                     tableRow += `
@@ -209,7 +367,7 @@
                 }
                 
                 tableRow += `
-                        <td class="table__total-cell"><strong>${formatCurrency(totalYearContrib)}</strong></td>
+                        <td class="table__total-cell"><strong>${formatCurrency(isCurrentYear ? (employee401kContrib + finalBonusContrib + employerMatch + employee401aContrib) : totalYearContrib)}</strong></td>
                         <td class="table__balance-cell">${formatCurrency(start401k)}</td>`;
                 
                 if (has401a) {
@@ -300,7 +458,49 @@
                             <div class="summary-item">
                                 <label class="summary-label">📊 Final Salary</label>
                                 <div class="summary-value summary-value--info">${formatCurrency(finalSalary)}</div>
+                            </div>`;
+            
+            // Add current year contribution status
+            const currentYearRemaining = annual401kLimit - current401kContributed;
+            if (current401kContributed > 0 || projectionYears > 0) {
+                // Calculate days remaining in current year for display
+                const currentDate = new Date();
+                const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+                const daysRemaining = Math.ceil((endOfYear - currentDate) / (1000 * 60 * 60 * 24));
+                const daysInYear = 365;
+                const remainingYearFraction = daysRemaining / daysInYear;
+                const dailyReturn = Math.pow(1 + annualReturn, 1/365) - 1;
+                const remainingYearReturn = Math.pow(1 + dailyReturn, daysRemaining) - 1;
+                const proratedSalary = baseSalary * remainingYearFraction;
+                
+                contributionDetailsSection += `
+                            <div class="summary-item">
+                                <label class="summary-label">📅 Days Remaining in 2025</label>
+                                <div class="summary-value summary-value--info">${daysRemaining} days (${(remainingYearFraction * 100).toFixed(1)}%)</div>
                             </div>
+                            <div class="summary-item">
+                                <label class="summary-label">💰 2025 Prorated Salary</label>
+                                <div class="summary-value summary-value--info">${formatCurrency(proratedSalary)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">� 2025 RRemaining Return Rate</label>
+                                <div class="summary-value summary-value--info">${formatPercent(remainingYearReturn * 100)}</div>
+                            </div>`;
+                
+                if (current401kContributed > 0) {
+                    contributionDetailsSection += `
+                            <div class="summary-item">
+                                <label class="summary-label">💰 2025 Total Contributions So Far</label>
+                                <div class="summary-value summary-value--warning">${formatCurrency(current401kContributed)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <label class="summary-label">🎯 2025 Remaining Limit</label>
+                                <div class="summary-value summary-value--${currentYearRemaining > 0 ? 'success' : 'danger'}">${formatCurrency(Math.max(0, currentYearRemaining))}</div>
+                            </div>`;
+                }
+            }
+            
+            contributionDetailsSection += `
                             <div class="summary-item">
                                 <label class="summary-label">🎯 Avg 401k Contribution Rate</label>
                                 <div class="summary-value summary-value--warning">${formatPercent(avgContribPercent * 100)}</div>
@@ -423,6 +623,22 @@
                         <p>This calculator helps you plan your retirement savings by projecting the growth of your 401k and 401a accounts over time. It uses your current salary, expected salary increases, and contribution strategies to show how your retirement savings will grow.</p>
                         
                         <h4>📊 Key Features</h4>
+                        
+                        <div class="method-section">
+                            <h5>� Cyurrent Year (2025) Special Handling</h5>
+                            <p><strong>How it works:</strong></p>
+                            <ul>
+                                <li>Enter regular employee 401k contributions made in 2025 (including any bonus contributions already made)</li>
+                                <li>Calculator determines remaining contribution limit ($23,500 - total contributions so far)</li>
+                                <li>Salary is prorated based on days remaining in 2025</li>
+                                <li>Bonus contributions: If past March, bonus was already paid and should be included in "contributed so far"</li>
+                                <li>If before March, bonus is prorated for remaining time until bonus payment</li>
+                                <li>Contribution calculations use prorated amounts to respect remaining time in year</li>
+                                <li>Returns calculated based on actual days remaining in 2025 (not full year)</li>
+                                <li>Daily return rate of 0.0305% compounded for remaining days only</li>
+                            </ul>
+                            <p><strong>Why This Matters:</strong> Separates regular and bonus contributions for accurate 2025 projections.</p>
+                        </div>
                         
                         <div class="method-section">
                             <h5>💰 Dynamic Contribution Optimization</h5>
@@ -587,7 +803,7 @@
 })();
     // Input validation for 401k calculator
     function setup401kInputValidation() {
-        const numberInputs = document.querySelectorAll('#baseSalary, #salaryIncrease, #projectionYears, #annualReturn, #current401aBalance, #current401kBalance, #bonusPercent, #bonusContribPercent, #employerMatchPercent, #contrib401aPercent');
+        const numberInputs = document.querySelectorAll('#baseSalary, #salaryIncrease, #projectionYears, #annualReturn, #current401aBalance, #current401kBalance, #current401kContributed, #bonusPercent, #bonusContribPercent, #employerMatchPercent, #contrib401aPercent');
         
         numberInputs.forEach(input => {
             if (!input) return;
