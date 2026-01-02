@@ -30,6 +30,7 @@
     // Input validation for SEPP calculator
     function setupSEPPInputValidation() {
         const numberInputs = document.querySelectorAll('#startAge, #balance, #growth, #irsRate, #taxRate');
+        const currencyInputs = document.querySelectorAll('#balance'); // Only balance needs currency formatting
         
         // Function to update button text based on age
         function updateButtonText() {
@@ -50,8 +51,90 @@
             ageInput.addEventListener('change', updateButtonText);
         }
         
-        numberInputs.forEach(input => {
+        // Setup currency inputs with comma formatting and helper text
+        currencyInputs.forEach(input => {
             if (!input) return;
+            
+            // Format initial value
+            if (input.value) {
+                const formatted = formatUSNumber(input.value);
+                input.value = formatted;
+                updateUSDHelperText(input, formatted);
+            }
+            
+            // Handle input events
+            input.addEventListener('input', function(e) {
+                // Store cursor position before formatting
+                const cursorPosition = this.selectionStart;
+                const oldValue = this.value;
+                
+                let value = this.value.replace(/,/g, ''); // Remove existing commas
+                
+                // Only allow numbers
+                value = value.replace(/[^\d]/g, '');
+                
+                // Allow large numbers (up to 12 digits for millions/billions)
+                if (value.length > 12) {
+                    value = value.substring(0, 12);
+                }
+                
+                if (value && value !== '0') {
+                    const formatted = formatUSNumber(value);
+                    
+                    // Calculate new cursor position
+                    const oldCommas = (oldValue.match(/,/g) || []).length;
+                    const newCommas = (formatted.match(/,/g) || []).length;
+                    const commasDiff = newCommas - oldCommas;
+                    
+                    this.value = formatted;
+                    
+                    // Restore cursor position, adjusting for added/removed commas
+                    const newCursorPosition = Math.min(cursorPosition + commasDiff, formatted.length);
+                    this.setSelectionRange(newCursorPosition, newCursorPosition);
+                    
+                    updateUSDHelperText(this, formatted);
+                } else {
+                    this.value = '';
+                    removeUSDHelperText(this);
+                }
+            });
+
+            // Handle focus events
+            input.addEventListener('focus', function(e) {
+                // Keep helper text visible, just remove commas for easier editing
+                this.value = this.value.replace(/,/g, '');
+            });
+
+            // Handle blur events
+            input.addEventListener('blur', function(e) {
+                let value = this.value.replace(/,/g, '');
+                
+                if (value && !isNaN(value) && value !== '0') {
+                    const formatted = formatUSNumber(value);
+                    this.value = formatted;
+                    updateUSDHelperText(this, formatted);
+                } else if (value === '' || value === '0') {
+                    this.value = '';
+                    removeUSDHelperText(this);
+                }
+            });
+
+            // Handle paste events for large numbers
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanPaste = paste.replace(/[^\d]/g, '');
+                if (cleanPaste && cleanPaste.length <= 12) {
+                    const formatted = formatUSNumber(cleanPaste);
+                    this.value = formatted;
+                    updateUSDHelperText(this, formatted);
+                }
+            });
+        });
+        
+        // Setup other number inputs (no comma formatting)
+        numberInputs.forEach(input => {
+            if (!input || currencyInputs.includes(input)) return; // Skip currency inputs already handled
             
             // Prevent non-numeric characters
             input.addEventListener('keypress', function(e) {
@@ -100,7 +183,221 @@
 
     // life table and helpers
     const lifeTable = {30:55.3,31:54.4,32:53.4,33:52.5,34:51.5,35:50.5,36:49.6,37:48.6,38:47.7,39:46.7,40:45.7,41:44.8,42:43.8,43:42.9,44:41.9,45:41.0,46:40.0,47:39.0,48:38.1,49:37.1,50:36.2,51:35.3,52:34.3,53:33.4,54:32.5,55:31.6,56:30.6,57:29.8,58:28.9,59:28.0,60:27.1,61:26.2,62:25.4,63:24.5,64:23.7,65:22.9,66:22.0,67:21.2,68:20.4,69:19.6,70:18.8};
+    
+    // USD formatting functions
     function formatCurr(num){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(num)}
+    
+    function formatUSDDetailed(num) {
+        if (isNaN(num) || num === null || num === undefined) {
+            return '$0.00';
+        }
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 2
+        }).format(num);
+    }
+
+    // Enhanced USD formatting with readable suffixes
+    function formatUSDReadable(num) {
+        if (isNaN(num) || num === null || num === undefined) {
+            return '$0';
+        }
+        
+        const basicFormat = formatCurr(num);
+        let suffix = '';
+        
+        if (num >= 1000000000) { // 1 Billion or more
+            const billions = num / 1000000000;
+            suffix = ` (${billions.toFixed(2)} B)`;
+        } else if (num >= 1000000) { // 1 Million or more
+            const millions = num / 1000000;
+            suffix = ` (${millions.toFixed(2)} M)`;
+        } else if (num >= 1000) { // 1 Thousand or more
+            const thousands = num / 1000;
+            suffix = ` (${thousands.toFixed(2)} K)`;
+        }
+        
+        return basicFormat + suffix;
+    }
+
+    // Number to words conversion for USD (handles up to trillions)
+    function numberToUSWords(num) {
+        if (num === 0 || isNaN(num) || num === null || num === undefined) {
+            return 'Zero';
+        }
+        
+        // Convert to integer to avoid decimal issues
+        num = Math.floor(Math.abs(num));
+        
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+        const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        
+        function convertHundreds(n) {
+            if (n === 0 || isNaN(n)) return '';
+            
+            let result = '';
+            if (n >= 100) {
+                const hundredDigit = Math.floor(n / 100);
+                if (hundredDigit > 0 && hundredDigit < ones.length) {
+                    result += ones[hundredDigit] + ' Hundred';
+                    n %= 100;
+                    if (n > 0) result += ' ';
+                }
+            }
+            if (n >= 20) {
+                const tenDigit = Math.floor(n / 10);
+                if (tenDigit >= 0 && tenDigit < tens.length) {
+                    result += tens[tenDigit];
+                    n %= 10;
+                    if (n > 0 && n < ones.length) result += ' ' + ones[n];
+                }
+            } else if (n >= 10) {
+                const teenIndex = n - 10;
+                if (teenIndex >= 0 && teenIndex < teens.length) {
+                    result += teens[teenIndex];
+                }
+            } else if (n > 0 && n < ones.length) {
+                result += ones[n];
+            }
+            return result;
+        }
+        
+        let result = '';
+        
+        // Handle trillions
+        if (num >= 1000000000000) {
+            const trillions = Math.floor(num / 1000000000000);
+            result += convertHundreds(trillions) + ' Trillion';
+            num %= 1000000000000;
+            if (num > 0) result += ' ';
+        }
+        
+        // Handle billions
+        if (num >= 1000000000) {
+            const billions = Math.floor(num / 1000000000);
+            const billionWords = convertHundreds(billions);
+            if (billionWords) {
+                result += billionWords + ' Billion';
+            }
+            num %= 1000000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle millions
+        if (num >= 1000000) {
+            const millions = Math.floor(num / 1000000);
+            const millionWords = convertHundreds(millions);
+            if (millionWords) {
+                result += millionWords + ' Million';
+            }
+            num %= 1000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle thousands
+        if (num >= 1000) {
+            const thousands = Math.floor(num / 1000);
+            const thousandWords = convertHundreds(thousands);
+            if (thousandWords) {
+                result += thousandWords + ' Thousand';
+            }
+            num %= 1000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle remaining hundreds, tens, and ones
+        if (num > 0) {
+            const remainingWords = convertHundreds(num);
+            if (remainingWords) {
+                result += remainingWords;
+            }
+        }
+        
+        return result.trim() || 'Zero';
+    }
+
+    // Format number with US comma system (standard thousands separator)
+    function formatUSNumber(num) {
+        if (isNaN(num) || num === '' || num === '0') return num.toString();
+        
+        const numStr = num.toString();
+        const parts = numStr.split('.');
+        let integerPart = parts[0];
+        const decimalPart = parts[1] ? '.' + parts[1] : '';
+        
+        // US numbering system: comma every 3 digits from right
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        
+        return integerPart + decimalPart;
+    }
+
+    // Create or update helper text element for USD
+    function updateUSDHelperText(input, value) {
+        const cleanValue = value.replace(/,/g, '');
+        const numValue = parseFloat(cleanValue);
+        
+        if (isNaN(numValue) || numValue === 0) {
+            removeUSDHelperText(input);
+            return;
+        }
+        
+        let helperId = input.id + 'Helper';
+        if (!input.id) {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            input.id = `input_${timestamp}_${random}`;
+            helperId = input.id + 'Helper';
+        }
+        
+        let helper = document.getElementById(helperId);
+        
+        if (!helper) {
+            helper = document.createElement('div');
+            helper.id = helperId;
+            helper.className = 'number-helper-text';
+            helper.style.cssText = `
+                font-size: 0.75rem;
+                color: #6b7280;
+                margin-top: 0.25rem;
+                font-style: italic;
+                line-height: 1.2;
+                word-wrap: break-word;
+            `;
+            
+            const formGroup = input.closest('.form-group');
+            if (formGroup) {
+                formGroup.appendChild(helper);
+            } else {
+                input.parentNode.insertBefore(helper, input.nextSibling);
+            }
+        }
+        
+        try {
+            const words = numberToUSWords(Math.floor(numValue));
+            
+            if (words && words !== 'undefined' && words.trim() !== '' && !words.includes('undefined')) {
+                helper.textContent = `(${words})`;
+            } else {
+                helper.textContent = `(${formatUSNumber(numValue)})`;
+            }
+        } catch (error) {
+            console.error('Error converting number to words:', error);
+            helper.textContent = `(${formatUSNumber(numValue)})`;
+        }
+    }
+
+    // Remove helper text
+    function removeUSDHelperText(input) {
+        if (!input.id) return;
+        
+        const helperId = input.id + 'Helper';
+        const helper = document.getElementById(helperId);
+        if (helper) {
+            helper.remove();
+        }
+    }
 
     // Modal helpers - define first so they're available for calculateSEPP
     window.showInfoModal = function(id){
@@ -302,7 +599,7 @@
     window.calculateSEPP = function(){
         try {
             const startAge = parseInt(document.getElementById('startAge').value);
-            const startBalance = parseFloat(document.getElementById('balance').value);
+            const startBalance = parseFloat(document.getElementById('balance').value.replace(/,/g, ''));
             const growth = parseFloat(document.getElementById('growth').value)/100;
             const irsRate = parseFloat(document.getElementById('irsRate').value)/100;
             const taxRate = parseFloat(document.getElementById('tax').value)/100;
@@ -324,7 +621,7 @@
             const infoBtn = (id) => ` <button class="btn btn--info" onclick="showInfoModal('${id}')" aria-label="More info" title="Learn more about this method"><i class="fas fa-info-circle"></i></button>`;
             
             const headerHtml = `
-                <div class="table-container">
+                <div class="table-container ${projectionYears > 5 ? 'has-scroll' : ''}">
                     <table class="table table--sepp">
                         <colgroup>
                             <col class="table__age-col">

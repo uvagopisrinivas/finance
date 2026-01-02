@@ -372,6 +372,23 @@
           // inject JS for 401k calculator
           const script = document.createElement('script'); 
           script.src='src/401K/401k_calculator.js?v=' + Date.now(); 
+          script.onload = function() {
+            // Ensure input validation setup runs after both HTML and JS are loaded
+            setTimeout(() => {
+              if (typeof window.setup401kInputValidation === 'function') {
+                console.log('Setting up 401k input validation...');
+                window.setup401kInputValidation();
+              }
+              // Also trigger initial calculation
+              if (typeof window.calculate401k === 'function') {
+                try {
+                  window.calculate401k();
+                } catch(e) {
+                  console.log('Initial 401k calculation skipped:', e);
+                }
+              }
+            }, 200);
+          };
           document.body.appendChild(script);
           container.dataset.loaded = 'true';
         }

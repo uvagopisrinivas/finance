@@ -17,16 +17,354 @@
         }).format(num / 100);
     }
 
+    // Enhanced USD formatting with readable suffixes
+    function formatUSDReadable(num) {
+        if (isNaN(num) || num === null || num === undefined) {
+            return '$0';
+        }
+        
+        const basicFormat = formatCurrency(num);
+        let suffix = '';
+        
+        if (num >= 1000000000) { // 1 Billion or more
+            const billions = num / 1000000000;
+            suffix = ` (${billions.toFixed(2)} B)`;
+        } else if (num >= 1000000) { // 1 Million or more
+            const millions = num / 1000000;
+            suffix = ` (${millions.toFixed(2)} M)`;
+        } else if (num >= 1000) { // 1 Thousand or more
+            const thousands = num / 1000;
+            suffix = ` (${thousands.toFixed(2)} K)`;
+        }
+        
+        return basicFormat + suffix;
+    }
+
+    // Number to words conversion for USD (handles up to trillions)
+    function numberToUSWords(num) {
+        if (num === 0 || isNaN(num) || num === null || num === undefined) {
+            return 'Zero';
+        }
+        
+        // Convert to integer to avoid decimal issues
+        num = Math.floor(Math.abs(num));
+        
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+        const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        
+        function convertHundreds(n) {
+            if (n === 0 || isNaN(n)) return '';
+            
+            let result = '';
+            if (n >= 100) {
+                const hundredDigit = Math.floor(n / 100);
+                if (hundredDigit > 0 && hundredDigit < ones.length) {
+                    result += ones[hundredDigit] + ' Hundred';
+                    n %= 100;
+                    if (n > 0) result += ' ';
+                }
+            }
+            if (n >= 20) {
+                const tenDigit = Math.floor(n / 10);
+                if (tenDigit >= 0 && tenDigit < tens.length) {
+                    result += tens[tenDigit];
+                    n %= 10;
+                    if (n > 0 && n < ones.length) result += ' ' + ones[n];
+                }
+            } else if (n >= 10) {
+                const teenIndex = n - 10;
+                if (teenIndex >= 0 && teenIndex < teens.length) {
+                    result += teens[teenIndex];
+                }
+            } else if (n > 0 && n < ones.length) {
+                result += ones[n];
+            }
+            return result;
+        }
+        
+        let result = '';
+        
+        // Handle trillions
+        if (num >= 1000000000000) {
+            const trillions = Math.floor(num / 1000000000000);
+            result += convertHundreds(trillions) + ' Trillion';
+            num %= 1000000000000;
+            if (num > 0) result += ' ';
+        }
+        
+        // Handle billions
+        if (num >= 1000000000) {
+            const billions = Math.floor(num / 1000000000);
+            const billionWords = convertHundreds(billions);
+            if (billionWords) {
+                result += billionWords + ' Billion';
+            }
+            num %= 1000000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle millions
+        if (num >= 1000000) {
+            const millions = Math.floor(num / 1000000);
+            const millionWords = convertHundreds(millions);
+            if (millionWords) {
+                result += millionWords + ' Million';
+            }
+            num %= 1000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle thousands
+        if (num >= 1000) {
+            const thousands = Math.floor(num / 1000);
+            const thousandWords = convertHundreds(thousands);
+            if (thousandWords) {
+                result += thousandWords + ' Thousand';
+            }
+            num %= 1000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle remaining hundreds, tens, and ones
+        if (num > 0) {
+            const remainingWords = convertHundreds(num);
+            if (remainingWords) {
+                result += remainingWords;
+            }
+        }
+        
+        return result.trim() || 'Zero';
+    }
+
+    // Format number with US comma system (standard thousands separator)
+    function formatUSNumber(num) {
+        if (isNaN(num) || num === '' || num === '0') return num.toString();
+        
+        const numStr = num.toString();
+        const parts = numStr.split('.');
+        let integerPart = parts[0];
+        const decimalPart = parts[1] ? '.' + parts[1] : '';
+        
+        // US numbering system: comma every 3 digits from right
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        
+        return integerPart + decimalPart;
+    }
+
+    // Create or update helper text element for USD
+    function updateUSDHelperText(input, value) {
+        const cleanValue = value.replace(/,/g, '');
+        const numValue = parseFloat(cleanValue);
+        
+        if (isNaN(numValue) || numValue === 0) {
+            removeUSDHelperText(input);
+            return;
+        }
+        
+        let helperId = input.id + 'Helper';
+        if (!input.id) {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            input.id = `input_${timestamp}_${random}`;
+            helperId = input.id + 'Helper';
+        }
+        
+        let helper = document.getElementById(helperId);
+        
+        if (!helper) {
+            helper = document.createElement('div');
+            helper.id = helperId;
+            helper.className = 'number-helper-text';
+            helper.style.cssText = `
+                font-size: 0.75rem;
+                color: #6b7280;
+                margin-top: 0.25rem;
+                font-style: italic;
+                line-height: 1.2;
+                word-wrap: break-word;
+            `;
+            
+            const formGroup = input.closest('.form-group');
+            if (formGroup) {
+                formGroup.appendChild(helper);
+            } else {
+                input.parentNode.insertBefore(helper, input.nextSibling);
+            }
+        }
+        
+        try {
+            const words = numberToUSWords(Math.floor(numValue));
+            
+            if (words && words !== 'undefined' && words.trim() !== '' && !words.includes('undefined')) {
+                helper.textContent = `(${words})`;
+            } else {
+                helper.textContent = `(${formatUSNumber(numValue)})`;
+            }
+        } catch (error) {
+            console.error('Error converting number to words:', error);
+            helper.textContent = `(${formatUSNumber(numValue)})`;
+        }
+    }
+
+    // Remove helper text
+    function removeUSDHelperText(input) {
+        if (!input.id) return;
+        
+        const helperId = input.id + 'Helper';
+        const helper = document.getElementById(helperId);
+        if (helper) {
+            helper.remove();
+        }
+    }
+
+    // Input validation for 401k calculator
+    function setup401kInputValidation() {
+        const currencyInputs = document.querySelectorAll('#baseSalary, #current401kBalance, #current401kContributed, #current401aBalance');
+        const numberInputs = document.querySelectorAll('#salaryIncrease, #projectionYears, #annualReturn, #bonusPercent, #bonusContribPercent, #employerMatchPercent, #contrib401aPercent');
+        
+        // Setup currency inputs with comma formatting and helper text
+        currencyInputs.forEach(input => {
+            if (!input) return;
+            
+            // Format initial value
+            if (input.value) {
+                const formatted = formatUSNumber(input.value);
+                input.value = formatted;
+                updateUSDHelperText(input, formatted);
+            }
+            
+            // Handle input events
+            input.addEventListener('input', function(e) {
+                // Store cursor position before formatting
+                const cursorPosition = this.selectionStart;
+                const oldValue = this.value;
+                
+                let value = this.value.replace(/,/g, ''); // Remove existing commas
+                
+                // Only allow numbers
+                value = value.replace(/[^\d]/g, '');
+                
+                // Allow large numbers (up to 12 digits for millions/billions)
+                if (value.length > 12) {
+                    value = value.substring(0, 12);
+                }
+                
+                if (value && value !== '0') {
+                    const formatted = formatUSNumber(value);
+                    
+                    // Calculate new cursor position
+                    const oldCommas = (oldValue.match(/,/g) || []).length;
+                    const newCommas = (formatted.match(/,/g) || []).length;
+                    const commasDiff = newCommas - oldCommas;
+                    
+                    this.value = formatted;
+                    
+                    // Restore cursor position, adjusting for added/removed commas
+                    const newCursorPosition = Math.min(cursorPosition + commasDiff, formatted.length);
+                    this.setSelectionRange(newCursorPosition, newCursorPosition);
+                    
+                    updateUSDHelperText(this, formatted);
+                } else {
+                    this.value = '';
+                    removeUSDHelperText(this);
+                }
+            });
+
+            // Handle focus events
+            input.addEventListener('focus', function(e) {
+                // Keep helper text visible, just remove commas for easier editing
+                this.value = this.value.replace(/,/g, '');
+            });
+
+            // Handle blur events
+            input.addEventListener('blur', function(e) {
+                let value = this.value.replace(/,/g, '');
+                
+                if (value && !isNaN(value) && value !== '0') {
+                    const formatted = formatUSNumber(value);
+                    this.value = formatted;
+                    updateUSDHelperText(this, formatted);
+                } else if (value === '' || value === '0') {
+                    this.value = '';
+                    removeUSDHelperText(this);
+                }
+            });
+
+            // Handle paste events for large numbers
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanPaste = paste.replace(/[^\d]/g, '');
+                if (cleanPaste && cleanPaste.length <= 12) {
+                    const formatted = formatUSNumber(cleanPaste);
+                    this.value = formatted;
+                    updateUSDHelperText(this, formatted);
+                }
+            });
+        });
+        
+        // Setup other number inputs (no comma formatting)
+        numberInputs.forEach(input => {
+            if (!input) return;
+            
+            // Prevent non-numeric characters
+            input.addEventListener('keypress', function(e) {
+                if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+                    (e.keyCode === 65 && e.ctrlKey === true) ||
+                    (e.keyCode === 67 && e.ctrlKey === true) ||
+                    (e.keyCode === 86 && e.ctrlKey === true) ||
+                    (e.keyCode === 88 && e.ctrlKey === true) ||
+                    (e.keyCode >= 35 && e.keyCode <= 39)) {
+                    return;
+                }
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+
+            // Prevent pasting non-numeric content
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                if (/^\d*\.?\d*$/.test(paste)) {
+                    this.value = paste;
+                }
+            });
+
+            // Clean up invalid values
+            input.addEventListener('blur', function(e) {
+                const value = parseFloat(this.value);
+                if (isNaN(value) || value < 0) {
+                    this.value = this.getAttribute('value') || '0';
+                }
+            });
+        });
+    }
+
+    // Setup validation when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setup401kInputValidation);
+    } else {
+        setTimeout(setup401kInputValidation, 100);
+    }
+    
+    // Also call setup when the function is defined (immediate execution)
+    setTimeout(setup401kInputValidation, 50);
+    
+    // Expose setup function globally for HTML script access
+    window.setup401kInputValidation = setup401kInputValidation;
+
     // Expose calculate401k globally
     window.calculate401k = function() {
         try {
             // Get input values
-            const baseSalary = parseFloat(document.getElementById('baseSalary').value);
+            const baseSalary = parseFloat(document.getElementById('baseSalary').value.replace(/,/g, ''));
             const salaryIncrease = parseFloat(document.getElementById('salaryIncrease').value) / 100;
             const projectionYears = parseInt(document.getElementById('projectionYears').value);
             const annualReturn = parseFloat(document.getElementById('annualReturn').value) / 100;
-            const current401kBalance = parseFloat(document.getElementById('current401kBalance').value);
-            const current401kContributed = parseFloat(document.getElementById('current401kContributed').value) || 0;
+            const current401kBalance = parseFloat(document.getElementById('current401kBalance').value.replace(/,/g, ''));
+            const current401kContributed = parseFloat(document.getElementById('current401kContributed').value.replace(/,/g, '')) || 0;
             
             // Get company benefit configuration
             const hasBonus = document.getElementById('hasBonus').checked;
@@ -38,7 +376,7 @@
             
             const has401a = document.getElementById('has401a').checked;
             const employee401aPercent = has401a ? parseFloat(document.getElementById('contrib401aPercent').value) / 100 : 0;
-            const current401aBalance = has401a ? parseFloat(document.getElementById('current401aBalance').value) : 0;
+            const current401aBalance = has401a ? parseFloat(document.getElementById('current401aBalance').value.replace(/,/g, '')) : 0;
 
             // Fixed parameters
             const annual401kLimit = 23500; // 2025 limit (employee + bonus contributions only)
@@ -801,50 +1139,3 @@
     });
 
 })();
-    // Input validation for 401k calculator
-    function setup401kInputValidation() {
-        const numberInputs = document.querySelectorAll('#baseSalary, #salaryIncrease, #projectionYears, #annualReturn, #current401aBalance, #current401kBalance, #current401kContributed, #bonusPercent, #bonusContribPercent, #employerMatchPercent, #contrib401aPercent');
-        
-        numberInputs.forEach(input => {
-            if (!input) return;
-            
-            // Prevent non-numeric characters
-            input.addEventListener('keypress', function(e) {
-                if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
-                    (e.keyCode === 65 && e.ctrlKey === true) ||
-                    (e.keyCode === 67 && e.ctrlKey === true) ||
-                    (e.keyCode === 86 && e.ctrlKey === true) ||
-                    (e.keyCode === 88 && e.ctrlKey === true) ||
-                    (e.keyCode >= 35 && e.keyCode <= 39)) {
-                    return;
-                }
-                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                    e.preventDefault();
-                }
-            });
-
-            // Prevent pasting non-numeric content
-            input.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const paste = (e.clipboardData || window.clipboardData).getData('text');
-                if (/^\d*\.?\d*$/.test(paste)) {
-                    this.value = paste;
-                }
-            });
-
-            // Clean up invalid values
-            input.addEventListener('blur', function(e) {
-                const value = parseFloat(this.value);
-                if (isNaN(value) || value < 0) {
-                    this.value = this.getAttribute('value') || '0';
-                }
-            });
-        });
-    }
-
-    // Setup validation when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setup401kInputValidation);
-    } else {
-        setTimeout(setup401kInputValidation, 100);
-    }

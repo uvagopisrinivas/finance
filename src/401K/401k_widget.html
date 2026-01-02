@@ -13,7 +13,7 @@
     <div class="form-grid">
         <div class="form-group">
             <label class="form-label">Current Base Salary ($)</label>
-            <input type="number" id="baseSalary" value="101700" class="form-input">
+            <input type="text" id="baseSalary" value="101700" class="form-input" inputmode="numeric">
         </div>
         <div class="form-group">
             <label class="form-label">% Increase in Base Salary per Year</label>
@@ -29,11 +29,11 @@
         </div>
         <div class="form-group">
             <label class="form-label">Current 401k Balance ($)</label>
-            <input type="number" id="current401kBalance" value="160000" class="form-input">
+            <input type="text" id="current401kBalance" value="160000" class="form-input" inputmode="numeric">
         </div>
         <div class="form-group">
             <label class="form-label">401k Contributed So Far This Year ($)</label>
-            <input type="number" id="current401kContributed" value="0" min="0" max="23500" class="form-input">
+            <input type="text" id="current401kContributed" value="0" class="form-input" inputmode="numeric">
             <small class="form-help">Enter total 401k contributions made in 2025 (including regular payroll and any bonus contributions)</small>
         </div>
     </div>
@@ -78,7 +78,7 @@
                 </div>
                 <div class="benefit-input" id="current401aGroup">
                     <label class="form-label">Current 401a Balance ($)</label>
-                    <input type="number" id="current401aBalance" value="28567.00" class="form-input">
+                    <input type="text" id="current401aBalance" value="28567.00" class="form-input" inputmode="numeric">
                 </div>
             </div>
 
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
     toggle401aFields(); // Initial state
     
     // Auto-recalculate when any input changes
-    const allInputs = document.querySelectorAll('input[type="number"], input[type="checkbox"]');
+    const allInputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="checkbox"]');
     allInputs.forEach(input => {
         input.addEventListener('change', function() {
             // Small delay to allow UI updates

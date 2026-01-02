@@ -366,6 +366,10 @@
             
             // Handle input events - more permissive for large numbers
             input.addEventListener('input', function(e) {
+                // Store cursor position before formatting
+                const cursorPosition = this.selectionStart;
+                const oldValue = this.value;
+                
                 let value = this.value.replace(/,/g, ''); // Remove existing commas
                 
                 // Only allow numbers (no length restriction)
@@ -378,7 +382,18 @@
                 
                 if (value && value !== '0') {
                     const formatted = formatIndianNumber(value);
+                    
+                    // Calculate new cursor position
+                    const oldCommas = (oldValue.match(/,/g) || []).length;
+                    const newCommas = (formatted.match(/,/g) || []).length;
+                    const commasDiff = newCommas - oldCommas;
+                    
                     this.value = formatted;
+                    
+                    // Restore cursor position, adjusting for added/removed commas
+                    const newCursorPosition = Math.min(cursorPosition + commasDiff, formatted.length);
+                    this.setSelectionRange(newCursorPosition, newCursorPosition);
+                    
                     updateHelperText(this, formatted);
                 } else {
                     this.value = '';
@@ -1079,6 +1094,10 @@
         
         // Handle input events
         input.addEventListener('input', function(e) {
+            // Store cursor position before formatting
+            const cursorPosition = this.selectionStart;
+            const oldValue = this.value;
+            
             let value = this.value.replace(/,/g, '');
             value = value.replace(/[^\d]/g, '');
             
@@ -1088,7 +1107,18 @@
             
             if (value && value !== '0') {
                 const formatted = formatIndianNumber(value);
+                
+                // Calculate new cursor position
+                const oldCommas = (oldValue.match(/,/g) || []).length;
+                const newCommas = (formatted.match(/,/g) || []).length;
+                const commasDiff = newCommas - oldCommas;
+                
                 this.value = formatted;
+                
+                // Restore cursor position, adjusting for added/removed commas
+                const newCursorPosition = Math.min(cursorPosition + commasDiff, formatted.length);
+                this.setSelectionRange(newCursorPosition, newCursorPosition);
+                
                 updateHelperText(this, formatted);
             } else {
                 this.value = '';
@@ -1199,17 +1229,17 @@
                 const futureMonthlyExpenses = monthlyExpenses * Math.pow(1 + inflationRate, yearsToRetirement);
                 const annualExpensesInRetirement = futureMonthlyExpenses * 12;
                 
-                // We only need corpus for the actual expenses, not the tax
-                // (Tax is paid from other sources or is a separate consideration)
+                // Simple present value calculation for retirement corpus
+                // We need to account for taxes on withdrawals
+                const grossAnnualExpenses = annualExpensesInRetirement / (1 - taxRate);
                 
-                // Using sustainable withdrawal method with net expenses only
-                const postRetirementReturn = 0.08;
-                const retirementCorpus = (annualExpensesInRetirement * yearsInRetirement) / 
-                                       (1 - Math.pow(1 + postRetirementReturn, -yearsInRetirement)) * 
-                                       (1 + postRetirementReturn);
+                // Using present value of annuity formula with post-retirement return
+                const postRetirementReturn = Math.max(returnRate - 0.02, 0.06); // Conservative return in retirement
+                const pvFactor = (1 - Math.pow(1 + postRetirementReturn, -yearsInRetirement)) / postRetirementReturn;
+                const retirementCorpus = grossAnnualExpenses * pvFactor;
 
-                // Total corpus needed (goals + retirement) - both adjusted for tax
-                const totalCorpusNeeded = totalGoalsFutureValueWithTax + retirementCorpus;
+                // Total corpus needed (goals + retirement) - goals already include tax consideration
+                const totalCorpusNeeded = totalGoalsFutureValue + retirementCorpus;
 
                 // Calculate what we can accumulate with current corpus + monthly savings
                 const monthlyReturn = returnRate / 12;
@@ -1248,19 +1278,8 @@
                 throw new Error('Based on your current savings capacity, you may need to increase monthly savings or reduce goals to retire within a reasonable timeframe.');
             }
 
-            // Update results
-            document.getElementById('retirementTotalGoals').textContent = goals.length;
-            document.getElementById('retirementGoalsCorpus').textContent = formatINRReadable(totalGoalsCurrentValue);
-            document.getElementById('retirementGoalsCorpusFuture').textContent = formatINRReadable(totalGoalsFutureValue);
-            document.getElementById('retirementCalculatedAge').textContent = retirementAge + ' years';
-            document.getElementById('retirementYearsLeft').textContent = calculationResults.yearsToRetirement;
-            document.getElementById('retirementCorpusNeeded').textContent = formatINRReadable(calculationResults.retirementCorpus);
-            document.getElementById('retirementTotalCorpus').textContent = formatINRReadable(calculationResults.totalCorpusNeeded);
-            document.getElementById('retirementMonthlySIP').textContent = formatINRReadable(monthlySavings);
-            document.getElementById('retirementIncomeAllocation').textContent = formatINRReadable(calculationResults.surplus);
-
-            // Generate detailed table
-            generateRetirementTable(goals, {
+            // Generate detailed table first to check if money runs out
+            const tableResults = generateRetirementTable(goals, {
                 currentAge,
                 retirementAge,
                 monthlySavings,
@@ -1272,6 +1291,23 @@
                 taxRate,
                 ...calculationResults
             });
+
+            // Adjust surplus based on whether money runs out
+            let actualSurplus = calculationResults.surplus;
+            if (tableResults && tableResults.moneyRunsOut) {
+                actualSurplus = 0; // No surplus if money runs out
+            }
+
+            // Update results
+            document.getElementById('retirementTotalGoals').textContent = goals.length;
+            document.getElementById('retirementGoalsCorpus').textContent = formatINRReadable(totalGoalsCurrentValue);
+            document.getElementById('retirementGoalsCorpusFuture').textContent = formatINRReadable(totalGoalsFutureValue);
+            document.getElementById('retirementCalculatedAge').textContent = retirementAge + ' years';
+            document.getElementById('retirementYearsLeft').textContent = calculationResults.yearsToRetirement;
+            document.getElementById('retirementCorpusNeeded').textContent = formatINRReadable(calculationResults.retirementCorpus);
+            document.getElementById('retirementTotalCorpus').textContent = formatINRReadable(calculationResults.totalCorpusNeeded);
+            document.getElementById('retirementMonthlySIP').textContent = formatINRReadable(monthlySavings);
+            document.getElementById('retirementIncomeAllocation').textContent = formatINRReadable(actualSurplus);
 
             // Show results
             document.getElementById('retirementResults').style.display = 'block';
@@ -1319,7 +1355,7 @@
                     <thead class="table__header">
                         <tr>
                             <th><i class="fas fa-tag"></i> Goal</th>
-                            <th><i class="fas fa-calendar-alt"></i> Years</th>
+                            <th><i class="fas fa-calendar-alt"></i> Age</th>
                             <th><i class="fas fa-rupee-sign"></i> Current Value</th>
                             <th><i class="fas fa-chart-line"></i> Future Value</th>
                             <th><i class="fas fa-percentage"></i> Inflation Impact</th>
@@ -1328,10 +1364,11 @@
                     <tbody>
                         ${goals.map(goal => {
                             const inflationImpact = ((goal.futureAmount - goal.currentAmount) / goal.currentAmount) * 100;
+                            const goalAge = currentAge + goal.years;
                             return `
                             <tr>
                                 <td class="table__year">${goal.name}</td>
-                                <td class="table__year">${goal.years}</td>
+                                <td class="table__year">${goalAge}</td>
                                 <td class="table__investment">${formatINR(goal.currentAmount)}</td>
                                 <td class="table__balance">${formatINR(goal.futureAmount)}</td>
                                 <td class="table__percent">${inflationImpact.toFixed(1)}%</td>
@@ -1377,7 +1414,10 @@
             const yearsIntoRetirement = Math.max(0, currentAgeInYear - params.retirementAge);
             
             // Check if any goals are due this year
-            const goalsThisYear = goals.filter(goal => goal.years === year);
+            const goalsThisYear = goals.filter(goal => {
+                const goalYear = goal.years;
+                return goalYear === year;
+            });
             const totalGoalExpenses = goalsThisYear.reduce((sum, goal) => sum + goal.futureAmount, 0);
             
             if (!isRetired) {
@@ -1388,12 +1428,12 @@
                 // Apply returns to existing portfolio + add new investment
                 portfolioValue = (portfolioValue * (1 + params.returnRate)) + yearlyInvestment;
                 
-                // Deduct goal expenses if any goals are due this year
-                // We only withdraw the actual goal amount, tax is separate for display
-                portfolioValue -= totalGoalExpenses;
+                // Deduct goal expenses if any goals are due this year (including taxes)
+                const grossGoalExpenses = totalGoalExpenses / (1 - params.taxRate);
+                portfolioValue -= grossGoalExpenses;
                 
-                // Tax is calculated for display purposes only
-                const taxOnGoals = totalGoalExpenses * params.taxRate;
+                // Tax is calculated for display purposes
+                const taxOnGoals = grossGoalExpenses * params.taxRate;
                 
                 const shortfallOrSurplus = params.totalCorpusNeeded - portfolioValue;
                 
@@ -1404,9 +1444,9 @@
                     cumulativeInvestment: cumulativeInvestment,
                     portfolioValue: portfolioValue,
                     monthlyExpenses: 0, // No monthly expenses during accumulation
-                    goalExpenses: totalGoalExpenses, // Net goal expenses (what you actually need)
-                    grossGoalWithdrawal: totalGoalExpenses, // Same as net since we only withdraw what we need
-                    taxOnGoals: taxOnGoals, // Tax paid on goals (for display only)
+                    goalExpenses: totalGoalExpenses, // Net goal expenses (what you actually get)
+                    grossGoalWithdrawal: grossGoalExpenses, // Gross withdrawal (including tax)
+                    taxOnGoals: taxOnGoals, // Tax paid on goals
                     goalsThisYear: goalsThisYear, // Track which goals
                     shortfallOrSurplus: shortfallOrSurplus,
                     isShortfall: shortfallOrSurplus > 0,
@@ -1416,20 +1456,68 @@
                 // Retirement phase - withdrawing for expenses
                 const yearlyInvestment = 0; // No more investments
                 
+                // Check if we have any money left at the start of the year
+                if (portfolioValue <= 0) {
+                    // No money left - cannot make any withdrawals
+                    yearlyData.push({
+                        year: year,
+                        age: currentAgeInYear,
+                        yearlyInvestment: 0,
+                        cumulativeInvestment: cumulativeInvestment,
+                        portfolioValue: 0,
+                        monthlyExpenses: 0, // Cannot withdraw if no money
+                        grossMonthlyWithdrawal: 0,
+                        taxOnExpenses: 0,
+                        monthlyTaxOnExpenses: 0,
+                        goalExpenses: 0, // Cannot fund goals if no money
+                        grossGoalWithdrawal: 0,
+                        taxOnGoals: 0,
+                        goalsThisYear: [], // No goals can be funded
+                        shortfallOrSurplus: 0,
+                        isShortfall: true,
+                        phase: 'retirement',
+                        moneyDepleted: true // Flag to indicate money has run out
+                    });
+                    continue; // Skip to next year
+                }
+                
                 // Calculate monthly expenses for this retirement year (with inflation from retirement start)
                 const netMonthlyExpensesThisYear = futureMonthlyExpensesAtRetirement * Math.pow(1 + params.inflationRate, yearsIntoRetirement);
                 const netAnnualExpensesThisYear = netMonthlyExpensesThisYear * 12;
                 
-                // Tax is only on the withdrawal amount (the expenses we actually withdraw)
-                const taxOnExpenses = netAnnualExpensesThisYear * params.taxRate;
-                const monthlyTaxOnExpenses = netMonthlyExpensesThisYear * params.taxRate;
-                const taxOnGoals = totalGoalExpenses * params.taxRate;
+                // Calculate gross withdrawal needed (including taxes)
+                const grossAnnualExpenses = netAnnualExpensesThisYear / (1 - params.taxRate);
+                const grossGoalExpenses = totalGoalExpenses / (1 - params.taxRate);
                 
-                // We only withdraw the actual expenses (net amounts), tax is separate calculation for display
-                const totalWithdrawal = netAnnualExpensesThisYear + totalGoalExpenses;
+                // Calculate what we can actually withdraw (limited by available funds)
+                const totalNeededWithdrawal = grossAnnualExpenses + grossGoalExpenses;
+                const maxAvailableAfterReturns = portfolioValue * (1 + params.returnRate);
                 
-                // Apply returns and subtract only the actual withdrawals (expenses)
-                portfolioValue = (portfolioValue * (1 + params.returnRate)) - totalWithdrawal;
+                // If we don't have enough money for full withdrawal, reduce proportionally
+                let actualGrossAnnualExpenses = grossAnnualExpenses;
+                let actualGrossGoalExpenses = grossGoalExpenses;
+                
+                if (totalNeededWithdrawal > maxAvailableAfterReturns) {
+                    // Not enough money - reduce withdrawals proportionally
+                    const reductionFactor = maxAvailableAfterReturns / totalNeededWithdrawal;
+                    actualGrossAnnualExpenses = grossAnnualExpenses * reductionFactor;
+                    actualGrossGoalExpenses = grossGoalExpenses * reductionFactor;
+                }
+                
+                const actualTotalWithdrawal = actualGrossAnnualExpenses + actualGrossGoalExpenses;
+                
+                // Calculate net amounts (after tax)
+                const actualNetAnnualExpenses = actualGrossAnnualExpenses * (1 - params.taxRate);
+                const actualNetGoalExpenses = actualGrossGoalExpenses * (1 - params.taxRate);
+                const actualMonthlyExpenses = actualNetAnnualExpenses / 12;
+                
+                // Tax calculations
+                const taxOnExpenses = actualGrossAnnualExpenses * params.taxRate;
+                const monthlyTaxOnExpenses = taxOnExpenses / 12;
+                const taxOnGoals = actualGrossGoalExpenses * params.taxRate;
+                
+                // Apply returns and subtract actual withdrawals
+                portfolioValue = (portfolioValue * (1 + params.returnRate)) - actualTotalWithdrawal;
                 
                 // During retirement, surplus is remaining portfolio value, deficit is negative portfolio
                 const remainingAfterExpenses = portfolioValue;
@@ -1442,17 +1530,18 @@
                     yearlyInvestment: yearlyInvestment,
                     cumulativeInvestment: cumulativeInvestment,
                     portfolioValue: Math.max(0, portfolioValue), // Don't show negative portfolio
-                    monthlyExpenses: netMonthlyExpensesThisYear, // Net monthly expenses (what you actually need)
-                    grossMonthlyWithdrawal: netMonthlyExpensesThisYear, // Same as net since we only withdraw what we need
-                    taxOnExpenses: taxOnExpenses, // Annual tax paid on monthly expenses (for display only)
+                    monthlyExpenses: actualMonthlyExpenses, // Net monthly expenses (after tax)
+                    grossMonthlyWithdrawal: actualGrossAnnualExpenses / 12, // Gross monthly withdrawal
+                    taxOnExpenses: taxOnExpenses, // Annual tax paid on expenses
                     monthlyTaxOnExpenses: monthlyTaxOnExpenses, // Monthly tax amount
-                    goalExpenses: totalGoalExpenses, // Net goal expenses (what you actually need)
-                    grossGoalWithdrawal: totalGoalExpenses, // Same as net since we only withdraw what we need
-                    taxOnGoals: taxOnGoals, // Tax paid on goals (for display only)
-                    goalsThisYear: goalsThisYear, // Track which goals
+                    goalExpenses: actualNetGoalExpenses, // Net goal expenses (after tax)
+                    grossGoalWithdrawal: actualGrossGoalExpenses, // Gross goal withdrawal
+                    taxOnGoals: taxOnGoals, // Tax paid on goals
+                    goalsThisYear: actualNetGoalExpenses > 0 ? goalsThisYear : [], // Only show goals if they can be funded
                     shortfallOrSurplus: shortfallOrSurplus,
                     isShortfall: isShortfall,
-                    phase: 'retirement'
+                    phase: 'retirement',
+                    moneyDepleted: portfolioValue <= 0 // Flag if money runs out this year
                 });
             }
         }
@@ -1548,19 +1637,24 @@
                             
                             // Format withdrawals display with monthly breakdown
                             let withdrawalsDisplay = '-';
-                            if (livingExpenses > 0 && goalExpenses > 0) {
+                            
+                            // Check if money has run out
+                            if (row.moneyDepleted || portfolioStart <= 0) {
+                                withdrawalsDisplay = '<span style="color: var(--color-error);">⚠️ No funds available</span>';
+                            } else if (livingExpenses > 0 && goalExpenses > 0) {
                                 const monthlyLiving = livingExpenses / 12;
-                                withdrawalsDisplay = `${formatINR(livingExpenses)} living (${formatINR(monthlyLiving)}/mo) + ${formatINR(goalExpenses)} goals`;
+                                const goalNames = row.goalsThisYear.map(goal => goal.name).join(', ');
+                                withdrawalsDisplay = `${formatINR(livingExpenses)} living<br><small style="color: var(--color-text-secondary);">(${formatINR(monthlyLiving)}/mo)</small><br>+ ${formatINR(goalExpenses)}<br><small style="color: var(--color-text-secondary);">(${goalNames})</small>`;
                             } else if (livingExpenses > 0) {
                                 const monthlyLiving = livingExpenses / 12;
                                 withdrawalsDisplay = `${formatINR(livingExpenses)} living<br><small style="color: var(--color-text-secondary);">(${formatINR(monthlyLiving)}/month)</small>`;
                             } else if (goalExpenses > 0) {
-                                const goalNames = row.goalsThisYear.map(goal => goal.name.split(' ')[0]).join(', ');
-                                withdrawalsDisplay = `${formatINR(goalExpenses)} (${goalNames})`;
+                                const goalNames = row.goalsThisYear.map(goal => goal.name).join(', ');
+                                withdrawalsDisplay = `${formatINR(goalExpenses)}<br><small style="color: var(--color-text-secondary);">(${goalNames})</small>`;
                             }
                             
                             return `
-                            <tr class="${row.phase === 'retirement' ? 'retirement-phase' : 'accumulation-phase'} ${row.goalExpenses > 0 ? 'goal-expense-year' : ''}">
+                            <tr class="${row.phase === 'retirement' ? 'retirement-phase' : 'accumulation-phase'} ${row.goalExpenses > 0 ? 'goal-expense-year' : ''} ${row.moneyDepleted ? 'money-depleted' : ''}">
                                 <td class="table__age">${row.age}</td>
                                 <td class="table__balance">${formatINR(portfolioStart)}</td>
                                 <td class="table__withdrawals">${withdrawalsDisplay}</td>
@@ -1586,6 +1680,13 @@
         `;
 
         document.getElementById('retirementTableContainer').innerHTML = goalsTableHtml + projectionTableHtml;
+        
+        // Return information about money depletion
+        return {
+            moneyRunsOut: moneyRunsOutAge !== null,
+            moneyRunsOutAge: moneyRunsOutAge,
+            legacyAmount: legacyAmount
+        };
     }
 
     // Manual function to refresh all helper texts
@@ -1648,6 +1749,10 @@
             }
             
             input.addEventListener('input', function(e) {
+                // Store cursor position before formatting
+                const cursorPosition = this.selectionStart;
+                const oldValue = this.value;
+                
                 let value = this.value.replace(/,/g, '');
                 value = value.replace(/[^\d]/g, '');
                 
@@ -1657,7 +1762,18 @@
                 
                 if (value && value !== '0') {
                     const formatted = formatIndianNumber(value);
+                    
+                    // Calculate new cursor position
+                    const oldCommas = (oldValue.match(/,/g) || []).length;
+                    const newCommas = (formatted.match(/,/g) || []).length;
+                    const commasDiff = newCommas - oldCommas;
+                    
                     this.value = formatted;
+                    
+                    // Restore cursor position, adjusting for added/removed commas
+                    const newCursorPosition = Math.min(cursorPosition + commasDiff, formatted.length);
+                    this.setSelectionRange(newCursorPosition, newCursorPosition);
+                    
                     updateHelperText(this, formatted);
                 } else {
                     this.value = '';
