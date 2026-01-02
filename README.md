@@ -1,6 +1,6 @@
-# 🎯 Retirement Planning Tools
+# 🎯 Comprehensive Financial Planning Platform
 
-A comprehensive web-based platform for retirement planning calculations, featuring advanced SEPP (Substantially Equal Periodic Payments) analysis and 401k projection tools.
+A sophisticated web-based platform for retirement planning, investment analysis, and financial calculations, featuring advanced SEPP analysis, 401k projections, Indian investment calculators, and live financial data access.
 
 ![Platform Preview](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
@@ -10,26 +10,55 @@ A comprehensive web-based platform for retirement planning calculations, featuri
 
 ### 📊 SEPP Calculator (72(t) Withdrawal Planner)
 - **Three IRS-approved methods**: RMD, Amortization, and Annuitization
-- **21-year projections** with detailed year-by-year analysis
+- **Up to 21-year projections** with detailed year-by-year analysis
 - **Tax impact calculations** and net income projections
 - **Comprehensive comparison** with intelligent recommendations
 - **Interactive info modals** explaining each method and formula
+- **Professional-grade calculations** using IRS life expectancy tables
 
 ### 💰 401k Projector
-- **Dynamic contribution optimization** maximizing annual limits
+- **Dynamic contribution optimization** maximizing annual limits ($23,500)
 - **Automatic employer matching** calculations (up to 6%)
 - **Multi-account tracking** (401k and 401a)
 - **Salary growth projections** with annual increases
-- **Bonus contribution handling** with 50% allocation
-- **Colorful analytics dashboard** with key insights
+- **Bonus contribution handling** with 50% allocation optimization
+- **Colorful analytics dashboard** with key insights and projections
+- **Interactive help system** with detailed explanations
+
+### 🇮🇳 Indian Investment Calculators Suite
+- **SIP Calculator** with step-up options and frequency selection (Monthly/Quarterly/Half-yearly/Yearly)
+- **SWP Calculator** with tax planning and active trading mode
+- **Lumpsum Calculator** with compound growth analysis
+- **Retirement Planner** with goal-based planning and life expectancy calculations
+- **Indian Rupee (₹) formatting** with number-to-words conversion
+- **Year-wise detailed projections** and cash flow analysis
+- **Mobile-optimized interface** with responsive design
+
+### 🔗 Live Financial Data Hub
+- **USA & India metals pricing** (Gold, Silver, Platinum, Palladium)
+- **Live USD to INR conversion** rates from trusted sources
+- **Paycheck calculator** with tax withholdings and 401k deductions
+- **Current mortgage rates** and terms from Bankrate
+- **USA & India tax brackets** and slabs (2024 rates)
+- **Federal Reserve rate calendar** and predictions (CME FedWatch)
+- **Professional data sources** (Trading Economics, RIA Money Transfer)
+
+### 🧮 Floating Calculator Widget
+- **Always-available calculator** with drag-and-drop functionality
+- **Minimize/maximize controls** with mobile-optimized touch support
+- **Keyboard shortcuts support** with full numeric keypad
+- **Copy/paste functionality** for seamless data entry
+- **Persistent across all tabs** for continuous access
+- **ESC key to close** and intelligent focus management
 
 ### 🎨 User Experience
 - **Responsive design** - works on desktop, tablet, and mobile
-- **Dark/Light themes** with smooth transitions
+- **Dark/Light themes** with smooth transitions and system preference detection
 - **Professional UI** with gradient effects and hover animations
 - **Fixed header/footer** for constant navigation access
 - **Contextual help** with detailed calculation explanations
 - **Real-time calculations** as you adjust parameters
+- **Copy-to-clipboard** functionality for easy data export
 
 ## 🚀 Quick Start
 
@@ -102,7 +131,7 @@ retirement-planning-tools/
 - **CI/CD**: GitHub Actions with automatic image builds
 - **Updates**: Watchtower for automatic deployments
 
-## 📊 Calculation Methods
+## 📊 Calculation Methods & Features
 
 ### SEPP Methods (IRS Section 72(t))
 
@@ -110,16 +139,19 @@ retirement-planning-tools/
    - Formula: `Annual Payment = Account Balance ÷ Life Expectancy Factor`
    - Variable payments based on account performance
    - Most conservative approach
+   - Recalculated annually
 
 2. **Method 2 - Amortization (Fixed)**
    - Formula: `PMT = PV × [r(1+r)ⁿ] / [(1+r)ⁿ - 1]`
    - Fixed payments like a mortgage
    - Moderate withdrawal approach
+   - Consistent income stream
 
 3. **Method 3 - Annuitization (Fixed)**
    - Formula: `Annual Payment = Account Balance ÷ Present Value Factor`
    - Highest fixed payments
    - Most aggressive approach
+   - Maximum early retirement income
 
 ### 401k Calculations
 
@@ -127,6 +159,24 @@ retirement-planning-tools/
 - **Employer Match**: `min(Employee Contribution, 6% of Salary)`
 - **Bonus Handling**: `10% of Salary × 50% to 401k`
 - **401a Contribution**: `4% of Salary (fixed)`
+- **Annual Growth**: Compound interest with salary increases
+
+### Indian Investment Calculations
+
+- **SIP (Systematic Investment Plan)**: Monthly/Quarterly/Half-yearly/Yearly investments with step-up options
+- **SWP (Systematic Withdrawal Plan)**: Regular withdrawals with tax planning and active trading modes
+- **Lumpsum**: One-time investment with compound growth analysis
+- **Retirement Planning**: Goal-based planning with inflation adjustment and life expectancy calculations
+- **Currency**: All calculations in Indian Rupees (₹) with proper formatting
+
+### Live Financial Data Sources
+
+- **Metals Pricing**: Trading Economics, GoodReturns (India)
+- **Currency Rates**: RIA Money Transfer (USD/INR)
+- **Tax Information**: Fidelity (USA), Income Tax India
+- **Mortgage Rates**: Bankrate
+- **Federal Rates**: CME Group FedWatch Tool
+- **Paycheck Calculator**: SmartAsset
 
 ## 🌐 Deployment
 
@@ -198,13 +248,18 @@ Edit `default.conf` for:
 - Cache control policies
 - SSL/TLS configuration
 
-## 📈 Performance
+## 📈 Performance & Features
 
 - **Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices)
 - **Bundle Size**: < 500KB total (including all assets)
 - **Load Time**: < 2 seconds on 3G networks
 - **Memory Usage**: < 50MB container footprint
-- **Mobile Optimized**: Responsive tables with horizontal scrolling
+- **Mobile Optimized**: Responsive design with touch-friendly controls
+- **Multi-Currency**: USD ($) and Indian Rupee (₹) support
+- **Copy-to-Clipboard**: Easy data export functionality
+- **Floating Calculator**: Always-available draggable calculator widget
+- **Theme Support**: Dark/Light modes with system preference detection
+- **Accessibility**: WCAG compliant with keyboard navigation support
 
 ## 🔒 Security Features
 
@@ -263,19 +318,32 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## ⚠️ Disclaimer
 
-This software is for educational and planning purposes only. It provides estimates based on user inputs and should not be considered as financial advice. Always consult with qualified financial advisors, tax professionals, and estate planning attorneys before making retirement planning decisions.
+This software is for educational and planning purposes only. It provides estimates based on user inputs and should not be considered as financial advice. The calculations are based on:
+
+- **SEPP**: Current IRS regulations and life expectancy tables
+- **401k**: Standard contribution limits and employer matching assumptions
+- **Indian Investments**: Market assumptions and standard tax rates
+- **Live Data**: Third-party sources that may have delays or inaccuracies
+
+Always consult with qualified financial advisors, tax professionals, and estate planning attorneys before making retirement planning decisions. Market conditions, tax laws, and regulations may change, affecting the accuracy of projections.
 
 ## 🎯 Roadmap
 
 - [ ] User accounts and saved calculations
-- [ ] PDF report generation
-- [ ] Monte Carlo simulations
-- [ ] Social Security integration
+- [ ] PDF report generation with charts
+- [ ] Monte Carlo simulations for risk analysis
+- [ ] Social Security integration (USA)
+- [ ] EPF/PPF calculators (India)
 - [ ] Mobile app (React Native)
 - [ ] API for third-party integrations
+- [ ] Advanced tax optimization strategies
+- [ ] Multi-language support (Hindi, Spanish)
+- [ ] Real-time market data integration
+- [ ] Portfolio rebalancing calculators
+- [ ] Estate planning tools
 
 ---
 
-**Built with ❤️ for better retirement planning**
+**Built with ❤️ for comprehensive financial planning**
 
-*Ready to deploy? Run `docker-compose up -d` and start planning your financial future!*
+*Ready to deploy? Run `docker-compose up -d` and start planning your financial future with professional-grade tools!*

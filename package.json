@@ -1,10 +1,10 @@
 {
-  "name": "sepp-calculator",
-  "version": "1.0.0",
-  "description": "Static 72(t) SEPP Withdrawal Planner with scalable CSS architecture",
+  "name": "financial-planning-platform",
+  "version": "2.0.0",
+  "description": "Comprehensive financial planning platform with SEPP, 401k, Indian investment calculators, and live financial data",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/retirement-planning-tools.git"
+    "url": "https://github.com/your-username/financial-planning-platform.git"
   },
   "keywords": [
     "sepp",
@@ -12,7 +12,16 @@
     "retirement",
     "calculator",
     "financial",
-    "planning"
+    "planning",
+    "sip",
+    "swp",
+    "lumpsum",
+    "indian",
+    "investment",
+    "rupee",
+    "metals",
+    "currency",
+    "tax"
   ],
   "author": "",
   "license": "MIT",

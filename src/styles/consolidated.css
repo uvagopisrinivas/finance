@@ -3563,16 +3563,27 @@ input.form-input[type="text"] {
   border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
   cursor: move;
   user-select: none;
-}
-
-.calculator-widget__title {
-  font-weight: 600;
-  font-size: 0.9rem;
+  /* Debug: Ensure header is visible and has space */
+  min-height: 50px;
+  overflow: visible;
 }
 
 .calculator-widget__controls {
   display: flex;
   gap: 4px;
+  /* Debug: Ensure controls are visible */
+  flex-shrink: 0;
+  min-width: 60px;
+}
+
+.calculator-widget__title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  /* Allow title to shrink if needed */
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .calculator-widget__btn {
@@ -3588,10 +3599,40 @@ input.form-input[type="text"] {
   justify-content: center;
   font-size: 0.8rem;
   transition: all 0.2s ease;
+  /* Prevent touch interference with dragging */
+  touch-action: manipulation;
+  position: relative;
+  z-index: 10;
+}
+
+/* Mobile-specific button styling */
+@media (max-width: 768px) {
+  .calculator-widget__btn {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+    min-width: 36px;
+    min-height: 36px;
+  }
 }
 
 .calculator-widget__btn:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+.calculator-widget__btn:active {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0.95);
+}
+
+/* Mobile-specific button feedback */
+@media (max-width: 768px) {
+  .calculator-widget__btn:active {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0.9);
+  }
 }
 
 .calculator-widget__body {
@@ -3730,7 +3771,25 @@ input.form-input[type="text"] {
   .calculator-widget {
     width: 260px;
     right: 10px;
-    top: 110px; /* Increased from 80px to account for mobile header height */
+    top: 110px;
+  }
+  
+  .calculator-widget__header {
+    padding: 8px 12px;
+    min-height: 44px;
+  }
+  
+  .calculator-widget__title {
+    font-size: 0.8rem;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .calculator-widget__controls {
+    flex-shrink: 0;
+    gap: 8px;
   }
   
   .calculator-widget__body {
@@ -3757,7 +3816,28 @@ input.form-input[type="text"] {
     width: calc(100vw - 20px);
     right: 10px;
     left: 10px;
-    top: 120px; /* Increased from default to ensure it's below the mobile header */
+    top: 120px;
+  }
+  
+  .calculator-widget__header {
+    padding: 6px 10px;
+    min-height: 40px;
+  }
+  
+  .calculator-widget__title {
+    font-size: 0.75rem;
+  }
+  
+  .calculator-widget__btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  .calculator-widget__controls {
+    gap: 10px;
   }
 }
 /* ==========================================================================
