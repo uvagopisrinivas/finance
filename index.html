@@ -45,6 +45,9 @@
           <button class="nav__tab" data-tab="401k">401k</button>
           <button class="nav__tab" data-tab="indian">INR</button>
           <button class="nav__tab" data-tab="links">Links</button>
+          <button id="calculatorToggle" class="calculator-toggle" title="Open Calculator">
+            <i class="fas fa-calculator"></i>
+          </button>
           <button id="globalThemeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
         </nav>
       </div>
@@ -244,6 +247,51 @@
       </section>
     </div>
   </main>
+
+  <!-- Floating Calculator Widget -->
+  <div id="calculatorWidget" class="calculator-widget">
+    <div class="calculator-widget__header">
+      <span class="calculator-widget__title">Calculator</span>
+      <div class="calculator-widget__controls">
+        <button id="calculatorMinimize" class="calculator-widget__btn" title="Minimize">
+          <i class="fas fa-minus"></i>
+        </button>
+        <button id="calculatorClose" class="calculator-widget__btn" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="calculator-widget__body">
+      <div class="calculator__display">
+        <input type="text" id="calculatorDisplay" class="calculator__screen" value="0">
+      </div>
+      <div class="calculator__buttons">
+        <button class="calculator__btn calculator__btn--clear" onclick="calculatorClear()">C</button>
+        <button class="calculator__btn calculator__btn--clear" onclick="calculatorClearEntry()">CE</button>
+        <button class="calculator__btn calculator__btn--operator" onclick="calculatorBackspace()">⌫</button>
+        <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('÷')">÷</button>
+        
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('7')">7</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('8')">8</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('9')">9</button>
+        <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('×')">×</button>
+        
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('4')">4</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('5')">5</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('6')">6</button>
+        <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('-')">-</button>
+        
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('1')">1</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('2')">2</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('3')">3</button>
+        <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('+')">+</button>
+        
+        <button class="calculator__btn calculator__btn--number calculator__btn--zero" onclick="calculatorNumber('0')">0</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorDecimal()">.</button>
+        <button class="calculator__btn calculator__btn--equals" onclick="calculatorEquals()">=</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">© <span id="year"></span> Uva Kondisetty — Built with plain HTML/CSS/JS</div>
@@ -525,6 +573,327 @@
       window.history.pushState({tab: currentTab}, null, '#' + currentTab);
       window.location.href = url;
     };
+
+    // Calculator functionality
+    let calculatorState = {
+      display: '0',
+      previousValue: null,
+      operation: null,
+      waitingForOperand: false
+    };
+
+    function updateCalculatorDisplay() {
+      const display = document.getElementById('calculatorDisplay');
+      if (display) {
+        // Format the display value to remove unnecessary decimal places
+        let displayValue = calculatorState.display;
+        if (!isNaN(parseFloat(displayValue))) {
+          const num = parseFloat(displayValue);
+          // Show up to 2 decimal places, but remove trailing zeros
+          displayValue = num % 1 === 0 ? num.toString() : num.toFixed(2).replace(/\.?0+$/, '');
+        }
+        display.value = displayValue;
+      }
+    }
+
+    window.calculatorNumber = function(num) {
+      if (calculatorState.waitingForOperand) {
+        calculatorState.display = num;
+        calculatorState.waitingForOperand = false;
+      } else {
+        calculatorState.display = calculatorState.display === '0' ? num : calculatorState.display + num;
+      }
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorDecimal = function() {
+      if (calculatorState.waitingForOperand) {
+        calculatorState.display = '0.';
+        calculatorState.waitingForOperand = false;
+      } else if (calculatorState.display.indexOf('.') === -1) {
+        calculatorState.display += '.';
+      }
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorClear = function() {
+      calculatorState.display = '0';
+      calculatorState.previousValue = null;
+      calculatorState.operation = null;
+      calculatorState.waitingForOperand = false;
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorClearEntry = function() {
+      calculatorState.display = '0';
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorBackspace = function() {
+      if (calculatorState.display.length > 1) {
+        calculatorState.display = calculatorState.display.slice(0, -1);
+      } else {
+        calculatorState.display = '0';
+      }
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorOperation = function(nextOperation) {
+      const inputValue = parseFloat(calculatorState.display);
+
+      if (calculatorState.previousValue === null) {
+        calculatorState.previousValue = inputValue;
+      } else if (calculatorState.operation) {
+        const currentValue = calculatorState.previousValue || 0;
+        const newValue = calculate(currentValue, inputValue, calculatorState.operation);
+
+        calculatorState.display = String(newValue);
+        calculatorState.previousValue = newValue;
+        updateCalculatorDisplay();
+      }
+
+      calculatorState.waitingForOperand = true;
+      calculatorState.operation = nextOperation;
+    };
+
+    window.calculatorEquals = function() {
+      const inputValue = parseFloat(calculatorState.display);
+
+      if (calculatorState.previousValue !== null && calculatorState.operation) {
+        const newValue = calculate(calculatorState.previousValue, inputValue, calculatorState.operation);
+        
+        // Format the result to 2 decimal places max
+        calculatorState.display = newValue.toString();
+        calculatorState.previousValue = null;
+        calculatorState.operation = null;
+        calculatorState.waitingForOperand = true;
+        updateCalculatorDisplay();
+      }
+    };
+
+    function calculate(firstValue, secondValue, operation) {
+      let result;
+      switch (operation) {
+        case '+':
+          result = firstValue + secondValue;
+          break;
+        case '-':
+          result = firstValue - secondValue;
+          break;
+        case '×':
+          result = firstValue * secondValue;
+          break;
+        case '÷':
+          result = secondValue !== 0 ? firstValue / secondValue : 0;
+          break;
+        default:
+          result = secondValue;
+      }
+      
+      // Round to 2 decimal places and remove trailing zeros
+      return Math.round(result * 100) / 100;
+    }
+
+    // Calculator widget controls
+    const calculatorToggle = document.getElementById('calculatorToggle');
+    const calculatorWidget = document.getElementById('calculatorWidget');
+    const calculatorClose = document.getElementById('calculatorClose');
+    const calculatorMinimize = document.getElementById('calculatorMinimize');
+    const calculatorHeader = document.querySelector('.calculator-widget__header');
+    const calculatorDisplay = document.getElementById('calculatorDisplay');
+
+    if (calculatorToggle && calculatorWidget) {
+      calculatorToggle.addEventListener('click', function() {
+        calculatorWidget.classList.toggle('active');
+        if (calculatorWidget.classList.contains('active')) {
+          updateCalculatorDisplay();
+          // Focus on display for immediate paste functionality
+          setTimeout(() => {
+            if (calculatorDisplay) calculatorDisplay.focus();
+          }, 100);
+        }
+      });
+
+      function closeCalculator() {
+        calculatorWidget.classList.remove('active');
+      }
+
+      function minimizeCalculator() {
+        calculatorWidget.classList.toggle('minimized');
+      }
+
+      if (calculatorClose) {
+        calculatorClose.addEventListener('click', closeCalculator);
+      }
+
+      if (calculatorMinimize) {
+        calculatorMinimize.addEventListener('click', minimizeCalculator);
+      }
+
+      // Make calculator draggable
+      let isDragging = false;
+      let dragOffset = { x: 0, y: 0 };
+
+      if (calculatorHeader) {
+        // Mouse events for desktop
+        calculatorHeader.addEventListener('mousedown', function(e) {
+          isDragging = true;
+          const rect = calculatorWidget.getBoundingClientRect();
+          dragOffset.x = e.clientX - rect.left;
+          dragOffset.y = e.clientY - rect.top;
+          calculatorWidget.style.transition = 'none';
+        });
+
+        // Touch events for mobile
+        calculatorHeader.addEventListener('touchstart', function(e) {
+          isDragging = true;
+          const rect = calculatorWidget.getBoundingClientRect();
+          const touch = e.touches[0];
+          dragOffset.x = touch.clientX - rect.left;
+          dragOffset.y = touch.clientY - rect.top;
+          calculatorWidget.style.transition = 'none';
+          e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+          if (isDragging) {
+            const x = e.clientX - dragOffset.x;
+            const y = e.clientY - dragOffset.y;
+            
+            // Keep calculator within viewport with better mobile constraints
+            const headerHeight = window.innerWidth <= 768 ? 110 : 68; // Use mobile header height
+            const maxX = window.innerWidth - calculatorWidget.offsetWidth;
+            const maxY = window.innerHeight - calculatorWidget.offsetHeight;
+            const minY = headerHeight; // Ensure it stays below header
+            
+            calculatorWidget.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+            calculatorWidget.style.top = Math.max(minY, Math.min(y, maxY)) + 'px';
+            calculatorWidget.style.right = 'auto';
+          }
+        });
+
+        document.addEventListener('touchmove', function(e) {
+          if (isDragging) {
+            const touch = e.touches[0];
+            const x = touch.clientX - dragOffset.x;
+            const y = touch.clientY - dragOffset.y;
+            
+            // Keep calculator within viewport with better mobile constraints
+            const headerHeight = window.innerWidth <= 768 ? 110 : 68;
+            const maxX = window.innerWidth - calculatorWidget.offsetWidth;
+            const maxY = window.innerHeight - calculatorWidget.offsetHeight;
+            const minY = headerHeight;
+            
+            calculatorWidget.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+            calculatorWidget.style.top = Math.max(minY, Math.min(y, maxY)) + 'px';
+            calculatorWidget.style.right = 'auto';
+            e.preventDefault();
+          }
+        });
+
+        document.addEventListener('mouseup', function() {
+          if (isDragging) {
+            isDragging = false;
+            calculatorWidget.style.transition = '';
+          }
+        });
+
+        document.addEventListener('touchend', function() {
+          if (isDragging) {
+            isDragging = false;
+            calculatorWidget.style.transition = '';
+          }
+        });
+      }
+
+      // Enhanced display input handling with paste support
+      if (calculatorDisplay) {
+        // Allow manual input and paste
+        calculatorDisplay.addEventListener('input', function(e) {
+          let value = this.value.replace(/[^0-9.-]/g, ''); // Only allow numbers, decimal, and minus
+          
+          // Validate the number
+          if (value === '' || value === '-') {
+            value = '0';
+          } else if (!isNaN(parseFloat(value))) {
+            value = parseFloat(value).toString();
+          } else {
+            value = calculatorState.display; // Revert to previous value if invalid
+          }
+          
+          calculatorState.display = value;
+          calculatorState.waitingForOperand = false;
+          this.value = value;
+        });
+
+        // Handle paste events
+        calculatorDisplay.addEventListener('paste', function(e) {
+          e.preventDefault();
+          const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+          const cleanNumber = pastedText.replace(/[^0-9.-]/g, '');
+          
+          if (cleanNumber && !isNaN(parseFloat(cleanNumber))) {
+            calculatorState.display = parseFloat(cleanNumber).toString();
+            calculatorState.waitingForOperand = false;
+            updateCalculatorDisplay();
+          }
+        });
+
+        // Handle focus/blur for better UX
+        calculatorDisplay.addEventListener('focus', function() {
+          this.select(); // Select all text when focused
+        });
+      }
+
+      // Close calculator with Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && calculatorWidget.classList.contains('active')) {
+          closeCalculator();
+        }
+      });
+
+      // Keyboard support for calculator (only when calculator is active and focused)
+      document.addEventListener('keydown', function(e) {
+        if (!calculatorWidget.classList.contains('active')) return;
+
+        const key = e.key;
+        
+        // Only handle calculator keys if display is focused or no other input is focused
+        const activeElement = document.activeElement;
+        const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
+        
+        if (isInputFocused && activeElement !== calculatorDisplay) return;
+        
+        if (key >= '0' && key <= '9') {
+          e.preventDefault();
+          calculatorNumber(key);
+        } else if (key === '.') {
+          e.preventDefault();
+          calculatorDecimal();
+        } else if (key === '+') {
+          e.preventDefault();
+          calculatorOperation('+');
+        } else if (key === '-') {
+          e.preventDefault();
+          calculatorOperation('-');
+        } else if (key === '*') {
+          e.preventDefault();
+          calculatorOperation('×');
+        } else if (key === '/') {
+          e.preventDefault();
+          calculatorOperation('÷');
+        } else if (key === 'Enter' || key === '=') {
+          e.preventDefault();
+          calculatorEquals();
+        } else if (key === 'Backspace') {
+          e.preventDefault();
+          calculatorBackspace();
+        } else if (key === 'Delete' || key.toLowerCase() === 'c') {
+          e.preventDefault();
+          calculatorClear();
+        }
+      });
+    }
   </script>
 </body>
 </html>

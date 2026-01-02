@@ -61,7 +61,7 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   
   /* Component Specific */
-  --table-row-height: 48px;
+  --table-row-height: 56px;
   --header-height: 68px;
   --header-height-mobile: 90px;
   --footer-height: 80px;
@@ -534,6 +534,7 @@ body {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
+  margin: var(--space-lg) var(--space-md) var(--space-lg) var(--space-md);
 }
 
 .table {
@@ -556,7 +557,7 @@ body {
 }
 
 .table__header th {
-  padding: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
   text-align: center;
   font-weight: var(--font-weight-semibold);
   position: sticky;
@@ -591,7 +592,7 @@ body {
 }
 
 .table__body td {
-  padding: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
   border-bottom: 1px solid var(--color-border);
   text-align: center;
 }
@@ -727,6 +728,7 @@ body {
 .table--indian th,
 .table--indian td {
   text-align: center;
+  padding: var(--space-lg) var(--space-md);
 }
 
 .table--indian .table__year {
@@ -781,12 +783,47 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Column widths for Indian calculators */
-.table--indian th:nth-child(1) { width: 10%; }
-.table--indian th:nth-child(2) { width: 22%; }
-.table--indian th:nth-child(3) { width: 22%; }
-.table--indian th:nth-child(4) { width: 22%; }
-.table--indian th:nth-child(5) { width: 24%; }
+/* Column widths for Indian calculators - Better distribution for Goals Breakdown */
+.table--indian th:nth-child(1) { width: 25%; } /* Goal names need more space */
+.table--indian th:nth-child(2) { width: 8%; }  /* Years column - just numbers */
+.table--indian th:nth-child(3) { width: 20%; } /* Current Value */
+.table--indian th:nth-child(4) { width: 22%; } /* Future Value */
+.table--indian th:nth-child(5) { width: 25%; } /* Inflation Impact */
+
+/* Enhanced spacing for Goals Breakdown and similar tables */
+.table--indian {
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.table--indian th {
+  padding: var(--space-xl) var(--space-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.table--indian td {
+  padding: var(--space-lg) var(--space-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+/* Goal column specific styling - left align and no truncation */
+.table--indian th:nth-child(1),
+.table--indian td:nth-child(1) {
+  text-align: left;
+  white-space: normal;
+  word-wrap: break-word;
+  padding-left: var(--space-2xl);
+}
+
+/* Years column - center align and compact */
+.table--indian th:nth-child(2),
+.table--indian td:nth-child(2) {
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
 
 /* ==========================================================================
    MODAL COMPONENT
@@ -1920,7 +1957,7 @@ body {
   
   .table--indian th,
   .table--indian td {
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-md) var(--space-sm);
     font-size: var(--font-size-xs);
   }
   
@@ -2173,15 +2210,15 @@ body {
   
   .table--indian th,
   .table--indian td {
-    padding: var(--space-xs) var(--space-sm); /* Increased padding */
+    padding: var(--space-md) var(--space-sm); /* Increased padding */
     font-size: var(--font-size-xs); /* Changed from 10px to use CSS variable */
   }
   
-  .table--indian th:nth-child(1) { min-width: 50px; }
-  .table--indian th:nth-child(2) { min-width: 90px; }
-  .table--indian th:nth-child(3) { min-width: 90px; }
-  .table--indian th:nth-child(4) { min-width: 90px; }
-  .table--indian th:nth-child(5) { min-width: 100px; }
+  .table--indian th:nth-child(1) { min-width: 120px; } /* Goal names need more space */
+  .table--indian th:nth-child(2) { min-width: 60px; }  /* Years - just numbers */
+  .table--indian th:nth-child(3) { min-width: 90px; }  /* Current Value */
+  .table--indian th:nth-child(4) { min-width: 90px; }  /* Future Value */
+  .table--indian th:nth-child(5) { min-width: 100px; } /* Inflation Impact */
 }
 
 /* ==========================================================================
@@ -2536,4 +2573,1438 @@ body {
 
 .info-panel .mt-sm {
   margin-top: var(--space-sm);
+}
+/* Number Helper Text Styles */
+.number-helper-text {
+  font-size: var(--font-size-xs);
+  color: #6b7280;
+  margin-top: var(--space-xs);
+  font-style: italic;
+  line-height: var(--line-height-tight);
+  word-wrap: break-word;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.form-group:hover .number-helper-text {
+  opacity: 1;
+}
+
+/* Mobile optimizations for helper text */
+@media (max-width: 768px) {
+  .number-helper-text {
+    font-size: 0.7rem;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+}
+
+/* Enhanced form input styles for better mobile experience */
+@media (max-width: 768px) {
+  .form-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+  }
+  
+  .form-label {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-xs);
+  }
+  
+  .form-hint {
+    font-size: 0.7rem;
+  }
+}
+/* Copy Button Styles */
+.copy-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.copy-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Ensure summary items have relative positioning for copy button */
+.summary-item {
+  position: relative;
+  padding-right: 40px; /* Make room for copy button */
+}
+
+/* Mobile optimizations for copy buttons */
+@media (max-width: 768px) {
+  .copy-btn {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    right: 4px;
+  }
+  
+  .summary-item {
+    padding-right: 45px;
+  }
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .copy-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .copy-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+/* Select dropdown styles for frequency selection */
+.form-input[type="text"], 
+.form-input:not([type]), 
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Remove background image for text inputs */
+input.form-input[type="text"] {
+  background-image: none;
+  padding-right: 16px;
+}
+
+/* Dark theme select arrow */
+[data-theme="dark"] select.form-input {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Light theme select arrow */
+[data-theme="light"] select.form-input {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+/* Improved table layout with better column distribution */
+.table--indian {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table--indian th,
+.table--indian td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Specific column widths for better distribution */
+.table--indian th:nth-child(1), /* Year */
+.table--indian td:nth-child(1) {
+  width: 8%;
+  text-align: center;
+}
+
+.table--indian th:nth-child(2), /* Start Balance */
+.table--indian td:nth-child(2) {
+  width: 16%;
+}
+
+.table--indian th:nth-child(3), /* Gross Withdrawal */
+.table--indian td:nth-child(3) {
+  width: 14%;
+}
+
+.table--indian th:nth-child(4), /* Tax Paid */
+.table--indian td:nth-child(4) {
+  width: 12%;
+}
+
+.table--indian th:nth-child(5), /* Net Received */
+.table--indian td:nth-child(5) {
+  width: 14%;
+}
+
+.table--indian th:nth-child(6), /* Monthly Net */
+.table--indian td:nth-child(6) {
+  width: 16%;
+  font-weight: 600;
+}
+
+.table--indian th:nth-child(7), /* End Balance */
+.table--indian td:nth-child(7) {
+  width: 16%;
+}
+
+/* Monthly Net Received Column Styling */
+.table__monthly-net {
+  background: rgba(46, 204, 113, 0.08);
+  color: #27ae60;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Column-specific subtle background colors */
+.table__withdrawal {
+  background: rgba(255, 193, 7, 0.06);
+}
+
+.table__tax {
+  background: rgba(220, 53, 69, 0.06);
+}
+
+.table__net {
+  background: rgba(40, 167, 69, 0.06);
+}
+
+.table__balance {
+  background: rgba(13, 110, 253, 0.06);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .table__monthly-net {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+[data-theme="dark"] .table__withdrawal {
+  background: rgba(255, 193, 7, 0.08);
+}
+
+[data-theme="dark"] .table__tax {
+  background: rgba(220, 53, 69, 0.08);
+}
+
+[data-theme="dark"] .table__net {
+  background: rgba(40, 167, 69, 0.08);
+}
+
+[data-theme="dark"] .table__balance {
+  background: rgba(13, 110, 253, 0.08);
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .table__monthly-net {
+  background: rgba(46, 204, 113, 0.05);
+  color: #198754;
+}
+
+[data-theme="light"] .table__withdrawal {
+  background: rgba(255, 193, 7, 0.04);
+}
+
+[data-theme="light"] .table__tax {
+  background: rgba(220, 53, 69, 0.04);
+}
+
+[data-theme="light"] .table__net {
+  background: rgba(40, 167, 69, 0.04);
+}
+
+[data-theme="light"] .table__balance {
+  background: rgba(13, 110, 253, 0.04);
+}
+
+/* Improved table spacing and layout */
+.table--indian td {
+  padding: var(--space-lg) var(--space-md);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table--indian th {
+  padding: var(--space-xl) var(--space-md);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1200px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  
+  .table--indian {
+    min-width: 1000px;
+    table-layout: auto;
+  }
+  
+  .table--indian th,
+  .table--indian td {
+    width: auto;
+    min-width: 120px;
+  }
+  
+  .table--indian th:nth-child(6),
+  .table--indian td:nth-child(6) {
+    min-width: 140px; /* Extra width for Monthly Net on mobile */
+  }
+}
+
+@media (max-width: 768px) {
+  .table--indian td,
+  .table--indian th {
+    padding: 10px 6px;
+    font-size: 0.8rem;
+  }
+  
+  .table--indian th {
+    font-size: 0.75rem;
+  }
+  
+  .table__monthly-net {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+}
+/* Vertical scroll for tables with more than 6 rows */
+.table-container {
+  position: relative;
+}
+
+.table-container .table--indian {
+  display: block;
+}
+
+.table-container .table--indian thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table-container .table--indian tbody {
+  display: block;
+  max-height: 400px; /* Approximately 6 rows (6 * 65px per row) */
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.table-container .table--indian tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* Ensure header and body columns align properly */
+.table-container .table--indian thead th,
+.table-container .table--indian tbody td {
+  display: table-cell;
+}
+
+/* Custom scrollbar styling */
+.table-container .table--indian tbody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-container .table--indian tbody::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.table-container .table--indian tbody::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.table-container .table--indian tbody::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark theme scrollbar */
+[data-theme="dark"] .table-container .table--indian tbody::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .table-container .table--indian tbody::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .table-container .table--indian tbody::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Light theme scrollbar */
+[data-theme="light"] .table-container .table--indian tbody::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .table-container .table--indian tbody::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .table-container .table--indian tbody::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Scroll indicator for better UX */
+.table-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.table-container.has-scroll::after {
+  opacity: 1;
+}
+
+/* Mobile adjustments for scroll */
+@media (max-width: 768px) {
+  .table-container .table--indian tbody {
+    max-height: 350px; /* Slightly smaller on mobile */
+  }
+  
+  .table-container .table--indian tbody::-webkit-scrollbar {
+    width: 6px;
+  }
+}
+/* Additional summary value color - Purple for Initial Investment */
+.summary-value--secondary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  min-width: 120px;
+  display: inline-block;
+}
+
+/* Retirement Calculator Specific Styles */
+.goals-section,
+.retirement-expenses-section {
+  margin: var(--space-2xl) 0;
+  padding: var(--space-xl);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-sm) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--space-sm);
+}
+
+.section-title i {
+  color: var(--color-primary);
+}
+
+.section-subtitle {
+  color: var(--color-text-secondary);
+  margin: var(--space-sm) 0 var(--space-lg) 0;
+  font-size: var(--font-size-base);
+}
+
+/* Simplified Retirement Results */
+.retirement-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.retirement-main-result {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3xl);
+  padding: var(--space-2xl);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: var(--border-radius-xl);
+  color: white;
+  text-align: center;
+}
+
+.retirement-age-display,
+.retirement-years-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.retirement-age-label,
+.retirement-years-label {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+  font-weight: var(--font-weight-medium);
+}
+
+.retirement-age-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.retirement-years-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.retirement-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.retirement-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.retirement-detail-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.retirement-detail-item.highlight {
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
+  border-color: var(--color-primary);
+  border-width: 2px;
+}
+
+.detail-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.detail-value {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  text-align: right;
+}
+
+.retirement-detail-item.highlight .detail-value {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+}
+
+/* Mobile responsiveness for retirement results */
+@media (max-width: 768px) {
+  .retirement-main-result {
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+  
+  .retirement-age-value {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .retirement-years-value {
+    font-size: var(--font-size-xl);
+  }
+  
+  .retirement-details {
+    grid-template-columns: 1fr;
+    padding: var(--space-md);
+  }
+  
+  .retirement-detail-item {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-xs);
+  }
+  
+  .detail-value {
+    text-align: center;
+  }
+}
+
+.section-subtitle {
+  color: var(--color-text-secondary);
+  margin: var(--space-sm) 0 var(--space-lg) 0;
+  font-size: var(--font-size-base);
+}
+
+.goal-item {
+  display: grid;
+  grid-template-columns: auto 2fr 2fr 1.5fr 1fr;
+  gap: var(--space-md);
+  align-items: start;
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.goal-item:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.goal-remove-btn {
+  background: var(--color-error);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  justify-self: center;
+}
+
+.goal-remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* Ensure form groups in goals have consistent height */
+.goal-item .form-group {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.goal-item .form-group .form-label {
+  margin-bottom: var(--space-xs);
+}
+
+.goal-item .form-group .form-input {
+  flex: 1;
+}
+
+/* Special styling for amount column to accommodate helper text */
+.goal-item .form-group:has(.goal-amount-input) {
+  min-height: 80px;
+}
+
+/* Mobile responsiveness for goals */
+@media (max-width: 768px) {
+  .goal-item {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+  
+  .goal-remove-btn {
+    justify-self: end;
+    margin-top: var(--space-sm);
+    margin-bottom: 0;
+    align-self: center;
+    order: -1;
+  }
+  
+  .goals-section,
+  .retirement-expenses-section {
+    padding: var(--space-lg);
+    margin: var(--space-lg) 0;
+  }
+  
+  .goal-item .form-group:has(.goal-amount-input) {
+    min-height: 70px;
+  }
+}
+
+/* Goal type specific colors */
+.goal-item[data-goal-type="marriage"] {
+  border-left: 4px solid #e91e63;
+}
+
+.goal-item[data-goal-type="education"] {
+  border-left: 4px solid #2196f3;
+}
+
+.goal-item[data-goal-type="house"] {
+  border-left: 4px solid #ff9800;
+}
+
+.goal-item[data-goal-type="vehicle"] {
+  border-left: 4px solid #9c27b0;
+}
+
+.goal-item[data-goal-type="vacation"] {
+  border-left: 4px solid #00bcd4;
+}
+
+.goal-item[data-goal-type="business"] {
+  border-left: 4px solid #4caf50;
+}
+
+.goal-item[data-goal-type="emergency"] {
+  border-left: 4px solid #f44336;
+}
+
+.goal-item[data-goal-type="other"] {
+  border-left: 4px solid #607d8b;
+}
+/* Calculator Toggle Button */
+.calculator-toggle {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 1.2rem;
+  padding: 8px 12px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 8px;
+}
+
+.calculator-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Floating Calculator Widget */
+.calculator-widget {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  width: 280px;
+  background: var(--color-card-bg);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: none;
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
+  animation: calculatorSlideIn 0.3s ease;
+}
+
+.calculator-widget.active {
+  display: block;
+}
+
+.calculator-widget.minimized .calculator-widget__body {
+  display: none;
+}
+
+.calculator-widget.minimized {
+  width: 200px;
+}
+
+@keyframes calculatorSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.calculator-widget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  cursor: move;
+  user-select: none;
+}
+
+.calculator-widget__title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.calculator-widget__controls {
+  display: flex;
+  gap: 4px;
+}
+
+.calculator-widget__btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.calculator-widget__btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.calculator-widget__body {
+  padding: 16px;
+}
+
+/* Calculator Styles */
+.calculator__display {
+  margin-bottom: 12px;
+}
+
+.calculator__screen {
+  width: 100%;
+  height: 50px;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: right;
+  color: var(--color-text);
+  font-family: 'Courier New', monospace;
+}
+
+.calculator__buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calculator__btn {
+  height: 40px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.calculator__btn:active {
+  transform: scale(0.95);
+}
+
+.calculator__btn--number {
+  background: var(--color-input-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.calculator__btn--number:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.calculator__btn--operator {
+  background: var(--color-primary);
+  color: white;
+}
+
+.calculator__btn--operator:hover {
+  background: var(--color-primary-dark);
+}
+
+.calculator__btn--clear {
+  background: #f39c12;
+  color: white;
+}
+
+.calculator__btn--clear:hover {
+  background: #e67e22;
+}
+
+.calculator__btn--equals {
+  background: #27ae60;
+  color: white;
+  grid-column: span 2;
+}
+
+.calculator__btn--equals:hover {
+  background: #219150;
+}
+
+.calculator__btn--zero {
+  grid-column: span 2;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .calculator-widget {
+  background: rgba(42, 42, 42, 0.95);
+  border-color: #404040;
+}
+
+[data-theme="dark"] .calculator__screen {
+  background: #2a2a2a;
+  border-color: #404040;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .calculator__btn--number {
+  background: #3a3a3a;
+  border-color: #505050;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .calculator__btn--number:hover {
+  background: #4a4a4a;
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .calculator-widget {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #e0e0e0;
+}
+
+[data-theme="light"] .calculator__screen {
+  background: #ffffff;
+  border-color: #e0e0e0;
+  color: #333333;
+}
+
+[data-theme="light"] .calculator__btn--number {
+  background: #f8f9fa;
+  border-color: #dee2e6;
+  color: #333333;
+}
+
+[data-theme="light"] .calculator__btn--number:hover {
+  background: #e9ecef;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .calculator-widget {
+    width: 260px;
+    right: 10px;
+    top: 110px; /* Increased from 80px to account for mobile header height */
+  }
+  
+  .calculator-widget__body {
+    padding: 12px;
+  }
+  
+  .calculator__screen {
+    height: 45px;
+    font-size: 1.2rem;
+  }
+  
+  .calculator__btn {
+    height: 36px;
+    font-size: 0.85rem;
+  }
+  
+  .calculator__buttons {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-widget {
+    width: calc(100vw - 20px);
+    right: 10px;
+    left: 10px;
+    top: 120px; /* Increased from default to ensure it's below the mobile header */
+  }
+}
+/* ==========================================================================
+   GOALS BREAKDOWN TABLE ENHANCEMENTS
+   ========================================================================== */
+
+/* Enhanced spacing specifically for Goals Breakdown and similar important tables */
+.table-container h4 + .table.table--indian,
+.table-container:has(h4:contains("Goals Breakdown")) .table--indian {
+  margin-top: var(--space-md);
+}
+
+.table-container h4 + .table.table--indian th,
+.table-container:has(h4:contains("Goals Breakdown")) .table--indian th {
+  padding: var(--space-xl) var(--space-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  background: linear-gradient(135deg, var(--color-table-header), var(--color-table-method-header));
+}
+
+.table-container h4 + .table.table--indian td,
+.table-container:has(h4:contains("Goals Breakdown")) .table--indian td {
+  padding: var(--space-xl) var(--space-lg);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+/* Goal column in Goals Breakdown - ensure proper text display */
+.table-container h4 + .table.table--indian th:nth-child(1),
+.table-container h4 + .table.table--indian td:nth-child(1),
+.table-container:has(h4:contains("Goals Breakdown")) .table--indian th:nth-child(1),
+.table-container:has(h4:contains("Goals Breakdown")) .table--indian td:nth-child(1) {
+  text-align: left;
+  white-space: normal;
+  word-wrap: break-word;
+  min-width: 150px;
+  max-width: 200px;
+}
+
+/* Enhanced hover effects for Goals Breakdown */
+.table-container h4 + .table.table--indian tbody tr:hover,
+.table-container:has(h4:contains("Goals Breakdown")) .table--indian tbody tr:hover {
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.12), rgba(52, 152, 219, 0.12)) !important;
+  transform: scale(1.005);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments for Goals Breakdown */
+@media (max-width: 768px) {
+  .table-container h4 + .table.table--indian th,
+  .table-container:has(h4:contains("Goals Breakdown")) .table--indian th {
+    padding: var(--space-lg) var(--space-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  .table-container h4 + .table.table--indian td,
+  .table-container:has(h4:contains("Goals Breakdown")) .table--indian td {
+    padding: var(--space-lg) var(--space-md);
+    font-size: var(--font-size-xs);
+  }
+}
+/* ==========================================================================
+   GENERAL TABLE SPACING IMPROVEMENTS
+   ========================================================================== */
+
+/* Increase minimum row height for better readability */
+.table tbody tr {
+  min-height: var(--table-row-height);
+}
+
+/* Add more breathing room around table containers */
+.table-container {
+  margin: var(--space-xl) 0;
+}
+
+/* Improve table header visual hierarchy */
+.table__header th {
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+/* Better spacing for table method headers */
+.table__method-header {
+  padding: var(--space-lg) var(--space-xl) var(--space-lg) var(--space-lg);
+}
+
+/* Enhanced table body spacing */
+.table__body {
+  line-height: 1.5;
+}
+
+/* Improved cell alignment and spacing */
+.table__body td:first-child {
+  padding-left: var(--space-lg);
+}
+
+.table__body td:last-child {
+  padding-right: var(--space-lg);
+}
+/* ==========================================================================
+   TABLE TITLE AND CONTAINER LEFT SPACING
+   ========================================================================== */
+
+/* Add left spacing to table titles */
+.table-container h4 {
+  margin-left: var(--space-lg) !important;
+  margin-right: var(--space-lg) !important;
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
+}
+
+/* Add left spacing to table content */
+.table-container .table {
+  margin-left: var(--space-sm);
+  margin-right: var(--space-sm);
+}
+
+/* Adjust responsive behavior for left spacing */
+@media (max-width: 768px) {
+  .table-container {
+    margin-left: var(--space-lg);
+    margin-right: var(--space-lg);
+  }
+  
+  .table-container h4 {
+    margin-left: var(--space-md) !important;
+    margin-right: var(--space-md) !important;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+  
+  .table-container .table {
+    margin-left: var(--space-sm);
+    margin-right: var(--space-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .table-container {
+    margin-left: var(--space-md);
+    margin-right: var(--space-md);
+  }
+  
+  .table-container h4 {
+    margin-left: var(--space-sm) !important;
+    margin-right: var(--space-sm) !important;
+    padding-left: var(--space-xs);
+    padding-right: var(--space-xs);
+  }
+  
+  .table-container .table {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+/* ==========================================================================
+   YEAR-WISE INVESTMENT PROJECTION TABLE STYLING
+   ========================================================================== */
+
+/* Specific column widths for Year-wise Investment Projection table with 6 columns */
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(1),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(1) {
+  width: 6%; /* Age - increased from 3% */
+  text-align: center;
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(2),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(2) {
+  width: 18%; /* Annual Investment - increased from 16% */
+  text-align: center;
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(3),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(3) {
+  width: 18%; /* Total Invested - increased from 16% */
+  text-align: center;
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(4),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(4) {
+  width: 20%; /* Portfolio Value - increased from 18% */
+  text-align: center;
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(5),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(5) {
+  width: 18%; /* Combined Expenses - same as before */
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(6),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(6) {
+  width: 20%; /* Shortfall/Surplus - reduced from 21% */
+  text-align: center;
+}
+
+/* Override the default left alignment for Year-wise Investment Projection table */
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th:nth-child(1),
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td:nth-child(1) {
+  text-align: center;
+  padding-left: var(--space-md);
+}
+
+/* Responsive adjustments for Year-wise Investment Projection */
+@media (max-width: 768px) {
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian {
+    min-width: 900px; /* Increased for 7 columns */
+  }
+  
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th,
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td {
+    padding: var(--space-md) var(--space-sm);
+    font-size: var(--font-size-xs);
+  }
+}
+/* ==========================================================================
+   COMPACT TABLE STYLING FOR BETTER FIT
+   ========================================================================== */
+
+/* Make Year-wise Investment Projection table more compact */
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian {
+  font-size: var(--font-size-sm);
+  table-layout: fixed;
+  width: 95%; /* Reduced from 100% to fit better */
+  max-width: 900px; /* Set maximum width */
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th {
+  padding: var(--space-sm) var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td {
+  padding: var(--space-xs) var(--space-xs);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure the table container doesn't overflow */
+.table-container:has(h4:contains("Year-wise Investment Projection")) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Responsive adjustments for better mobile experience */
+@media (max-width: 1200px) {
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian {
+    min-width: 800px; /* Reduced from 900px */
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian {
+    min-width: 700px; /* Further reduced for mobile */
+  }
+  
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th,
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td {
+    padding: var(--space-xs) 2px;
+    font-size: 10px;
+  }
+}
+/* ==========================================================================
+   RETIREMENT PHASE STYLING
+   ========================================================================== */
+
+/* Different styling for accumulation vs retirement phases */
+.table--indian .accumulation-phase {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
+}
+
+.table--indian .retirement-phase {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.08), rgba(243, 156, 18, 0.04));
+}
+
+.table--indian .retirement-phase:hover {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.15), rgba(243, 156, 18, 0.08)) !important;
+}
+
+.table--indian .accumulation-phase:hover {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.12), rgba(52, 152, 219, 0.08)) !important;
+}
+
+/* Highlight monthly expenses during retirement */
+.table--indian .retirement-phase .table__withdrawal {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.15), rgba(243, 156, 18, 0.08));
+  font-weight: var(--font-weight-bold);
+  border-left: 3px solid var(--color-warning);
+}
+/* ==========================================================================
+   GOAL EXPENSE YEAR STYLING
+   ========================================================================== */
+
+/* Highlight rows where goal expenses occur */
+.table--indian .goal-expense-year {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.06)) !important;
+  border-left: 4px solid var(--color-error);
+}
+
+.table--indian .goal-expense-year:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.10)) !important;
+  transform: scale(1.005);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Style the combined expenses column */
+.table--indian .table__expenses {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: var(--line-height-tight);
+}
+
+/* Tax column styling */
+.table--indian .table__tax {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error);
+}
+
+/* Cash flow table styling - fits panel width */
+.table--cashflow {
+  width: 100% !important;
+  min-width: auto !important;
+  table-layout: fixed;
+}
+
+.table--cashflow th,
+.table--cashflow td {
+  padding: var(--space-sm) var(--space-xs) !important;
+  font-size: var(--font-size-xs) !important;
+  word-wrap: break-word;
+}
+
+/* Column widths for cash flow table */
+.table--cashflow .table__age {
+  width: 8%;
+}
+
+.table--cashflow .table__balance {
+  width: 20%;
+}
+
+.table--cashflow .table__withdrawals {
+  width: 35%;
+  font-size: var(--font-size-xs);
+  line-height: 1.3;
+}
+
+.table--cashflow .table__tax {
+  width: 17%;
+  color: var(--color-error);
+}
+
+/* Cash flow explanation styling */
+.cashflow-explanation {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  background: rgba(39, 174, 96, 0.05);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 4px;
+}
+
+.cashflow-explanation h5 {
+  margin: 0 0 var(--space-md) 0;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+.cashflow-explanation ul {
+  margin: 0 0 var(--space-md) 0;
+  padding-left: var(--space-lg);
+}
+
+.cashflow-explanation li {
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
+.cashflow-explanation p {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+/* Tax information styling in expenses column */
+.table--indian .table__expenses small {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
+/* Color coding for different expense types */
+.table--indian .goal-expense-year .table__expenses {
+  color: var(--color-error);
+}
+
+.table--indian .retirement-phase .table__expenses {
+  color: var(--color-warning);
+}
+
+/* Responsive adjustments for 6-column table */
+@media (max-width: 1200px) {
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian {
+    min-width: 800px; /* Reduced from 900px */
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian {
+    min-width: 700px; /* Reduced from 800px */
+  }
+  
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian th,
+  .table-container:has(h4:contains("Year-wise Investment Projection")) .table--indian td {
+    padding: var(--space-xs) 2px;
+    font-size: 10px;
+  }
+}
+/* ==========================================================================
+   LEGACY AMOUNT AND DEPLETION WARNING STYLING
+   ========================================================================== */
+
+/* Legacy amount styling - matches existing retirement detail items */
+.retirement-detail-item.legacy-success {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+  border: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.retirement-detail-item.legacy-success .detail-label {
+  color: #b8860b;
+}
+
+.retirement-detail-item.legacy-success .detail-value {
+  color: #b8860b;
+}
+
+/* Money depletion warning styling */
+.retirement-detail-item.depletion-warning {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08));
+  border: 2px solid rgba(239, 68, 68, 0.4);
+}
+
+.retirement-detail-item.depletion-warning .detail-label {
+  color: var(--color-error);
+}
+
+.retirement-detail-item.depletion-warning .detail-value {
+  color: var(--color-error);
 }

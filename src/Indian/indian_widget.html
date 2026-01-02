@@ -9,20 +9,25 @@
 
     <!-- Calculator Type Selector -->
     <div class="calculator-tabs">
-        <button class="calculator-tab active" data-calculator="sip">
+        <button class="calculator-tab active" data-calculator="sip" onclick="switchIndianCalculator('sip')">
             <i class="fas fa-chart-line"></i>
             <span>SIP Calculator</span>
             <small>Systematic Investment Plan</small>
         </button>
-        <button class="calculator-tab" data-calculator="swp">
+        <button class="calculator-tab" data-calculator="swp" onclick="switchIndianCalculator('swp')">
             <i class="fas fa-hand-holding-usd"></i>
             <span>SWP Calculator</span>
             <small>Systematic Withdrawal Plan</small>
         </button>
-        <button class="calculator-tab" data-calculator="lumpsum">
+        <button class="calculator-tab" data-calculator="lumpsum" onclick="switchIndianCalculator('lumpsum')">
             <i class="fas fa-coins"></i>
             <span>Lumpsum Calculator</span>
             <small>One-time Investment</small>
+        </button>
+        <button class="calculator-tab" data-calculator="retirement" onclick="switchIndianCalculator('retirement')">
+            <i class="fas fa-user-clock"></i>
+            <span>Retirement Planner</span>
+            <small>Goal-based Planning</small>
         </button>
     </div>
 
@@ -38,10 +43,23 @@
         <div class="form-grid">
             <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-rupee-sign"></i>
-                    Monthly Investment (₹)
+                    <i class="fas fa-calendar-check"></i>
+                    Investment Frequency
                 </label>
-                <input type="number" id="sipAmount" value="25000" class="form-input" placeholder="Enter monthly SIP amount">
+                <select id="sipFrequency" class="form-input">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="halfyearly">Half-yearly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+                <small class="form-hint">How often you want to invest</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span id="sipAmountLabel">Monthly Investment (₹)</span>
+                </label>
+                <input type="text" id="sipAmount" value="25000" class="form-input" placeholder="Enter SIP amount" inputmode="numeric">
                 <small class="form-hint">Minimum recommended: ₹1,000</small>
             </div>
             <div class="form-group">
@@ -49,8 +67,8 @@
                     <i class="fas fa-percentage"></i>
                     Expected Return Rate (% p.a.)
                 </label>
-                <input type="number" id="sipReturnRate" value="12" step="0.1" class="form-input" placeholder="Expected annual return">
-                <small class="form-hint">Typical range: 8% - 15%</small>
+                <input type="number" id="sipReturnRate" value="12" step="0.1" min="10" max="15" class="form-input" placeholder="Expected annual return">
+                <small class="form-hint">Typical range: 10% - 15%</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
@@ -133,24 +151,37 @@
                     <i class="fas fa-wallet"></i>
                     Total Investment (₹)
                 </label>
-                <input type="number" id="swpTotalInvestment" value="500000" class="form-input" placeholder="Your investment corpus">
+                <input type="text" id="swpTotalInvestment" value="500000" class="form-input" placeholder="Your investment corpus" inputmode="numeric">
                 <small class="form-hint">Your accumulated investment amount</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    Monthly Withdrawal (₹)
+                    <i class="fas fa-calendar-check"></i>
+                    Withdrawal Frequency
                 </label>
-                <input type="number" id="swpWithdrawal" value="10000" class="form-input" placeholder="Monthly income needed">
-                <small class="form-hint">Amount you want to withdraw monthly</small>
+                <select id="swpFrequency" class="form-input">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="halfyearly">Half-yearly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+                <small class="form-hint">How often you want to withdraw</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span id="swpWithdrawalLabel">Monthly Withdrawal (₹)</span>
+                </label>
+                <input type="text" id="swpWithdrawal" value="10000" class="form-input" placeholder="Income needed" inputmode="numeric">
+                <small class="form-hint">Amount you want to withdraw</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
                     <i class="fas fa-percentage"></i>
                     Expected Return Rate (% p.a.)
                 </label>
-                <input type="number" id="swpReturnRate" value="8" step="0.1" class="form-input" placeholder="Expected annual return">
-                <small class="form-hint">Conservative range: 6% - 10%</small>
+                <input type="number" id="swpReturnRate" value="12" step="0.1" min="10" max="15" class="form-input" placeholder="Expected annual return">
+                <small class="form-hint">Typical range: 10% - 15%</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
@@ -208,7 +239,7 @@
                                 <i class="fas fa-wallet"></i>
                                 Initial Investment
                             </span>
-                            <span class="summary-value" id="swpInitialInvestment">₹0</span>
+                            <span class="summary-value summary-value--secondary" id="swpInitialInvestment">₹0</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">
@@ -222,7 +253,7 @@
                                 <i class="fas fa-receipt"></i>
                                 Total Tax Paid
                             </span>
-                            <span class="summary-value summary-value--danger" id="swpTotalTax">₹0</span>
+                            <span class="summary-value summary-value--error" id="swpTotalTax">₹0</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">
@@ -260,7 +291,7 @@
                     <i class="fas fa-rupee-sign"></i>
                     Investment Amount (₹)
                 </label>
-                <input type="number" id="lumpsumAmount" value="25000" class="form-input" placeholder="One-time investment amount">
+                <input type="text" id="lumpsumAmount" value="25000" class="form-input" placeholder="One-time investment amount" inputmode="numeric">
                 <small class="form-hint">Your lumpsum investment</small>
             </div>
             <div class="form-group">
@@ -268,8 +299,8 @@
                     <i class="fas fa-percentage"></i>
                     Expected Return Rate (% p.a.)
                 </label>
-                <input type="number" id="lumpsumReturnRate" value="12" step="0.1" class="form-input" placeholder="Expected annual return">
-                <small class="form-hint">Typical range: 8% - 15%</small>
+                <input type="number" id="lumpsumReturnRate" value="12" step="0.1" min="10" max="15" class="form-input" placeholder="Expected annual return">
+                <small class="form-hint">Typical range: 10% - 15%</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
@@ -326,6 +357,162 @@
                 </div>
             </div>
             <div id="lumpsumTableContainer"></div>
+        </div>
+    </div>
+
+    <!-- Retirement Planning Calculator -->
+    <div id="retirementCalculator" class="calculator-section">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-user-clock text-info"></i> Retirement Planning Calculator</h3>
+                <p>Plan your retirement with goal-based financial planning. Set your life goals, consider inflation, and calculate the corpus needed for a comfortable retirement.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <!-- Personal Information -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-birthday-cake"></i>
+                    Current Age (Years)
+                </label>
+                <input type="number" id="retirementCurrentAge" value="34" min="18" max="65" class="form-input" placeholder="Your current age">
+                <small class="form-hint">Your age today</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-piggy-bank"></i>
+                    Monthly Savings (₹)
+                </label>
+                <input type="text" id="retirementMonthlySavings" value="300000" class="form-input" placeholder="Amount you can save monthly" inputmode="numeric">
+                <small class="form-hint">How much you can invest every month</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-wallet"></i>
+                    Current Corpus (₹) - Optional
+                </label>
+                <input type="text" id="retirementCurrentCorpus" value="48200000" class="form-input" placeholder="Your existing investments" inputmode="numeric">
+                <small class="form-hint">Total value of your current investments (optional)</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-percentage"></i>
+                    Expected Return Rate (% p.a.)
+                </label>
+                <input type="number" id="retirementReturnRate" value="10" step="0.1" min="8" max="18" class="form-input" placeholder="Expected investment returns">
+                <small class="form-hint">Expected annual investment returns</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-arrow-up"></i>
+                    Inflation Rate (% p.a.)
+                </label>
+                <input type="number" id="retirementInflationRate" value="3" step="0.1" min="3" max="10" class="form-input" placeholder="Expected inflation rate">
+                <small class="form-hint">Expected annual inflation rate</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-shopping-cart"></i>
+                    Monthly Expenses in Retirement (₹)
+                </label>
+                <input type="text" id="retirementMonthlyExpenses" value="160000" class="form-input" placeholder="Monthly expenses after retirement" inputmode="numeric">
+                <small class="form-hint">Current value - will be adjusted for inflation</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-heartbeat"></i>
+                    Life Expectancy (Years)
+                </label>
+                <input type="number" id="retirementLifeExpectancy" value="65" min="50" max="100" class="form-input" placeholder="Expected life expectancy">
+                <small class="form-hint">How long you expect to live</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-receipt"></i>
+                    Tax Rate on Withdrawals (%)
+                </label>
+                <input type="number" id="retirementTaxRate" value="30" step="0.1" min="0" max="50" class="form-input" placeholder="Tax rate on withdrawals">
+                <small class="form-hint">Tax on all withdrawals (expenses + goals). Higher tax = need larger corpus</small>
+            </div>
+        </div>
+
+        <!-- Financial Goals Section -->
+        <div class="goals-section">
+            <h3 class="section-title">
+                <i class="fas fa-bullseye"></i>
+                Financial Goals
+            </h3>
+            <p class="section-subtitle">Add your life goals and target amounts. The calculator will adjust for inflation.</p>
+            
+            <div id="goalsContainer">
+                <!-- Default goals will be added here -->
+            </div>
+            
+            <button type="button" class="btn btn--secondary" onclick="addNewGoal()">
+                <i class="fas fa-plus"></i>
+                Add New Goal
+            </button>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary btn--large" onclick="calculateRetirement()">
+                <i class="fas fa-calculator"></i>
+                Calculate Retirement Plan
+            </button>
+        </div>
+
+        <div id="retirementResults" class="results-area hidden">
+            <div class="results-header">
+                <h3><i class="fas fa-chart-pie"></i> Your Retirement Plan</h3>
+                <p>Based on your savings and goals, here's when you can retire</p>
+            </div>
+            
+            <div class="retirement-summary">
+                <div class="retirement-main-result">
+                    <div class="retirement-age-display">
+                        <span class="retirement-age-label">You Can Retire At Age</span>
+                        <span class="retirement-age-value" id="retirementCalculatedAge">0 years</span>
+                    </div>
+                    <div class="retirement-years-display">
+                        <span class="retirement-years-label">Years to Retirement</span>
+                        <span class="retirement-years-value" id="retirementYearsLeft">0</span>
+                    </div>
+                </div>
+                
+                <div class="retirement-details">
+                    <div class="retirement-detail-item">
+                        <span class="detail-label">Total Goals</span>
+                        <span class="detail-value" id="retirementTotalGoals">0</span>
+                    </div>
+                    <div class="retirement-detail-item">
+                        <span class="detail-label">Goals Value (Today)</span>
+                        <span class="detail-value" id="retirementGoalsCorpus">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item">
+                        <span class="detail-label">Goals Value (Future)</span>
+                        <span class="detail-value" id="retirementGoalsCorpusFuture">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item">
+                        <span class="detail-label">Retirement Corpus Needed</span>
+                        <span class="detail-value" id="retirementCorpusNeeded">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item">
+                        <span class="detail-label">Total Corpus Required</span>
+                        <span class="detail-value" id="retirementTotalCorpus">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item">
+                        <span class="detail-label">Monthly Savings Used</span>
+                        <span class="detail-value" id="retirementMonthlySIP">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item highlight">
+                        <span class="detail-label">Surplus Amount</span>
+                        <span class="detail-value" id="retirementIncomeAllocation">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="retirementTableContainer"></div>
         </div>
     </div>
 </div>
