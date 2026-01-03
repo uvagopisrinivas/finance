@@ -5,17 +5,26 @@
     window.calculateSIP = function() {
         try {
             const investmentAmount = parseFloat(document.getElementById('sipAmount').value.replace(/,/g, ''));
-            const frequency = document.getElementById('sipFrequency').value;
+            const frequency = document.getElementById('sipFrequency').value;          // e.g. 'monthly', 'quarterly', 'yearly'
             const annualRate = parseFloat(document.getElementById('sipReturnRate').value) / 100;
-            const years = parseInt(document.getElementById('sipTimePeriod').value);
+            const years = parseInt(document.getElementById('sipTimePeriod').value, 10);
             const stepUpRate = parseFloat(document.getElementById('sipStepUp').value) / 100;
 
-            if (isNaN(investmentAmount) || isNaN(annualRate) || isNaN(years) || investmentAmount <= 0 || annualRate < 0 || years <= 0) {
+            if (
+                isNaN(investmentAmount) ||
+                isNaN(annualRate) ||
+                isNaN(years) ||
+                investmentAmount <= 0 ||
+                annualRate < 0 ||
+                years <= 0
+            ) {
                 throw new Error('Please enter valid positive values');
             }
 
             const frequencyMultiplier = getFrequencyMultiplier(frequency);
-            const periodicRate = annualRate / frequencyMultiplier;
+            // For correct compounding, convert annual rate to effective period rate:
+            // r_period = (1 + r_annual)^(1/frequency) - 1
+            const periodicRate = Math.pow(1 + annualRate, 1 / frequencyMultiplier) - 1;
             const totalPeriods = years * frequencyMultiplier;
             
             let totalInvestment = 0;
@@ -32,15 +41,15 @@
                 let yearEndValue = runningValue;
 
                 for (let period = 1; period <= frequencyMultiplier; period++) {
-                    // Apply step-up annually (only at the beginning of each year)
-                    if (period === 1 && year > 1) {
+                    // Apply step-up annually (only at the beginning of each new year)
+                    if (period === 1 && year > 1 && stepUpRate > 0) {
                         currentAmount = currentAmount * (1 + stepUpRate);
                     }
 
                     yearInvestment += currentAmount;
                     runningInvestment += currentAmount;
 
-                    // Calculate future value with compound interest
+                    // Add this instalment, then grow by periodicRate
                     yearEndValue = (yearEndValue + currentAmount) * (1 + periodicRate);
                 }
 
@@ -108,6 +117,20 @@
             </div>
         `;
         document.getElementById('sipTableContainer').innerHTML = tableHtml;
+    }
+
+    // Make sure you have this helper somewhere:
+    function getFrequencyMultiplier(freq) {
+        switch (freq) {
+            case 'monthly':
+                return 12;
+            case 'quarterly':
+                return 4;
+            case 'yearly':
+                return 1;
+            default:
+                return 12; // fallback to monthly
+        }
     }
 
 })();

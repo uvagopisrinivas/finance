@@ -4,14 +4,29 @@
     // Lumpsum Calculator
     window.calculateLumpsum = function() {
         try {
-            const principal = parseFloat(document.getElementById('lumpsumAmount').value.replace(/,/g, ''));
-            const annualRate = parseFloat(document.getElementById('lumpsumReturnRate').value) / 100;
-            const years = parseInt(document.getElementById('lumpsumTimePeriod').value);
-            // Use annual compounding since lumpsum is calculated annually
+            const principal = parseFloat(
+                document.getElementById('lumpsumAmount').value.replace(/,/g, '')
+            );
+            const annualRate = parseFloat(
+                document.getElementById('lumpsumReturnRate').value
+            ) / 100;
+            const years = parseInt(
+                document.getElementById('lumpsumTimePeriod').value,
+                10
+            );
+
+            // Using annual compounding for lumpsum:
+            // Amount = P * (1 + r)^n
             const compoundingFreq = 1;
 
-            if (isNaN(principal) || isNaN(annualRate) || isNaN(years) || 
-                principal <= 0 || annualRate < 0 || years <= 0) {
+            if (
+                isNaN(principal) ||
+                isNaN(annualRate) ||
+                isNaN(years) ||
+                principal <= 0 ||
+                annualRate < 0 ||
+                years <= 0
+            ) {
                 throw new Error('Please enter valid positive values');
             }
 
@@ -19,9 +34,12 @@
             const yearlyData = [];
             
             for (let year = 1; year <= years; year++) {
-                const amount = principal * Math.pow((1 + annualRate / compoundingFreq), compoundingFreq * year);
+                const amount = principal * Math.pow(
+                    1 + annualRate / compoundingFreq,
+                    compoundingFreq * year
+                );
                 const returns = amount - principal;
-                
+
                 yearlyData.push({
                     year: year,
                     principal: principal,
@@ -35,9 +53,12 @@
             const totalReturns = finalAmount - principal;
 
             // Update summary
-            document.getElementById('lumpsumInvestedAmount').textContent = formatINRReadable(principal);
-            document.getElementById('lumpsumExpectedReturns').textContent = formatINRReadable(totalReturns);
-            document.getElementById('lumpsumTotalValue').textContent = formatINRReadable(finalAmount);
+            document.getElementById('lumpsumInvestedAmount').textContent =
+                formatINRReadable(principal);
+            document.getElementById('lumpsumExpectedReturns').textContent =
+                formatINRReadable(totalReturns);
+            document.getElementById('lumpsumTotalValue').textContent =
+                formatINRReadable(finalAmount);
 
             // Generate table
             generateLumpsumTable(yearlyData);

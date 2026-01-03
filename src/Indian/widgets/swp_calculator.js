@@ -6,19 +6,26 @@
         try {
             const totalInvestment = parseFloat(document.getElementById('swpTotalInvestment').value.replace(/,/g, ''));
             const withdrawalAmount = parseFloat(document.getElementById('swpWithdrawal').value.replace(/,/g, ''));
-            const frequency = document.getElementById('swpFrequency').value;
+            const frequency = document.getElementById('swpFrequency').value; // 'monthly', 'quarterly', 'yearly'
             const annualRate = parseFloat(document.getElementById('swpReturnRate').value) / 100;
             const taxRate = parseFloat(document.getElementById('swpTaxRate').value) / 100;
-            const years = parseInt(document.getElementById('swpTimePeriod').value);
+            const years = parseInt(document.getElementById('swpTimePeriod').value, 10);
             const isActiveTrading = document.getElementById('swpActiveTrading').checked;
 
-            if (isNaN(totalInvestment) || isNaN(withdrawalAmount) || isNaN(annualRate) || isNaN(taxRate) || isNaN(years) || 
-                totalInvestment <= 0 || withdrawalAmount <= 0 || annualRate < 0 || taxRate < 0 || years <= 0) {
+            if (
+                isNaN(totalInvestment) || isNaN(withdrawalAmount) ||
+                isNaN(annualRate) || isNaN(taxRate) || isNaN(years) ||
+                totalInvestment <= 0 || withdrawalAmount <= 0 ||
+                annualRate < 0 || taxRate < 0 || years <= 0
+            ) {
                 throw new Error('Please enter valid positive values');
             }
 
             const frequencyMultiplier = getFrequencyMultiplier(frequency);
-            const periodicRate = annualRate / frequencyMultiplier;
+            // Use effective rate per period, similar to SIP calculators:
+            // r_period = (1 + r_annual)^(1/frequency) - 1
+            const periodicRate = Math.pow(1 + annualRate, 1 / frequencyMultiplier) - 1;
+
             let remainingBalance = totalInvestment;
             let totalWithdrawn = 0;
             let totalTaxPaid = 0;
@@ -49,19 +56,19 @@
                     // Update balance with net gains
                     remainingBalance = yearStartBalance + netGains;
                     
-                    // Now handle withdrawals (no additional tax since already paid)
+                    // Now handle withdrawals (no additional tax since already paid on gains)
                     const annualWithdrawal = Math.min(withdrawalAmount * frequencyMultiplier, remainingBalance);
                     yearWithdrawal = annualWithdrawal;
                     yearNetReceived = annualWithdrawal; // No additional tax on withdrawal
                     
                     remainingBalance -= annualWithdrawal;
-                    
+
                 } else {
-                    // Regular SWP: Tax on withdrawal amount at specified rate
+                    // Regular SWP: periodic compounding + tax on each withdrawal
                     for (let period = 1; period <= frequencyMultiplier; period++) {
                         if (remainingBalance <= 0) break;
 
-                        // Apply periodic return
+                        // Apply periodic return on remaining balance
                         const periodicReturn = remainingBalance * periodicRate;
                         remainingBalance += periodicReturn;
                         yearGains += periodicReturn;
@@ -69,7 +76,7 @@
                         // Withdraw amount (but not more than remaining balance)
                         const grossWithdrawal = Math.min(withdrawalAmount, remainingBalance);
                         
-                        // Tax calculation: Apply tax rate to the entire withdrawal amount
+                        // Tax calculation: apply tax rate to the withdrawal amount
                         const periodicTax = grossWithdrawal * taxRate;
                         const netWithdrawal = grossWithdrawal - periodicTax;
                         
@@ -77,6 +84,8 @@
                         yearWithdrawal += grossWithdrawal;
                         yearTaxPaid += periodicTax;
                         yearNetReceived += netWithdrawal;
+
+                        if (remainingBalance <= 0) break;
                     }
                 }
 
@@ -157,6 +166,20 @@
             </div>
         `;
         document.getElementById('swpTableContainer').innerHTML = tableHtml;
+    }
+
+    // Ensure this helper exists and matches your SIP widget
+    function getFrequencyMultiplier(freq) {
+        switch (freq) {
+            case 'monthly':
+                return 12;
+            case 'quarterly':
+                return 4;
+            case 'yearly':
+                return 1;
+            default:
+                return 12;
+        }
     }
 
 })();
