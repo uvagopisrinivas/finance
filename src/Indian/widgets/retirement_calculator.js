@@ -266,19 +266,22 @@
                 // Total corpus needed (goals + retirement) - goals already include tax consideration
                 const totalCorpusNeeded = totalGoalsFutureValue + retirementCorpus;
 
-                // Calculate what we can accumulate with current corpus + monthly savings
-                const monthlyReturn = returnRate / 12;
+                // Effective monthly rate from annual rate, aligned with SIP/SWP
+                const monthlyReturn = Math.pow(1 + returnRate, 1 / 12) - 1;
                 const totalMonths = yearsToRetirement * 12;
-                
-                // Future value of current corpus
-                const futureValueOfCurrentCorpus = currentCorpus * Math.pow(1 + returnRate, yearsToRetirement);
-                
-                // Future value of monthly savings (SIP)
-                const futureValueOfSavings = monthlySavings * 
-                    ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn);
-                
+
+                // Future value of current corpus (annual compounding is fine here)
+                const futureValueOfCurrentCorpus =
+                    currentCorpus * Math.pow(1 + returnRate, yearsToRetirement);
+
+                // Future value of monthly savings (SIP-style)
+                const futureValueOfSavings =
+                    monthlySavings * ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn);
+
                 // Total accumulated corpus
-                const totalAccumulatedCorpus = futureValueOfCurrentCorpus + futureValueOfSavings;
+                const totalAccumulatedCorpus =
+                    futureValueOfCurrentCorpus + futureValueOfSavings;
+
 
                 // Check if this is feasible (we can accumulate enough)
                 if (totalAccumulatedCorpus >= totalCorpusNeeded) {
@@ -302,20 +305,23 @@
             if (!canRetire) {
                 throw new Error('Based on your current savings capacity, you may need to increase monthly savings or reduce goals to retire within a reasonable timeframe.');
             }
+            // Conservative return in retirement (same as used in corpus formula)
+            const postRetirementReturn = Math.max(returnRate - 0.02, 0.06);
 
-            // Generate detailed table first to check if money runs out
             const tableResults = generateRetirementTable(goals, {
                 currentAge,
                 retirementAge,
                 monthlySavings,
                 currentCorpus,
                 returnRate,
+                postRetirementReturn, // NEW: pass post-retirement return to table
                 inflationRate,
                 monthlyExpenses,
                 lifeExpectancy,
                 taxRate,
                 ...calculationResults
             });
+
 
             // Adjust surplus based on whether money runs out
             let actualSurplus = calculationResults.surplus;
@@ -353,8 +359,13 @@
         
         // Validate parameters to prevent NaN values
         const monthlySavings = parseFloat(params.monthlySavings) || 0;
-        const currentCorpus = parseFloat(params.currentCorpus) || 0;
+        const currentCorpus = parseFloat(params.currentCorpus) || 0; 
         const returnRate = parseFloat(params.returnRate) || 0.12;
+        // Use conservative post-retirement return if provided, else fall back
+        const postRetirementReturn =
+            typeof params.postRetirementReturn === 'number'
+                ? params.postRetirementReturn
+                : returnRate;
         const currentAge = parseInt(params.currentAge) || 30;
         const totalCorpusNeeded = parseFloat(params.totalCorpusNeeded) || 0;
         
@@ -516,7 +527,8 @@
                 
                 // Calculate what we can actually withdraw (limited by available funds)
                 const totalNeededWithdrawal = grossAnnualExpenses + grossGoalExpenses;
-                const maxAvailableAfterReturns = portfolioValue * (1 + params.returnRate);
+                const maxAvailableAfterReturns = portfolioValue * (1 + postRetirementReturn);
+
                 
                 // If we don't have enough money for full withdrawal, reduce proportionally
                 let actualGrossAnnualExpenses = grossAnnualExpenses;
@@ -542,7 +554,7 @@
                 const taxOnGoals = actualGrossGoalExpenses * params.taxRate;
                 
                 // Apply returns and subtract actual withdrawals
-                portfolioValue = (portfolioValue * (1 + params.returnRate)) - actualTotalWithdrawal;
+                portfolioValue = (portfolioValue * (1 + postRetirementReturn)) - actualTotalWithdrawal;
                 
                 // During retirement, surplus is remaining portfolio value, deficit is negative portfolio
                 const remainingAfterExpenses = portfolioValue;
@@ -654,12 +666,18 @@
                                 portfolioAfterInvestment += row.yearlyInvestment;
                             }
                             
+                            // Use post-retirement return only during retirement years
+                            const effectiveRate =
+                                row.phase === 'retirement'
+                                    ? postRetirementReturn
+                                    : returnRate;
+
                             // Step 3: Apply investment returns
-                            const portfolioAfterReturns = portfolioAfterInvestment * (1 + params.returnRate);
-                            
+                            const portfolioAfterReturns = portfolioAfterInvestment * (1 + effectiveRate);
+
                             // Step 4: Subtract withdrawals and tax
                             portfolioEnd = portfolioAfterReturns - totalWithdrawals - totalTax;
-                            
+
                             // Format withdrawals display with monthly breakdown
                             let withdrawalsDisplay = '-';
                             
