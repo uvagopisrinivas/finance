@@ -381,14 +381,7 @@
             const html = await fetch('src/SEPP/sepp_widget.html').then(r=>r.text());
             container.innerHTML = html;
             container.dataset.loaded = 'true';
-            // Trigger initial calculation after HTML is loaded
-            if (typeof window.calculateSEPP === 'function') {
-              try {
-                window.calculateSEPP();
-              } catch(e) {
-                console.log('Initial SEPP calculation skipped:', e);
-              }
-            }
+            // Initial calculation removed - user must click Generate button
           };
           document.body.appendChild(script);
         }
@@ -409,14 +402,7 @@
                 console.log('Setting up 401k input validation...');
                 window.setup401kInputValidation();
               }
-              // Also trigger initial calculation
-              if (typeof window.calculate401k === 'function') {
-                try {
-                  window.calculate401k();
-                } catch(e) {
-                  console.log('Initial 401k calculation skipped:', e);
-                }
-              }
+              // Initial calculation removed - user must click Generate button
             }, 200);
           };
           document.body.appendChild(script);
@@ -430,19 +416,29 @@
           const html = await fetch('src/Indian/indian_widget.html').then(r=>r.text());
           container.innerHTML = html;
           // inject JS for Indian calculators
-          const script = document.createElement('script'); 
-          script.src='src/Indian/indian_calculators.js?v=' + Date.now(); 
-          document.body.appendChild(script);
-          container.dataset.loaded = 'true';
+          const scripts = [
+            'src/Indian/indian_calculators.js',
+            'src/Indian/widgets/sip_calculator.js',
+            'src/Indian/widgets/swp_calculator.js', 
+            'src/Indian/widgets/lumpsum_calculator.js',
+            'src/Indian/widgets/retirement_calculator.js'
+          ];
           
-          // Ensure tab switching works after script loads
-          script.onload = function() {
-            // Initialize the first calculator as active
-            setTimeout(() => {
-              console.log('Initializing Indian calculators...');
-              
-              // Ensure only SIP is visible initially
-              const sections = document.querySelectorAll('.calculator-section');
+          let loadedScripts = 0;
+          const totalScripts = scripts.length;
+          
+          scripts.forEach(scriptSrc => {
+            const script = document.createElement('script');
+            script.src = scriptSrc + '?v=' + Date.now();
+            script.onload = function() {
+              loadedScripts++;
+              if (loadedScripts === totalScripts) {
+                // All scripts loaded, initialize
+                setTimeout(() => {
+                  console.log('Initializing Indian calculators...');
+                  
+                  // Ensure only SIP is visible initially
+                  const sections = document.querySelectorAll('.calculator-section');
               sections.forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none';
@@ -501,7 +497,11 @@
               
               console.log('Tab click events bound to', tabElements.length, 'tabs');
             }, 200);
-          };
+                }
+              };
+              document.body.appendChild(script);
+            });
+            container.dataset.loaded = 'true';
           // Setup input validation after a short delay to ensure DOM is ready
           setTimeout(() => {
             if (window.setupInputValidation) window.setupInputValidation();

@@ -34,7 +34,18 @@
     <button onclick="calculateSEPP()" class="btn btn--primary btn--large" id="seppCalculateBtn">Generate SEPP Projection</button>
 </div>
 
-<div id="resultsArea"></div>
+<div id="resultsArea">
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">📊 SEPP Analysis Results</h3>
+            <p class="card__subtitle">Click "Generate SEPP Projection" above to see your 72(t) withdrawal analysis</p>
+        </div>
+        <div class="placeholder-content">
+            <p>🎯 Your personalized SEPP projection will appear here after clicking the Generate button</p>
+            <p>📈 The analysis will show all three IRS-approved withdrawal methods with detailed year-by-year breakdowns</p>
+        </div>
+    </div>
+</div>
 
 <!-- Modal for info popups -->
 <div id="infoModal" class="modal modal--hidden" aria-hidden="true">

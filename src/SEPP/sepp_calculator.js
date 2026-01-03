@@ -873,8 +873,6 @@
         }
     };
 
-    // Defensive initial render: only run if widget exists on page
-    if(document.getElementById('resultsArea')){
-        try{ window.calculateSEPP(); }catch(e){}
-    }
+    // Removed automatic calculation - user must click Generate button to see results
+
 })();

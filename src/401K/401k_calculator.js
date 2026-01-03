@@ -931,14 +931,7 @@
         }
     };
 
-    // Auto-calculate on page load if widget exists
-    if (document.getElementById('results401kArea')) {
-        try { 
-            window.calculate401k(); 
-        } catch(e) {
-            // Calculator not ready yet
-        }
-    }
+    // Removed automatic calculation - user must click Generate button to see results
 
     // 401k Info Modal Functions - Use unique function name to avoid conflicts
     function show401kInfoModal(id) {

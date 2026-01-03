@@ -352,6 +352,18 @@ body {
   margin: 0;
 }
 
+.placeholder-content {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.placeholder-content p {
+  margin: var(--space-md) 0;
+  font-size: var(--font-size-base);
+}
+
 /* ==========================================================================
    FORM COMPONENTS
    ========================================================================== */

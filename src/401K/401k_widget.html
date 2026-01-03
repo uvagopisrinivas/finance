@@ -115,7 +115,18 @@
     <button onclick="calculate401k()" class="btn btn--primary btn--large">Generate 401k Projection</button>
 </div>
 
-<div id="results401kArea"></div>
+<div id="results401kArea">
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">📊 401k Projection Results</h3>
+            <p class="card__subtitle">Click "Generate 401k Projection" above to see your retirement savings analysis</p>
+        </div>
+        <div class="placeholder-content">
+            <p>🎯 Your personalized 401k projection will appear here after clicking the Generate button</p>
+            <p>📈 The analysis will show year-by-year growth with contributions, employer matching, and investment returns</p>
+        </div>
+    </div>
+</div>
 
 <!-- Modal for 401k info popups -->
 <div id="info401kModal" class="modal modal--hidden" aria-hidden="true">
@@ -172,17 +183,6 @@ document.addEventListener('DOMContentLoaded', function() {
     has401aCheckbox.addEventListener('change', toggle401aFields);
     toggle401aFields(); // Initial state
     
-    // Auto-recalculate when any input changes
-    const allInputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="checkbox"]');
-    allInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            // Small delay to allow UI updates
-            setTimeout(() => {
-                if (typeof window.calculate401k === 'function') {
-                    window.calculate401k();
-                }
-            }, 100);
-        });
-    });
+    // Removed auto-recalculation - user must click Generate button to see updated results
 });
 </script>
