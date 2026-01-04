@@ -538,6 +538,20 @@
         summaryItems.innerHTML = `
             <div class="mortgage-summary-item">
                 <span class="mortgage-summary-label">
+                    <i class="fas fa-home"></i>
+                    Home Price
+                </span>
+                <span class="mortgage-summary-value">${formatMortgageCurrency(homePrice)}</span>
+            </div>
+            <div class="mortgage-summary-item">
+                <span class="mortgage-summary-label">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    Down Payment
+                </span>
+                <span class="mortgage-summary-value">${formatMortgageCurrency(downPayment)} (${downPaymentPercent.toFixed(1)}%)</span>
+            </div>
+            <div class="mortgage-summary-item">
+                <span class="mortgage-summary-label">
                     <i class="fas fa-money-bill-wave"></i>
                     Loan Amount
                 </span>
