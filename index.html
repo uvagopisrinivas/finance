@@ -8,6 +8,8 @@
   <link rel="apple-touch-icon" href="src/assets/images/favicon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="src/styles/consolidated.css">
+  <!-- Production-ready logging utility -->
+  <script src="src/shared/logger.js"></script>
   <!-- Ensure CSS loads properly with cache busting -->
   <script>
     // Verify CSS is loaded
@@ -15,7 +17,7 @@
       const cssLink = document.querySelector('link[href="src/styles/consolidated.css"]');
       if (cssLink) {
         cssLink.onerror = function() {
-          console.error('Failed to load CSS file');
+          Logger.error('Failed to load CSS file');
           // Fallback: try to reload CSS
           const newLink = document.createElement('link');
           newLink.rel = 'stylesheet';
@@ -621,7 +623,7 @@
             // Ensure input validation setup runs after both HTML and JS are loaded
             setTimeout(() => {
               if (typeof window.setup401kInputValidation === 'function') {
-                console.log('Setting up 401k input validation...');
+                Logger.debug('Setting up 401k input validation...');
                 window.setup401kInputValidation();
               }
               // Initial calculation removed - user must click Generate button
@@ -657,7 +659,7 @@
               if (loadedScripts === totalScripts) {
                 // All scripts loaded, initialize
                 setTimeout(() => {
-                  console.log('Initializing financial planning tools...');
+                  Logger.debug('Initializing financial planning tools...');
                   
                   // Ensure only SIP is visible initially
                   const sections = document.querySelectorAll('.calculator-section');
@@ -671,7 +673,7 @@
               if (sipSection) {
                 sipSection.classList.add('active');
                 sipSection.style.display = 'block';
-                console.log('SIP calculator activated');
+                Logger.debug('SIP calculator activated');
               }
               
               // Ensure SIP tab is active
@@ -680,7 +682,7 @@
               const sipTab = document.querySelector('[data-calculator="sip"]');
               if (sipTab) {
                 sipTab.classList.add('active');
-                console.log('SIP tab activated');
+                Logger.debug('SIP tab activated');
               }
               
               // Call the switch function if available
@@ -693,7 +695,7 @@
               tabElements.forEach(tab => {
                 tab.addEventListener('click', function() {
                   const calculatorType = this.getAttribute('data-calculator');
-                  console.log('Tab clicked:', calculatorType);
+                  Logger.debug('Tab clicked:', calculatorType);
                   
                   // Remove active class from all tabs
                   tabElements.forEach(t => t.classList.remove('active'));
@@ -712,12 +714,12 @@
                   if (targetSection) {
                     targetSection.classList.add('active');
                     targetSection.style.display = 'block';
-                    console.log('Switched to:', calculatorType);
+                    Logger.debug('Switched to:', calculatorType);
                   }
                 });
               });
               
-              console.log('Tab click events bound to', tabElements.length, 'tabs');
+              Logger.debug('Tab click events bound to', tabElements.length, 'tabs');
             }, 200);
                 }
               };
@@ -742,14 +744,14 @@
             const script = document.createElement('script');
             script.src = 'src/mortgage/mortgage_calculator.js?v=' + Date.now();
             script.onload = function() {
-              console.log('Mortgage calculator script loaded');
+              Logger.debug('Mortgage calculator script loaded');
               // Ensure initialization happens after script load with multiple attempts
               let attempts = 0;
               const maxAttempts = 5;
               
               function tryInitialize() {
                 attempts++;
-                console.log(`Initialization attempt ${attempts}`);
+                Logger.debug(`Initialization attempt ${attempts}`);
                 
                 if (window.initializeMortgageCalculator) {
                   window.initializeMortgageCalculator();
@@ -758,28 +760,28 @@
                   setTimeout(() => {
                     const usSection = document.getElementById('usMortgageCalculator');
                     if (usSection && usSection.style.display === 'none') {
-                      console.log('US section still hidden, forcing visibility');
+                      Logger.debug('US section still hidden, forcing visibility');
                       usSection.style.display = 'block';
                       usSection.classList.add('active');
                     }
                   }, 100);
                 } else if (attempts < maxAttempts) {
-                  console.log('Initialization function not ready, retrying...');
+                  Logger.debug('Initialization function not ready, retrying...');
                   setTimeout(tryInitialize, 100);
                 } else {
-                  console.error('Failed to initialize mortgage calculator after multiple attempts');
+                  Logger.error('Failed to initialize mortgage calculator after multiple attempts');
                 }
               }
               
               tryInitialize();
             };
             script.onerror = function() {
-              console.error('Failed to load mortgage calculator script');
+              Logger.error('Failed to load mortgage calculator script');
             };
             document.body.appendChild(script);
             container.dataset.loaded = 'true';
           } catch (error) {
-            console.error('Error loading mortgage calculator:', error);
+            Logger.error('Error loading mortgage calculator:', error);
             container.innerHTML = '<div class="error-message">Error loading mortgage calculator. Please refresh the page.</div>';
           }
         }
@@ -888,19 +890,19 @@
 
     // Simple popup function (deprecated - now handled in links widget)
     window.openPopup = function(url, title) {
-      console.log('⚠️ openPopup is deprecated');
+      Logger.warn('⚠️ openPopup is deprecated');
       return false;
     };
 
     // Simple metal click handler (deprecated - now handled in links widget)
     window.handleMetalClick = function(url, title, event) {
-      console.log('⚠️ handleMetalClick is deprecated');
+      Logger.warn('⚠️ handleMetalClick is deprecated');
       return false;
     };
 
     // Simple function to open metals links in same tab
     window.openMetalPopup = function(url, name) {
-      console.log('🔗 Opening metal link in same tab:', name, url);
+      Logger.debug('🔗 Opening metal link in same tab:', name, url);
       // Ensure the current tab state is saved in history before navigating
       const currentTab = getCurrentTab();
       window.history.pushState({tab: currentTab}, null, '#' + currentTab);
@@ -1073,7 +1075,7 @@
     const calculatorDisplay = document.getElementById('calculatorDisplay');
 
     // Debug: Check if elements are found
-    console.log('Calculator elements found:', {
+    Logger.debug('Calculator elements found:', {
       toggle: !!calculatorToggle,
       widget: !!calculatorWidget,
       close: !!calculatorClose,
@@ -1091,12 +1093,12 @@
       });
 
       function closeCalculator() {
-        console.log('Closing calculator');
+        Logger.debug('Closing calculator');
         calculatorWidget.classList.remove('active');
       }
 
       function minimizeCalculator() {
-        console.log('Minimizing calculator');
+        Logger.debug('Minimizing calculator');
         calculatorWidget.classList.toggle('minimized');
         
         // Update the yellow button symbol based on minimized state
@@ -1115,19 +1117,19 @@
       if (calculatorClose) {
         // Multiple event types for better mobile support
         calculatorClose.addEventListener('click', function(e) {
-          console.log('Close button clicked');
+          Logger.debug('Close button clicked');
           e.stopPropagation();
           e.preventDefault();
           closeCalculator();
         });
         
         calculatorClose.addEventListener('touchstart', function(e) {
-          console.log('Close button touched');
+          Logger.debug('Close button touched');
           e.stopPropagation();
         });
         
         calculatorClose.addEventListener('touchend', function(e) {
-          console.log('Close button touch ended');
+          Logger.debug('Close button touch ended');
           e.preventDefault();
           e.stopPropagation();
           closeCalculator();

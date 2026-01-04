@@ -308,7 +308,7 @@
     // Set mortgage currency and update UI - improved with element checking
     window.setMortgageCurrency = function(currency) {
         try {
-            console.log('Setting mortgage currency to:', currency);
+            Logger.debug('Setting mortgage currency to:', currency);
             
             if (mortgageCurrencyConfig[currency]) {
                 currentMortgageCurrency = currency;
@@ -327,7 +327,7 @@
                     if (usSection) {
                         usSection.style.display = 'block';
                         usSection.classList.add('active');
-                        console.log('US section activated');
+                        Logger.debug('US section activated');
                     }
                     if (indianSection) {
                         indianSection.style.display = 'none';
@@ -341,7 +341,7 @@
                     if (indianSection) {
                         indianSection.style.display = 'block';
                         indianSection.classList.add('active');
-                        console.log('Indian section activated');
+                        Logger.debug('Indian section activated');
                     }
                 }
                 
@@ -352,7 +352,7 @@
                 hideMortgageResults();
             }
         } catch (error) {
-            console.error('Error setting mortgage currency:', error);
+            Logger.error('Error setting mortgage currency:', error);
         }
     };
     
@@ -1161,7 +1161,14 @@
     // Initialize mortgage calculator - improved with element checking
     function initializeMortgageCalculator() {
         try {
-            console.log('Initializing mortgage calculator...');
+            Logger.debug('Initializing mortgage calculator...');
+            
+            // Ensure currency selector is set to USD first
+            const currencySelector = document.getElementById('mortgageCurrencySelector');
+            if (currencySelector) {
+                currencySelector.value = 'USD';
+                Logger.debug('Currency selector set to USD');
+            }
             
             setupMortgageInputValidation();
             setMortgageCurrency('USD'); // This will handle showing/hiding sections
@@ -1169,12 +1176,11 @@
             hideMortgageResults();
             
             // Add currency selector event listener
-            const currencySelector = document.getElementById('mortgageCurrencySelector');
             if (currencySelector) {
-                currencySelector.addEventListener('change', function() {
-                    console.log('Currency changed to:', this.value);
-                    setMortgageCurrency(this.value);
-                });
+                // Remove any existing listeners first
+                currencySelector.removeEventListener('change', handleCurrencyChange);
+                currencySelector.addEventListener('change', handleCurrencyChange);
+                Logger.debug('Currency selector event listener added');
             }
             
             // Setup utilities checkbox functionality
@@ -1251,7 +1257,17 @@
                 }
             }, 200);
         } catch (error) {
-            console.error('Error initializing mortgage calculator:', error);
+            Logger.error('Error initializing mortgage calculator:', error);
+        }
+    }
+    
+    // Separate currency change handler for better debugging
+    function handleCurrencyChange(event) {
+        try {
+            Logger.debug('Currency change event triggered:', event.target.value);
+            setMortgageCurrency(event.target.value);
+        } catch (error) {
+            Logger.error('Error handling currency change:', error);
         }
     }
     
@@ -1263,13 +1279,13 @@
                 initializeMortgageCalculator();
             }, 100);
         } catch (error) {
-            console.error('Error during mortgage calculator initialization:', error);
+            Logger.error('Error during mortgage calculator initialization:', error);
             // Retry once after a longer delay
             setTimeout(() => {
                 try {
                     initializeMortgageCalculator();
                 } catch (retryError) {
-                    console.error('Retry failed for mortgage calculator:', retryError);
+                    Logger.error('Retry failed for mortgage calculator:', retryError);
                 }
             }, 500);
         }

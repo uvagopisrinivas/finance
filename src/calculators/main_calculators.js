@@ -97,7 +97,7 @@
             // Update goals section if in retirement calculator
             updateGoalsSection();
             
-            console.log('Currency changed to:', currency);
+            Logger.debug('Currency changed to:', currency);
         }
     };
     
@@ -245,7 +245,7 @@
             }
         });
         
-        console.log('Currency changed - results hidden. Please recalculate to see results in new currency.');
+        Logger.debug('Currency changed - results hidden. Please recalculate to see results in new currency.');
     }
     
     // Generic currency formatting function
@@ -318,7 +318,7 @@
 
     // Calculator switching functionality
     window.switchCalculator = function(calculatorType) {
-        console.log('Switching to calculator:', calculatorType);
+        Logger.debug('Switching to calculator:', calculatorType);
         
         // Update tab states
         document.querySelectorAll('.calculator-tab').forEach(tab => {
@@ -327,9 +327,9 @@
         const activeTab = document.querySelector(`[data-calculator="${calculatorType}"]`);
         if (activeTab) {
             activeTab.classList.add('active');
-            console.log('Active tab set for:', calculatorType);
+            Logger.debug('Active tab set for:', calculatorType);
         } else {
-            console.error('Tab not found for:', calculatorType);
+            Logger.error('Tab not found for:', calculatorType);
         }
 
         // Update calculator sections
@@ -339,9 +339,9 @@
         const activeSection = document.getElementById(`${calculatorType}Calculator`);
         if (activeSection) {
             activeSection.classList.add('active');
-            console.log('Active section set for:', calculatorType);
+            Logger.debug('Active section set for:', calculatorType);
         } else {
-            console.error('Section not found for:', calculatorType + 'Calculator');
+            Logger.error('Section not found for:', calculatorType + 'Calculator');
         }
     };
 

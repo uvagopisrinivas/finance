@@ -923,11 +923,11 @@
             if (resultsEl) {
                 resultsEl.innerHTML = summaryHtml + fullTableHtml;
             } else {
-                console.error('Results container not found');
+                Logger.error('Results container not found');
             }
             
         } catch (error) {
-            console.error('Error in 401k calculation:', error);
+            Logger.error('Error in 401k calculation:', error);
             const resultsEl = document.getElementById('results401kArea');
             if (resultsEl) {
                 resultsEl.innerHTML = `
@@ -947,13 +947,13 @@
 
     // 401k Info Modal Functions - Use unique function name to avoid conflicts
     function show401kInfoModal(id) {
-        console.log('show401kInfoModal called with id:', id); // Debug log
+        Logger.debug('show401kInfoModal called with id:', id); // Debug log
         const modal = document.getElementById('info401kModal');
         const titleEl = document.getElementById('info401kTitle');
         const contentEl = document.getElementById('info401kContent');
         
         if (!modal || !titleEl || !contentEl) {
-            console.error('Modal elements not found:', {modal, titleEl, contentEl});
+            Logger.error('Modal elements not found:', {modal, titleEl, contentEl});
             return;
         }
         
@@ -1103,7 +1103,7 @@
         
         const info = data[id];
         if (!info) {
-            console.error('No data found for id:', id, 'Available keys:', Object.keys(data));
+            Logger.error('No data found for id:', id, 'Available keys:', Object.keys(data));
             titleEl.innerText = 'Info';
             contentEl.innerHTML = '<p>No information available for this section.</p>';
         } else {
