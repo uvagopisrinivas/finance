@@ -54,11 +54,11 @@
 
             // Update summary
             document.getElementById('lumpsumInvestedAmount').textContent =
-                formatINRReadable(principal);
+                formatCurrencyReadable(principal);
             document.getElementById('lumpsumExpectedReturns').textContent =
-                formatINRReadable(totalReturns);
+                formatCurrencyReadable(totalReturns);
             document.getElementById('lumpsumTotalValue').textContent =
-                formatINRReadable(finalAmount);
+                formatCurrencyReadable(finalAmount);
 
             // Generate table
             generateLumpsumTable(yearlyData);
@@ -93,9 +93,9 @@
                         ${data.map(row => `
                             <tr>
                                 <td class="table__year">${row.year}</td>
-                                <td class="table__investment">${formatINR(row.principal)}</td>
-                                <td class="table__balance">${formatINR(row.amount)}</td>
-                                <td class="table__returns">${formatINR(row.returns)}</td>
+                                <td class="table__investment">${formatCurrency(row.principal)}</td>
+                                <td class="table__balance">${formatCurrency(row.amount)}</td>
+                                <td class="table__returns">${formatCurrency(row.returns)}</td>
                                 <td class="table__percent">${formatPercent(row.returnPercent)}</td>
                             </tr>
                         `).join('')}

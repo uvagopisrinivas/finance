@@ -1,6 +1,6 @@
 # 🎯 Comprehensive Financial Planning Platform
 
-A sophisticated web-based platform for retirement planning, investment analysis, and financial calculations, featuring advanced SEPP analysis, 401k projections, Indian investment calculators, and live financial data access.
+A sophisticated web-based platform for retirement planning, investment analysis, and financial calculations, featuring advanced SEPP analysis, 401k projections, multi-currency financial planning tools, and live financial data access.
 
 ![Platform Preview](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
@@ -25,12 +25,14 @@ A sophisticated web-based platform for retirement planning, investment analysis,
 - **Colorful analytics dashboard** with key insights and projections
 - **Interactive help system** with detailed explanations
 
-### 🇮🇳 Indian Investment Calculators Suite
+### 📊 Multi-Currency Financial Planning Tools
 - **SIP Calculator** with step-up options and frequency selection (Monthly/Quarterly/Half-yearly/Yearly)
 - **SWP Calculator** with tax planning and active trading mode
 - **Lumpsum Calculator** with compound growth analysis
 - **Retirement Planner** with goal-based planning and life expectancy calculations
-- **Indian Rupee (₹) formatting** with number-to-words conversion
+- **Multi-currency support** - USD ($) and Indian Rupee (₹) with intelligent formatting
+- **Currency-specific defaults** and tax rates for US and Indian markets
+- **Number-to-words conversion** supporting both Western and Indian numbering systems
 - **Year-wise detailed projections** and cash flow analysis
 - **Mobile-optimized interface** with responsive design
 
@@ -112,13 +114,22 @@ retirement-planning-tools/
 │   ├── 📁 401K/               # 401k Projector module
 │   │   ├── 401k_widget.html   # 401k UI components
 │   │   └── 401k_calculator.js # 401k calculation logic
-│   └── 📁 styles/             # Styling system
-│       ├── global.css         # Compiled CSS
-│       └── global.less        # LESS source files
-├── � ODockerfile             # Container configuration
-├── 🐳 docker-compose.yml     # Docker Compose deployment
-├── ⚙️ default.conf           # Nginx configuration
-└── 📁 .github/workflows/     # GitHub Actions CI/CD
+│   ├── 📁 calculators/        # Multi-Currency Financial Planning Tools
+│   │   ├── calculators_widget.html # Financial planning UI
+│   │   ├── main_calculators.js     # Multi-currency utilities
+│   │   └── 📁 widgets/             # Individual calculator widgets
+│   │       ├── sip_calculator.js   # SIP calculations
+│   │       ├── swp_calculator.js   # SWP calculations
+│   │       ├── lumpsum_calculator.js # Lumpsum calculations
+│   │       └── retirement_calculator.js # Retirement planning
+│   ├── 📁 links/             # Live financial data links
+│   │   └── links_widget.html # External data sources
+│   └── 📁 styles/            # Styling system
+│       └── consolidated.css  # Compiled CSS
+├── 🐳 Dockerfile            # Container configuration
+├── 🐳 docker-compose.yml    # Docker Compose deployment
+├── ⚙️ default.conf          # Nginx configuration
+└── 📁 .github/workflows/    # GitHub Actions CI/CD
 ```
 
 ## 🛠️ Technology Stack
@@ -161,13 +172,15 @@ retirement-planning-tools/
 - **401a Contribution**: `4% of Salary (fixed)`
 - **Annual Growth**: Compound interest with salary increases
 
-### Indian Investment Calculations
+### Multi-Currency Financial Planning Calculations
 
 - **SIP (Systematic Investment Plan)**: Monthly/Quarterly/Half-yearly/Yearly investments with step-up options
-- **SWP (Systematic Withdrawal Plan)**: Regular withdrawals with tax planning and active trading modes
+- **SWP (Systematic Withdrawal Plan)**: Regular withdrawals with tax planning and active trading modes  
 - **Lumpsum**: One-time investment with compound growth analysis
 - **Retirement Planning**: Goal-based planning with inflation adjustment and life expectancy calculations
-- **Currency**: All calculations in Indian Rupees (₹) with proper formatting
+- **Multi-Currency**: Calculations in both USD ($) and Indian Rupees (₹) with proper formatting
+- **Currency-Specific Defaults**: Appropriate default values and tax rates for US and Indian markets
+- **Number Systems**: Western (Trillion, Billion, Million) and Indian (Crore, Lac, Thousand) numbering
 
 ### Live Financial Data Sources
 
@@ -255,7 +268,9 @@ Edit `default.conf` for:
 - **Load Time**: < 2 seconds on 3G networks
 - **Memory Usage**: < 50MB container footprint
 - **Mobile Optimized**: Responsive design with touch-friendly controls
-- **Multi-Currency**: USD ($) and Indian Rupee (₹) support
+- **Multi-Currency**: USD ($) and Indian Rupee (₹) support with intelligent formatting
+- **Currency-Aware Defaults**: Appropriate values and tax rates for different markets
+- **Dual Number Systems**: Western and Indian numbering with proper number-to-words conversion
 - **Copy-to-Clipboard**: Easy data export functionality
 - **Floating Calculator**: Always-available draggable calculator widget
 - **Theme Support**: Dark/Light modes with system preference detection

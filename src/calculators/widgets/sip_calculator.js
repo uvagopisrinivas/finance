@@ -69,9 +69,9 @@
             const totalReturns = futureValue - totalInvestment;
 
             // Update summary
-            document.getElementById('sipTotalInvestment').textContent = formatINRReadable(totalInvestment);
-            document.getElementById('sipExpectedReturns').textContent = formatINRReadable(totalReturns);
-            document.getElementById('sipTotalValue').textContent = formatINRReadable(futureValue);
+            document.getElementById('sipTotalInvestment').textContent = formatCurrencyReadable(totalInvestment);
+            document.getElementById('sipExpectedReturns').textContent = formatCurrencyReadable(totalReturns);
+            document.getElementById('sipTotalValue').textContent = formatCurrencyReadable(futureValue);
 
             // Generate table
             generateSIPTable(yearlyData);
@@ -106,10 +106,10 @@
                         ${data.map(row => `
                             <tr>
                                 <td class="table__year">${row.year}</td>
-                                <td class="table__investment">${formatINR(row.yearlyInvestment)}</td>
-                                <td class="table__investment">${formatINR(row.cumulativeInvestment)}</td>
-                                <td class="table__balance">${formatINR(row.yearEndValue)}</td>
-                                <td class="table__returns">${formatINR(row.yearlyReturns)}</td>
+                                <td class="table__investment">${formatCurrency(row.yearlyInvestment)}</td>
+                                <td class="table__investment">${formatCurrency(row.cumulativeInvestment)}</td>
+                                <td class="table__balance">${formatCurrency(row.yearEndValue)}</td>
+                                <td class="table__returns">${formatCurrency(row.yearlyReturns)}</td>
                             </tr>
                         `).join('')}
                     </tbody>

@@ -43,7 +43,7 @@
           <button class="nav__tab" data-tab="about">About</button>
           <button class="nav__tab" data-tab="sepp">SEPP</button>
           <button class="nav__tab" data-tab="401k">401k</button>
-          <button class="nav__tab" data-tab="indian">INR</button>
+          <button class="nav__tab" data-tab="plans">Plans</button>
           <button class="nav__tab" data-tab="links">Links</button>
           <button id="calculatorToggle" class="calculator-toggle" title="Open Calculator">
             <i class="fas fa-calculator"></i>
@@ -66,7 +66,7 @@
           <div class="about-grid">
             <div class="about-section">
               <h2 class="about-section__title">🎯 Purpose</h2>
-              <p>This platform provides sophisticated financial calculators designed to help individuals plan for retirement, optimize investment strategies, and manage early withdrawal plans. Whether you're considering a 72(t) SEPP plan, projecting your 401k growth, planning SIP investments in India, or need quick access to live financial data, these tools offer detailed analysis with professional-grade calculations.</p>
+              <p>This platform provides sophisticated financial planning tools designed to help individuals plan for retirement, optimize investment strategies, and manage early withdrawal plans. Whether you're considering a 72(t) SEPP plan, projecting your 401k growth, planning investments with multi-currency support, or need quick access to live financial data, these tools offer detailed analysis with professional-grade calculations.</p>
             </div>
             
             <div class="about-section">
@@ -104,14 +104,15 @@
                 
                 <div class="tool-card">
                   <div class="tool-card__icon">🇮🇳</div>
-                  <h3 class="tool-card__title">Indian Investment Calculators</h3>
-                  <p class="tool-card__description">Comprehensive investment planning suite for Indian markets with SIP, SWP, Lumpsum, and Retirement Planning calculators. All calculations in Indian Rupees (₹) with advanced features.</p>
+                  <h3 class="tool-card__title">Financial Planning Tools</h3>
+                  <p class="tool-card__description">Comprehensive financial planning suite with SIP, SWP, Lumpsum, and Retirement Planning tools. Support for multiple currencies (USD & INR) with advanced features.</p>
                   <ul class="tool-card__features">
+                    <li>✓ Multi-currency support (USD $ & INR ₹)</li>
                     <li>✓ SIP Calculator with step-up option & frequency selection</li>
                     <li>✓ SWP Calculator with tax planning & active trading mode</li>
                     <li>✓ Lumpsum Calculator with compound growth analysis</li>
                     <li>✓ Retirement Planner with goal-based planning</li>
-                    <li>✓ Indian Rupee (₹) formatting with number-to-words</li>
+                    <li>✓ Intelligent number formatting with number-to-words</li>
                     <li>✓ Year-wise detailed projections & cash flow analysis</li>
                     <li>✓ Mobile-optimized responsive interface</li>
                   </ul>
@@ -194,7 +195,7 @@
                   <div class="usage-step__number">1</div>
                   <div class="usage-step__content">
                     <h4>Choose Your Tool</h4>
-                    <p>Navigate to <strong>SEPP</strong> for early withdrawal planning, <strong>401k</strong> for retirement projections, <strong>INR</strong> for Indian investments, or <strong>Links</strong> for live financial data.</p>
+                    <p>Navigate to <strong>SEPP</strong> for early withdrawal planning, <strong>401k</strong> for retirement projections, <strong>Plans</strong> for multi-currency financial planning, or <strong>Links</strong> for live financial data.</p>
                   </div>
                 </div>
                 <div class="usage-step">
@@ -252,8 +253,8 @@
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;401k&quot;]').click()">
                   💰 Try 401k Projector
                 </button>
-                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;indian&quot;]').click()">
-                  🇮🇳 Try Indian Calculators
+                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;plans&quot;]').click()">
+                  📊 Try Financial Planning Tools
                 </button>
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;links&quot;]').click()">
                   🔗 View Live Financial Data
@@ -269,8 +270,8 @@
       <section id="401k" class="tab-content" style="display:none">
         <div id="401kContainer">Loading…</div>
       </section>
-      <section id="indian" class="tab-content" style="display:none">
-        <div id="indianContainer">Loading…</div>
+      <section id="plans" class="tab-content" style="display:none">
+        <div id="plansContainer">Loading…</div>
       </section>
       <section id="links" class="tab-content" style="display:none">
         <div id="linksContainer">Loading…</div>
@@ -355,7 +356,7 @@
     // Function to get current tab from URL hash or default to 'about'
     function getCurrentTab() {
       const hash = window.location.hash.substring(1);
-      const validTabs = ['about', 'sepp', '401k', 'indian', 'links'];
+      const validTabs = ['about', 'sepp', '401k', 'plans', 'links'];
       return validTabs.includes(hash) ? hash : 'about';
     }
     
@@ -409,19 +410,19 @@
           container.dataset.loaded = 'true';
         }
       }
-      if(tabName==='indian'){
-        // load Indian calculators widget html
-        const container = document.getElementById('indianContainer');
+      if(tabName==='plans'){
+        // load Multi-Currency calculators widget html
+        const container = document.getElementById('plansContainer');
         if(!container.dataset.loaded){
-          const html = await fetch('src/Indian/indian_widget.html').then(r=>r.text());
+          const html = await fetch('src/calculators/calculators_widget.html').then(r=>r.text());
           container.innerHTML = html;
-          // inject JS for Indian calculators
+          // inject JS for financial planning tools
           const scripts = [
-            'src/Indian/indian_calculators.js',
-            'src/Indian/widgets/sip_calculator.js',
-            'src/Indian/widgets/swp_calculator.js', 
-            'src/Indian/widgets/lumpsum_calculator.js',
-            'src/Indian/widgets/retirement_calculator.js'
+            'src/calculators/main_calculators.js',
+            'src/calculators/widgets/sip_calculator.js',
+            'src/calculators/widgets/swp_calculator.js', 
+            'src/calculators/widgets/lumpsum_calculator.js',
+            'src/calculators/widgets/retirement_calculator.js'
           ];
           
           let loadedScripts = 0;
@@ -435,7 +436,7 @@
               if (loadedScripts === totalScripts) {
                 // All scripts loaded, initialize
                 setTimeout(() => {
-                  console.log('Initializing Indian calculators...');
+                  console.log('Initializing financial planning tools...');
                   
                   // Ensure only SIP is visible initially
                   const sections = document.querySelectorAll('.calculator-section');
@@ -462,8 +463,8 @@
               }
               
               // Call the switch function if available
-              if (window.switchIndianCalculator) {
-                window.switchIndianCalculator('sip');
+              if (window.switchCalculator) {
+                window.switchCalculator('sip');
               }
               
               // Ensure click events are properly bound to tabs

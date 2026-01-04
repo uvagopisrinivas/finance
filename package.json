@@ -1,7 +1,7 @@
 {
   "name": "financial-planning-platform",
   "version": "2.0.0",
-  "description": "Comprehensive financial planning platform with SEPP, 401k, Indian investment calculators, and live financial data",
+  "description": "Comprehensive financial planning platform with SEPP, 401k, multi-currency investment tools, and live financial data",
   "repository": {
     "type": "git",
     "url": "https://github.com/your-username/financial-planning-platform.git"
@@ -10,18 +10,20 @@
     "sepp",
     "401k",
     "retirement",
-    "calculator",
-    "financial",
-    "planning",
+    "financial-planning",
+    "investment-tools",
     "sip",
     "swp",
     "lumpsum",
-    "indian",
-    "investment",
+    "multi-currency",
+    "usd",
+    "inr",
     "rupee",
+    "dollar",
     "metals",
     "currency",
-    "tax"
+    "tax",
+    "wealth-planning"
   ],
   "author": "",
   "license": "MIT",

@@ -1,57 +1,315 @@
-// Indian Investment Calculators - Main File with Shared Utilities
+// Multi-Currency Investment Calculators - Main File with Shared Utilities
 (function(){
     
-    // Utility functions for Indian Rupee formatting
-    function formatINR(num) {
+    // Global currency state
+    let currentCurrency = 'INR'; // Default to INR
+    
+    // Make currentCurrency globally accessible
+    window.currentCurrency = currentCurrency;
+    
+    // Currency configuration
+    const currencyConfig = {
+        'INR': {
+            symbol: '₹',
+            locale: 'en-IN',
+            name: 'Indian Rupee',
+            largeUnits: [
+                { value: 10000000, name: 'Cr', fullName: 'Crore' },
+                { value: 100000, name: 'Lacs', fullName: 'Lac' },
+                { value: 1000, name: 'K', fullName: 'Thousand' }
+            ],
+            numberSystem: 'indian', // Uses Indian comma system (x,xx,xxx)
+            defaults: {
+                sipAmount: '25000',
+                swpTotalInvestment: '500000',
+                swpWithdrawal: '10000',
+                swpTaxRate: '10',
+                lumpsumAmount: '25000',
+                lumpsumTimePeriod: '10',
+                retirementMonthlySavings: '200000',
+                retirementMonthlyExpenses: '160000',
+                goalAmount: '500000'
+            },
+            taxHints: {
+                swpTaxRate: 'LTCG: 10%, STCG: 15-30%'
+            }
+        },
+        'USD': {
+            symbol: '$',
+            locale: 'en-US',
+            name: 'US Dollar',
+            largeUnits: [
+                { value: 1000000000000, name: 'T', fullName: 'Trillion' },
+                { value: 1000000000, name: 'B', fullName: 'Billion' },
+                { value: 1000000, name: 'M', fullName: 'Million' },
+                { value: 1000, name: 'K', fullName: 'Thousand' }
+            ],
+            numberSystem: 'western', // Uses Western comma system (xxx,xxx)
+            defaults: {
+                sipAmount: '3000',
+                swpTotalInvestment: '1000000',
+                swpWithdrawal: '3000',
+                swpTaxRate: '30',
+                lumpsumAmount: '500000',
+                lumpsumTimePeriod: '30',
+                retirementMonthlySavings: '3000',
+                retirementMonthlyExpenses: '3000',
+                goalAmount: '20000'
+            },
+            taxHints: {
+                swpTaxRate: 'LTCG: 15-20%, STCG: 22-37%'
+            }
+        }
+    };
+    
+    // Get current currency configuration
+    function getCurrentCurrencyConfig() {
+        return currencyConfig[currentCurrency] || currencyConfig['INR'];
+    }
+    
+    // Set currency and update UI
+    window.setCurrency = function(currency) {
+        if (currencyConfig[currency]) {
+            currentCurrency = currency;
+            window.currentCurrency = currency; // Update global reference
+            
+            // Update currency selector if it exists
+            const selector = document.getElementById('currencySelector');
+            if (selector) {
+                selector.value = currency;
+            }
+            
+            // Apply currency-specific defaults
+            applyCurrencyDefaults();
+            
+            // Update all currency labels in the UI
+            updateCurrencyLabels();
+            
+            // Update tax hints
+            updateTaxHints();
+            
+            // Reformat all existing input values
+            reformatAllInputs();
+            
+            // Update any existing results
+            updateExistingResults();
+            
+            // Update goals section if in retirement calculator
+            updateGoalsSection();
+            
+            console.log('Currency changed to:', currency);
+        }
+    };
+    
+    // Apply currency-specific default values
+    function applyCurrencyDefaults() {
+        const config = getCurrentCurrencyConfig();
+        const defaults = config.defaults;
+        
+        // Update input values with currency-specific defaults
+        const inputMappings = {
+            'sipAmount': defaults.sipAmount,
+            'swpTotalInvestment': defaults.swpTotalInvestment,
+            'swpWithdrawal': defaults.swpWithdrawal,
+            'swpTaxRate': defaults.swpTaxRate,
+            'lumpsumAmount': defaults.lumpsumAmount,
+            'lumpsumTimePeriod': defaults.lumpsumTimePeriod,
+            'retirementMonthlySavings': defaults.retirementMonthlySavings,
+            'retirementMonthlyExpenses': defaults.retirementMonthlyExpenses
+        };
+        
+        Object.entries(inputMappings).forEach(([inputId, defaultValue]) => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                // For currency inputs, format the number
+                if (inputId.includes('Amount') || inputId.includes('Investment') || inputId.includes('Withdrawal') || inputId.includes('Savings') || inputId.includes('Expenses')) {
+                    const formatted = formatNumber(defaultValue);
+                    input.value = formatted;
+                    updateHelperText(input, formatted);
+                } else {
+                    input.value = defaultValue;
+                }
+            }
+        });
+    }
+    
+    // Update tax hints based on currency
+    function updateTaxHints() {
+        const config = getCurrentCurrencyConfig();
+        const taxHints = config.taxHints;
+        
+        // Update SWP tax rate hint
+        const swpTaxHint = document.querySelector('#swpTaxRate + .form-hint');
+        if (swpTaxHint && taxHints.swpTaxRate) {
+            swpTaxHint.textContent = taxHints.swpTaxRate;
+        }
+    }
+    
+    // Update goals section with currency-specific defaults
+    function updateGoalsSection() {
+        const config = getCurrentCurrencyConfig();
+        
+        // Check if we're in the retirement calculator
+        const retirementSection = document.getElementById('retirementCalculator');
+        if (retirementSection && retirementSection.classList.contains('active')) {
+            // Reinitialize goals with currency-appropriate defaults
+            if (window.reinitializeGoals) {
+                window.reinitializeGoals();
+            }
+        }
+        
+        // Update existing goal amount inputs
+        const goalAmountInputs = document.querySelectorAll('.goal-amount-input');
+        goalAmountInputs.forEach(input => {
+            if (input.value) {
+                // Extract numeric value and reformat
+                const numericValue = input.value.replace(/[^\d]/g, '');
+                if (numericValue) {
+                    const formatted = formatNumber(numericValue);
+                    input.value = formatted;
+                    updateHelperText(input, formatted);
+                }
+            }
+        });
+        
+        // Update goal amount labels
+        document.querySelectorAll('label').forEach(label => {
+            if (label.textContent.includes('Amount (') && (label.textContent.includes('₹') || label.textContent.includes('$'))) {
+                label.textContent = `Amount (${config.symbol})`;
+            }
+        });
+    }
+    
+    // Update currency labels throughout the UI
+    function updateCurrencyLabels() {
+        const config = getCurrentCurrencyConfig();
+        const symbol = config.symbol;
+        
+        // Update all labels that contain currency symbols
+        document.querySelectorAll('label, .form-hint, .summary-label').forEach(element => {
+            let text = element.textContent;
+            // Replace ₹ with current symbol
+            if (text.includes('₹')) {
+                element.textContent = text.replace(/₹/g, symbol);
+            }
+            // Replace $ with current symbol  
+            if (text.includes('$')) {
+                element.textContent = text.replace(/\$/g, symbol);
+            }
+        });
+        
+        // Update placeholder text
+        document.querySelectorAll('input[placeholder]').forEach(input => {
+            let placeholder = input.placeholder;
+            if (placeholder.includes('₹')) {
+                input.placeholder = placeholder.replace(/₹/g, symbol);
+            }
+            if (placeholder.includes('$')) {
+                input.placeholder = placeholder.replace(/\$/g, symbol);
+            }
+        });
+    }
+    
+    // Reformat all input values when currency changes
+    function reformatAllInputs() {
+        const currencyInputs = document.querySelectorAll('#sipAmount, #swpTotalInvestment, #swpWithdrawal, #lumpsumAmount, #retirementMonthlySavings, #retirementCurrentCorpus, #retirementMonthlyExpenses, .goal-amount-input');
+        
+        currencyInputs.forEach(input => {
+            if (input.value && input.value.trim() !== '') {
+                // Extract numeric value
+                const numericValue = input.value.replace(/[^\d]/g, '');
+                if (numericValue) {
+                    const formatted = formatNumber(numericValue);
+                    input.value = formatted;
+                    updateHelperText(input, formatted);
+                }
+            }
+        });
+    }
+    
+    // Update existing calculation results when currency changes
+    function updateExistingResults() {
+        // Hide all result sections when currency changes
+        // User must recalculate to see results in the new currency
+        const resultSections = [
+            'sipResults',
+            'swpResults', 
+            'lumpsumResults',
+            'retirementResults'
+        ];
+        
+        resultSections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.style.display = 'none';
+            }
+        });
+        
+        console.log('Currency changed - results hidden. Please recalculate to see results in new currency.');
+    }
+    
+    // Generic currency formatting function
+    function formatCurrency(num) {
+        const config = getCurrentCurrencyConfig();
+        
         // Handle NaN, null, undefined values
         if (isNaN(num) || num === null || num === undefined) {
-            return '₹0';
+            return config.symbol + '0';
         }
-        return new Intl.NumberFormat('en-IN', {
+        
+        return new Intl.NumberFormat(config.locale, {
             style: 'currency',
-            currency: 'INR',
+            currency: currentCurrency,
             maximumFractionDigits: 0
         }).format(num);
     }
 
-    function formatINRDetailed(num) {
+    function formatCurrencyDetailed(num) {
+        const config = getCurrentCurrencyConfig();
+        
         // Handle NaN, null, undefined values
         if (isNaN(num) || num === null || num === undefined) {
-            return '₹0.00';
+            return config.symbol + '0.00';
         }
-        return new Intl.NumberFormat('en-IN', {
+        
+        return new Intl.NumberFormat(config.locale, {
             style: 'currency',
-            currency: 'INR',
+            currency: currentCurrency,
             maximumFractionDigits: 2
         }).format(num);
     }
 
-    // Enhanced INR formatting with readable suffixes
-    function formatINRReadable(num) {
+    // Enhanced currency formatting with readable suffixes
+    function formatCurrencyReadable(num) {
+        const config = getCurrentCurrencyConfig();
+        
         // Handle NaN, null, undefined values
         if (isNaN(num) || num === null || num === undefined) {
-            return '₹0';
+            return config.symbol + '0';
         }
         
-        const basicFormat = formatINR(num);
+        const basicFormat = formatCurrency(num);
         let suffix = '';
         
-        if (num >= 10000000) { // 1 Crore or more
-            const crores = num / 10000000;
-            suffix = ` (${crores.toFixed(2)} Cr)`;
-        } else if (num >= 100000) { // 1 Lac or more
-            const lacs = num / 100000;
-            suffix = ` (${lacs.toFixed(2)} Lacs)`;
-        } else if (num >= 1000) { // 1 Thousand or more
-            const thousands = num / 1000;
-            suffix = ` (${thousands.toFixed(2)} K)`;
+        // Find appropriate unit
+        for (const unit of config.largeUnits) {
+            if (num >= unit.value) {
+                const unitValue = num / unit.value;
+                suffix = ` (${unitValue.toFixed(2)} ${unit.name})`;
+                break;
+            }
         }
         
         return basicFormat + suffix;
     }
 
+    // Legacy function names for backward compatibility
+    window.formatINR = formatCurrency;
+    window.formatINRDetailed = formatCurrencyDetailed;
+    window.formatINRReadable = formatCurrencyReadable;
+
     function formatPercent(num) {
-        return new Intl.NumberFormat('en-IN', {
+        return new Intl.NumberFormat('en-US', {
             style: 'percent',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -59,7 +317,7 @@
     }
 
     // Calculator switching functionality
-    window.switchIndianCalculator = function(calculatorType) {
+    window.switchCalculator = function(calculatorType) {
         console.log('Switching to calculator:', calculatorType);
         
         // Update tab states
@@ -87,8 +345,12 @@
         }
     };
 
-    // Number to words conversion for Indian numbering system (handles up to thousands of crores)
-    function numberToIndianWords(num) {
+    // Legacy function name for backward compatibility
+    window.switchIndianCalculator = window.switchCalculator;
+    // Number to words conversion for multiple numbering systems
+    function numberToWords(num) {
+        const config = getCurrentCurrencyConfig();
+        
         if (num === 0 || isNaN(num) || num === null || num === undefined) {
             return 'Zero';
         }
@@ -96,6 +358,15 @@
         // Convert to integer to avoid decimal issues
         num = Math.floor(Math.abs(num));
         
+        if (config.numberSystem === 'indian') {
+            return numberToIndianWords(num);
+        } else {
+            return numberToWesternWords(num);
+        }
+    }
+
+    // Indian numbering system (Crore, Lac, Thousand)
+    function numberToIndianWords(num) {
         const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
         const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
         const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -184,6 +455,112 @@
         return result.trim() || 'Zero';
     }
 
+    // Western numbering system (Trillion, Billion, Million, Thousand)
+    function numberToWesternWords(num) {
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+        const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        
+        function convertHundreds(n) {
+            if (n === 0 || isNaN(n)) return '';
+            
+            let result = '';
+            if (n >= 100) {
+                const hundredDigit = Math.floor(n / 100);
+                if (hundredDigit > 0 && hundredDigit < ones.length) {
+                    result += ones[hundredDigit] + ' Hundred';
+                    n %= 100;
+                    if (n > 0) result += ' ';
+                }
+            }
+            if (n >= 20) {
+                const tenDigit = Math.floor(n / 10);
+                if (tenDigit >= 0 && tenDigit < tens.length) {
+                    result += tens[tenDigit];
+                    n %= 10;
+                    if (n > 0 && n < ones.length) result += ' ' + ones[n];
+                }
+            } else if (n >= 10) {
+                const teenIndex = n - 10;
+                if (teenIndex >= 0 && teenIndex < teens.length) {
+                    result += teens[teenIndex];
+                }
+            } else if (n > 0 && n < ones.length) {
+                result += ones[n];
+            }
+            return result;
+        }
+        
+        let result = '';
+        
+        // Handle trillions
+        if (num >= 1000000000000) {
+            const trillions = Math.floor(num / 1000000000000);
+            const trillionWords = convertHundreds(trillions);
+            if (trillionWords) {
+                result += trillionWords + ' Trillion';
+            }
+            num %= 1000000000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle billions
+        if (num >= 1000000000) {
+            const billions = Math.floor(num / 1000000000);
+            const billionWords = convertHundreds(billions);
+            if (billionWords) {
+                result += billionWords + ' Billion';
+            }
+            num %= 1000000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle millions
+        if (num >= 1000000) {
+            const millions = Math.floor(num / 1000000);
+            const millionWords = convertHundreds(millions);
+            if (millionWords) {
+                result += millionWords + ' Million';
+            }
+            num %= 1000000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle thousands
+        if (num >= 1000) {
+            const thousands = Math.floor(num / 1000);
+            const thousandWords = convertHundreds(thousands);
+            if (thousandWords) {
+                result += thousandWords + ' Thousand';
+            }
+            num %= 1000;
+            if (num > 0 && result) result += ' ';
+        }
+        
+        // Handle remaining hundreds, tens, and ones
+        if (num > 0) {
+            const remainingWords = convertHundreds(num);
+            if (remainingWords) {
+                result += remainingWords;
+            }
+        }
+        
+        return result.trim() || 'Zero';
+    }
+
+    // Format number with appropriate comma system
+    function formatNumber(num) {
+        const config = getCurrentCurrencyConfig();
+        
+        if (isNaN(num) || num === '' || num === '0') return num.toString();
+        
+        if (config.numberSystem === 'indian') {
+            return formatIndianNumber(num);
+        } else {
+            return formatWesternNumber(num);
+        }
+    }
+
     // Format number with Indian comma system (handles up to 15 digits)
     function formatIndianNumber(num) {
         if (isNaN(num) || num === '' || num === '0') return num.toString();
@@ -217,6 +594,25 @@
         
         return integerPart + decimalPart;
     }
+
+    // Format number with Western comma system (every 3 digits)
+    function formatWesternNumber(num) {
+        if (isNaN(num) || num === '' || num === '0') return num.toString();
+        
+        const numStr = num.toString();
+        const parts = numStr.split('.');
+        let integerPart = parts[0];
+        const decimalPart = parts[1] ? '.' + parts[1] : '';
+        
+        // Western numbering system: comma every 3 digits from right
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        
+        return integerPart + decimalPart;
+    }
+
+    // Legacy function names for backward compatibility
+    window.formatIndianNumber = formatNumber;
+    window.numberToIndianWords = numberToWords;
 
     // Create or update helper text element
     function updateHelperText(input, value) {
@@ -262,17 +658,17 @@
         }
         
         try {
-            const words = numberToIndianWords(Math.floor(numValue));
+            const words = numberToWords(Math.floor(numValue));
             
             if (words && words !== 'undefined' && words.trim() !== '' && !words.includes('undefined')) {
                 helper.textContent = `(${words})`;
             } else {
                 // Fallback to just showing the formatted number
-                helper.textContent = `(${formatIndianNumber(numValue)})`;
+                helper.textContent = `(${formatNumber(numValue)})`;
             }
         } catch (error) {
             console.error('Error converting number to words:', error);
-            helper.textContent = `(${formatIndianNumber(numValue)})`;
+            helper.textContent = `(${formatNumber(numValue)})`;
         }
     }
 
@@ -286,9 +682,11 @@
             helper.remove();
         }
     }
-
     // Frequency handling functions
     function updateFrequencyLabels() {
+        const config = getCurrentCurrencyConfig();
+        const symbol = config.symbol;
+        
         // Update SIP labels
         const sipFrequency = document.getElementById('sipFrequency');
         const sipAmountLabel = document.getElementById('sipAmountLabel');
@@ -296,10 +694,10 @@
         if (sipFrequency && sipAmountLabel) {
             const frequency = sipFrequency.value;
             const frequencyLabels = {
-                'monthly': 'Monthly Investment (₹)',
-                'quarterly': 'Quarterly Investment (₹)',
-                'halfyearly': 'Half-yearly Investment (₹)',
-                'yearly': 'Yearly Investment (₹)'
+                'monthly': `Monthly Investment (${symbol})`,
+                'quarterly': `Quarterly Investment (${symbol})`,
+                'halfyearly': `Half-yearly Investment (${symbol})`,
+                'yearly': `Yearly Investment (${symbol})`
             };
             sipAmountLabel.textContent = frequencyLabels[frequency];
         }
@@ -311,10 +709,10 @@
         if (swpFrequency && swpWithdrawalLabel) {
             const frequency = swpFrequency.value;
             const frequencyLabels = {
-                'monthly': 'Monthly Withdrawal (₹)',
-                'quarterly': 'Quarterly Withdrawal (₹)',
-                'halfyearly': 'Half-yearly Withdrawal (₹)',
-                'yearly': 'Yearly Withdrawal (₹)'
+                'monthly': `Monthly Withdrawal (${symbol})`,
+                'quarterly': `Quarterly Withdrawal (${symbol})`,
+                'halfyearly': `Half-yearly Withdrawal (${symbol})`,
+                'yearly': `Yearly Withdrawal (${symbol})`
             };
             swpWithdrawalLabel.textContent = frequencyLabels[frequency];
         }
@@ -333,7 +731,7 @@
     // Copy to clipboard functionality
     function copyToClipboard(text, element) {
         // Extract only the number part, remove currency symbol, commas, and everything in parentheses
-        let cleanText = text.replace(/₹/g, '').trim(); // Remove currency symbol
+        let cleanText = text.replace(/[₹$]/g, '').trim(); // Remove currency symbols
         
         // If there are parentheses, take only the part before them
         if (cleanText.includes('(')) {
@@ -446,7 +844,7 @@
             
             // Format initial value
             if (input.value) {
-                const formatted = formatIndianNumber(input.value);
+                const formatted = formatNumber(input.value);
                 input.value = formatted;
                 updateHelperText(input, formatted);
             }
@@ -468,7 +866,7 @@
                 }
 
                 if (value && value !== '0') {
-                    const formatted = formatIndianNumber(value);
+                    const formatted = formatNumber(value);
                     
                     // Better cursor position calculation
                     // Count digits before cursor in old value
@@ -513,7 +911,7 @@
                 let value = this.value.replace(/,/g, '');
                 
                 if (value && !isNaN(value) && value !== '0') {
-                    const formatted = formatIndianNumber(value);
+                    const formatted = formatNumber(value);
                     this.value = formatted;
                     updateHelperText(this, formatted);
                 } else if (value === '' || value === '0') {
@@ -545,7 +943,7 @@
                 const paste = (e.clipboardData || window.clipboardData).getData('text');
                 const cleanPaste = paste.replace(/[^\d]/g, '');
                 if (cleanPaste && cleanPaste.length <= 15) {
-                    const formatted = formatIndianNumber(cleanPaste);
+                    const formatted = formatNumber(cleanPaste);
                     this.value = formatted;
                     updateHelperText(this, formatted);
                 }
@@ -632,12 +1030,12 @@
     }
 
     // Make utility functions globally available
-    window.formatINR = formatINR;
-    window.formatINRDetailed = formatINRDetailed;
-    window.formatINRReadable = formatINRReadable;
+    window.formatCurrency = formatCurrency;
+    window.formatCurrencyDetailed = formatCurrencyDetailed;
+    window.formatCurrencyReadable = formatCurrencyReadable;
     window.formatPercent = formatPercent;
-    window.numberToIndianWords = numberToIndianWords;
-    window.formatIndianNumber = formatIndianNumber;
+    window.numberToWords = numberToWords;
+    window.formatNumber = formatNumber;
     window.updateHelperText = updateHelperText;
     window.removeHelperText = removeHelperText;
     window.updateFrequencyLabels = updateFrequencyLabels;
@@ -647,9 +1045,15 @@
 
     // Setup input validation when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupInputValidation);
+        document.addEventListener('DOMContentLoaded', function() {
+            setupInputValidation();
+            // Initialize with default currency
+            setCurrency('INR');
+        });
     } else {
         setupInputValidation();
+        // Initialize with default currency
+        setCurrency('INR');
     }
 
 })();

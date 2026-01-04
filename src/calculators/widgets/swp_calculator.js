@@ -110,11 +110,11 @@
             }
 
             // Update summary
-            document.getElementById('swpInitialInvestment').textContent = formatINRReadable(totalInvestment);
-            document.getElementById('swpTotalWithdrawal').textContent = formatINRReadable(totalWithdrawn);
-            document.getElementById('swpTotalTax').textContent = formatINRReadable(totalTaxPaid);
-            document.getElementById('swpNetReceived').textContent = formatINRReadable(totalNetReceived);
-            document.getElementById('swpFinalValue').textContent = formatINRReadable(remainingBalance);
+            document.getElementById('swpInitialInvestment').textContent = formatCurrencyReadable(totalInvestment);
+            document.getElementById('swpTotalWithdrawal').textContent = formatCurrencyReadable(totalWithdrawn);
+            document.getElementById('swpTotalTax').textContent = formatCurrencyReadable(totalTaxPaid);
+            document.getElementById('swpNetReceived').textContent = formatCurrencyReadable(totalNetReceived);
+            document.getElementById('swpFinalValue').textContent = formatCurrencyReadable(remainingBalance);
 
             // Generate table
             generateSWPTable(yearlyData);
@@ -153,12 +153,12 @@
                             return `
                             <tr>
                                 <td class="table__year">${row.year}</td>
-                                <td class="table__balance">${formatINR(row.startBalance)}</td>
-                                <td class="table__withdrawal">${formatINR(row.yearlyWithdrawal)}</td>
-                                <td class="table__tax">${formatINR(row.yearlyTax)}</td>
-                                <td class="table__net">${formatINR(row.yearlyNetReceived)}</td>
-                                <td class="table__monthly-net">${formatINR(monthlyNet)}</td>
-                                <td class="table__balance">${formatINR(row.endBalance)}</td>
+                                <td class="table__balance">${formatCurrency(row.startBalance)}</td>
+                                <td class="table__withdrawal">${formatCurrency(row.yearlyWithdrawal)}</td>
+                                <td class="table__tax">${formatCurrency(row.yearlyTax)}</td>
+                                <td class="table__net">${formatCurrency(row.yearlyNetReceived)}</td>
+                                <td class="table__monthly-net">${formatCurrency(monthlyNet)}</td>
+                                <td class="table__balance">${formatCurrency(row.endBalance)}</td>
                             </tr>
                         `}).join('')}
                     </tbody>

@@ -1,30 +1,42 @@
-<!-- Indian Calculators Widget -->
+<!-- Multi-Currency Financial Planning Tools Widget -->
 <div class="card">
     <div class="card__header">
         <div class="flex items-center gap-sm">
-            <h2 class="card__title mb-0">🇮🇳 Indian Investment Calculators</h2>
+            <h2 class="card__title mb-0">📊 Financial Planning Tools</h2>
         </div>
-        <p class="card__subtitle">Plan your investments with SIP, SWP, and Lumpsum calculators in Indian Rupees (₹)</p>
+        <p class="card__subtitle">Plan your financial future with SIP, SWP, Lumpsum, and Retirement planning tools in multiple currencies</p>
+        
+        <!-- Currency Selector -->
+        <div class="currency-selector">
+            <label class="form-label">
+                <i class="fas fa-globe"></i>
+                Currency
+            </label>
+            <select id="currencySelector" class="form-input" onchange="setCurrency(this.value)">
+                <option value="INR">🇮🇳 Indian Rupee (₹)</option>
+                <option value="USD">🇺🇸 US Dollar ($)</option>
+            </select>
+        </div>
     </div>
 
     <!-- Calculator Type Selector -->
     <div class="calculator-tabs">
-        <button class="calculator-tab active" data-calculator="sip" onclick="switchIndianCalculator('sip')">
+        <button class="calculator-tab active" data-calculator="sip" onclick="switchCalculator('sip')">
             <i class="fas fa-chart-line"></i>
             <span>SIP Calculator</span>
             <small>Systematic Investment Plan</small>
         </button>
-        <button class="calculator-tab" data-calculator="swp" onclick="switchIndianCalculator('swp')">
+        <button class="calculator-tab" data-calculator="swp" onclick="switchCalculator('swp')">
             <i class="fas fa-hand-holding-usd"></i>
             <span>SWP Calculator</span>
             <small>Systematic Withdrawal Plan</small>
         </button>
-        <button class="calculator-tab" data-calculator="lumpsum" onclick="switchIndianCalculator('lumpsum')">
+        <button class="calculator-tab" data-calculator="lumpsum" onclick="switchCalculator('lumpsum')">
             <i class="fas fa-coins"></i>
             <span>Lumpsum Calculator</span>
             <small>One-time Investment</small>
         </button>
-        <button class="calculator-tab" data-calculator="retirement" onclick="switchIndianCalculator('retirement')">
+        <button class="calculator-tab" data-calculator="retirement" onclick="switchCalculator('retirement')">
             <i class="fas fa-user-clock"></i>
             <span>Retirement Planner</span>
             <small>Goal-based Planning</small>

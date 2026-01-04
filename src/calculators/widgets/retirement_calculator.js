@@ -2,12 +2,27 @@
 (function(){
     
     let goalCounter = 0;
-    const defaultGoals = [
-        { type: 'marriage', name: "Daughter's Marriage", amount: 20000000, years: 25 },
-        { type: 'education', name: "Son's Education", amount: 4000000, years: 20 },
-        { type: 'house', name: "Dream House", amount: 20000000, years: 10 },
-        { type: 'emergency', name: "Emergency Fund", amount: 2500000, years: 6 }
-    ];
+    
+    // Get currency-aware default goals
+    function getDefaultGoals() {
+        const currentCurrency = window.currentCurrency || 'INR';
+        
+        if (currentCurrency === 'USD') {
+            return [
+                { type: 'marriage', name: "Child's Wedding", amount: 50000, years: 25 },
+                { type: 'education', name: "Child's Education", amount: 100000, years: 20 },
+                { type: 'house', name: "Dream House", amount: 500000, years: 10 },
+                { type: 'emergency', name: "Emergency Fund", amount: 50000, years: 6 }
+            ];
+        } else {
+            return [
+                { type: 'marriage', name: "Child's Wedding", amount: 20000000, years: 25 },
+                { type: 'education', name: "Child's Education", amount: 4000000, years: 20 },
+                { type: 'house', name: "Dream House", amount: 20000000, years: 10 },
+                { type: 'emergency', name: "Emergency Fund", amount: 2500000, years: 6 }
+            ];
+        }
+    }
 
     // Initialize default goals
     function initializeDefaultGoals() {
@@ -17,6 +32,7 @@
         container.innerHTML = '';
         goalCounter = 0;
         
+        const defaultGoals = getDefaultGoals();
         defaultGoals.forEach(goal => {
             addGoalItem(goal.type, goal.name, goal.amount, goal.years);
         });
@@ -34,12 +50,18 @@
 
     // Add new goal functionality
     window.addNewGoal = function() {
-        addGoalItem('other', '', 500000, 10);
+        const currentCurrency = window.currentCurrency || 'INR';
+        const defaultAmount = currentCurrency === 'USD' ? 20000 : 500000;
+        addGoalItem('other', '', defaultAmount, 10);
     };
 
     function addGoalItem(type = 'other', name = '', amount = 500000, years = 10) {
         goalCounter++;
         const container = document.getElementById('goalsContainer');
+        
+        // Get current currency symbol
+        const currentCurrency = window.currentCurrency || 'INR';
+        const symbol = currentCurrency === 'USD' ? '$' : '₹';
         
         const goalHtml = `
             <div class="goal-item" data-goal-type="${type}" id="goal-${goalCounter}">
@@ -64,8 +86,8 @@
                     <input type="text" class="form-input goal-name-input" value="${name}" placeholder="Enter goal name">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Amount (₹)</label>
-                    <input type="text" class="form-input goal-amount-input" value="${formatIndianNumber(amount)}" placeholder="Target amount" inputmode="numeric">
+                    <label class="form-label">Amount (${symbol})</label>
+                    <input type="text" class="form-input goal-amount-input" value="${formatNumber(amount)}" placeholder="Target amount" inputmode="numeric">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Years from now</label>
@@ -112,7 +134,7 @@
     function setupGoalAmountInput(input) {
         // Format initial value and show helper text
         if (input.value) {
-            const formatted = formatIndianNumber(input.value.replace(/,/g, ''));
+            const formatted = formatNumber(input.value.replace(/,/g, ''));
             input.value = formatted;
             updateHelperText(input, formatted);
         }
@@ -131,7 +153,7 @@
             }
             
             if (value && value !== '0') {
-                const formatted = formatIndianNumber(value);
+                const formatted = formatNumber(value);
                 
                 // Better cursor position calculation
                 // Count digits before cursor in old value
@@ -171,7 +193,7 @@
         input.addEventListener('blur', function(e) {
             let value = this.value.replace(/,/g, '');
             if (value && !isNaN(value) && value !== '0') {
-                const formatted = formatIndianNumber(value);
+                const formatted = formatNumber(value);
                 this.value = formatted;
                 updateHelperText(this, formatted);
             } else if (value === '' || value === '0') {
@@ -343,14 +365,14 @@
 
             // Update results
             document.getElementById('retirementTotalGoals').textContent = goals.length;
-            document.getElementById('retirementGoalsCorpus').textContent = formatINRReadable(totalGoalsCurrentValue);
-            document.getElementById('retirementGoalsCorpusFuture').textContent = formatINRReadable(totalGoalsFutureValue);
+            document.getElementById('retirementGoalsCorpus').textContent = formatCurrencyReadable(totalGoalsCurrentValue);
+            document.getElementById('retirementGoalsCorpusFuture').textContent = formatCurrencyReadable(totalGoalsFutureValue);
             document.getElementById('retirementCalculatedAge').textContent = retirementAge + ' years';
             document.getElementById('retirementYearsLeft').textContent = calculationResults.yearsToRetirement;
-            document.getElementById('retirementCorpusNeeded').textContent = formatINRReadable(calculationResults.retirementCorpus);
-            document.getElementById('retirementTotalCorpus').textContent = formatINRReadable(calculationResults.totalCorpusNeeded);
-            document.getElementById('retirementMonthlySIP').textContent = formatINRReadable(monthlySavings);
-            document.getElementById('retirementIncomeAllocation').textContent = formatINRReadable(actualSurplus);
+            document.getElementById('retirementCorpusNeeded').textContent = formatCurrencyReadable(calculationResults.retirementCorpus);
+            document.getElementById('retirementTotalCorpus').textContent = formatCurrencyReadable(calculationResults.totalCorpusNeeded);
+            document.getElementById('retirementMonthlySIP').textContent = formatCurrencyReadable(monthlySavings);
+            document.getElementById('retirementIncomeAllocation').textContent = formatCurrencyReadable(actualSurplus);
 
             // Show results
             document.getElementById('retirementResults').style.display = 'block';
@@ -417,8 +439,8 @@
                             <tr>
                                 <td class="table__year">${goal.name}</td>
                                 <td class="table__year">${goalAge}</td>
-                                <td class="table__investment">${formatINR(goal.currentAmount)}</td>
-                                <td class="table__balance">${formatINR(goal.futureAmount)}</td>
+                                <td class="table__investment">${formatCurrency(goal.currentAmount)}</td>
+                                <td class="table__balance">${formatCurrency(goal.futureAmount)}</td>
                                 <td class="table__percent">${inflationImpact.toFixed(1)}%</td>
                             </tr>
                         `}).join('')}
@@ -632,7 +654,7 @@
                     legacyDiv.className = 'retirement-detail-item legacy-info legacy-success';
                     legacyDiv.innerHTML = `
                         <span class="detail-label">💰 Legacy Amount (At Age ${params.lifeExpectancy})</span>
-                        <span class="detail-value">${formatINRReadable(legacyAmount)}</span>
+                        <span class="detail-value">${formatCurrencyReadable(legacyAmount)}</span>
                     `;
                     retirementDetails.appendChild(legacyDiv);
                 }
@@ -699,22 +721,22 @@
                             } else if (livingExpenses > 0 && goalExpenses > 0) {
                                 const monthlyLiving = livingExpenses / 12;
                                 const goalNames = row.goalsThisYear.map(goal => goal.name).join(', ');
-                                withdrawalsDisplay = `${formatINR(livingExpenses)} living<br><small style="color: var(--color-text-secondary);">(${formatINR(monthlyLiving)}/mo)</small><br>+ ${formatINR(goalExpenses)}<br><small style="color: var(--color-text-secondary);">(${goalNames})</small>`;
+                                withdrawalsDisplay = `${formatCurrency(livingExpenses)} living<br><small style="color: var(--color-text-secondary);">(${formatCurrency(monthlyLiving)}/mo)</small><br>+ ${formatCurrency(goalExpenses)}<br><small style="color: var(--color-text-secondary);">(${goalNames})</small>`;
                             } else if (livingExpenses > 0) {
                                 const monthlyLiving = livingExpenses / 12;
-                                withdrawalsDisplay = `${formatINR(livingExpenses)} living<br><small style="color: var(--color-text-secondary);">(${formatINR(monthlyLiving)}/month)</small>`;
+                                withdrawalsDisplay = `${formatCurrency(livingExpenses)} living<br><small style="color: var(--color-text-secondary);">(${formatCurrency(monthlyLiving)}/month)</small>`;
                             } else if (goalExpenses > 0) {
                                 const goalNames = row.goalsThisYear.map(goal => goal.name).join(', ');
-                                withdrawalsDisplay = `${formatINR(goalExpenses)}<br><small style="color: var(--color-text-secondary);">(${goalNames})</small>`;
+                                withdrawalsDisplay = `${formatCurrency(goalExpenses)}<br><small style="color: var(--color-text-secondary);">(${goalNames})</small>`;
                             }
                             
                             return `
                             <tr class="${row.phase === 'retirement' ? 'retirement-phase' : 'accumulation-phase'} ${row.goalExpenses > 0 ? 'goal-expense-year' : ''} ${row.moneyDepleted ? 'money-depleted' : ''}">
                                 <td class="table__age">${row.age}</td>
-                                <td class="table__balance">${formatINR(portfolioStart)}</td>
+                                <td class="table__balance">${formatCurrency(portfolioStart)}</td>
                                 <td class="table__withdrawals">${withdrawalsDisplay}</td>
-                                <td class="table__tax">${formatINR(totalTax)}</td>
-                                <td class="table__balance">${formatINR(Math.max(0, portfolioEnd))}</td>
+                                <td class="table__tax">${formatCurrency(totalTax)}</td>
+                                <td class="table__balance">${formatCurrency(Math.max(0, portfolioEnd))}</td>
                             </tr>
                         `}).join('')}
                     </tbody>
@@ -754,7 +776,10 @@
         });
     };
 
-    // Initialize retirement calculator when switching to it
+    // Function to reinitialize goals when currency changes
+    window.reinitializeGoals = function() {
+        initializeDefaultGoals();
+    };
     const originalSwitchFunction = window.switchIndianCalculator;
     window.switchIndianCalculator = function(calculatorType) {
         originalSwitchFunction(calculatorType);
@@ -786,7 +811,7 @@
             input.removeAttribute('maxlength');
             
             if (input.value) {
-                const formatted = formatIndianNumber(input.value);
+                const formatted = formatNumber(input.value);
                 input.value = formatted;
                 updateHelperText(input, formatted);
             }
@@ -804,7 +829,7 @@
                 }
                 
                 if (value && value !== '0') {
-                    const formatted = formatIndianNumber(value);
+                    const formatted = formatNumber(value);
                     
                     // Better cursor position calculation
                     // Count digits before cursor in old value
@@ -845,7 +870,7 @@
                 let value = this.value.replace(/,/g, '');
                 
                 if (value && !isNaN(value) && value !== '0') {
-                    const formatted = formatIndianNumber(value);
+                    const formatted = formatNumber(value);
                     this.value = formatted;
                     updateHelperText(this, formatted);
                 } else if (value === '' || value === '0') {
@@ -854,6 +879,17 @@
                 }
             });
         });
+    }
+
+    // Initialize default goals when the retirement calculator loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Delay initialization to ensure all scripts are loaded
+            setTimeout(initializeDefaultGoals, 500);
+        });
+    } else {
+        // Delay initialization to ensure all scripts are loaded
+        setTimeout(initializeDefaultGoals, 500);
     }
 
 })();
