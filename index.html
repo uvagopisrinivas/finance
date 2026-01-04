@@ -350,7 +350,12 @@
         <div id="plansContainer">Loading…</div>
       </section>
       <section id="mortgage" class="tab-content" style="display:none">
-        <div id="mortgageContainer">Loading…</div>
+        <div id="mortgageContainer">
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading Mortgage Calculator...</p>
+          </div>
+        </div>
       </section>
       <section id="links" class="tab-content" style="display:none">
         <div id="linksContainer">Loading…</div>
@@ -729,16 +734,54 @@
         // load Mortgage calculator widget html
         const container = document.getElementById('mortgageContainer');
         if(!container.dataset.loaded){
-          const html = await fetch('src/mortgage/mortgage_widget.html').then(r=>r.text());
-          container.innerHTML = html;
-          // inject JS for mortgage calculator
-          const script = document.createElement('script');
-          script.src = 'src/mortgage/mortgage_calculator.js?v=' + Date.now();
-          script.onload = function() {
-            console.log('Mortgage calculator initialized');
-          };
-          document.body.appendChild(script);
-          container.dataset.loaded = 'true';
+          try {
+            const html = await fetch('src/mortgage/mortgage_widget.html').then(r=>r.text());
+            container.innerHTML = html;
+            
+            // inject JS for mortgage calculator with proper initialization
+            const script = document.createElement('script');
+            script.src = 'src/mortgage/mortgage_calculator.js?v=' + Date.now();
+            script.onload = function() {
+              console.log('Mortgage calculator script loaded');
+              // Ensure initialization happens after script load with multiple attempts
+              let attempts = 0;
+              const maxAttempts = 5;
+              
+              function tryInitialize() {
+                attempts++;
+                console.log(`Initialization attempt ${attempts}`);
+                
+                if (window.initializeMortgageCalculator) {
+                  window.initializeMortgageCalculator();
+                  
+                  // Verify initialization worked
+                  setTimeout(() => {
+                    const usSection = document.getElementById('usMortgageCalculator');
+                    if (usSection && usSection.style.display === 'none') {
+                      console.log('US section still hidden, forcing visibility');
+                      usSection.style.display = 'block';
+                      usSection.classList.add('active');
+                    }
+                  }, 100);
+                } else if (attempts < maxAttempts) {
+                  console.log('Initialization function not ready, retrying...');
+                  setTimeout(tryInitialize, 100);
+                } else {
+                  console.error('Failed to initialize mortgage calculator after multiple attempts');
+                }
+              }
+              
+              tryInitialize();
+            };
+            script.onerror = function() {
+              console.error('Failed to load mortgage calculator script');
+            };
+            document.body.appendChild(script);
+            container.dataset.loaded = 'true';
+          } catch (error) {
+            console.error('Error loading mortgage calculator:', error);
+            container.innerHTML = '<div class="error-message">Error loading mortgage calculator. Please refresh the page.</div>';
+          }
         }
       }
       if(tabName==='links'){

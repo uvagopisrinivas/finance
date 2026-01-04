@@ -46,7 +46,7 @@
                 </label>
                 <div class="input-group">
                     <div class="input-with-unit">
-                        <input type="text" id="downPayment" value="80000" class="form-input" placeholder="Down payment amount" inputmode="numeric">
+                        <input type="text" id="downPayment" value="80000" class="form-input" placeholder="Down payment" inputmode="numeric">
                         <span class="input-unit">$</span>
                     </div>
                     <div class="input-with-unit">
@@ -114,16 +114,17 @@
             <div class="form-group">
                 <label class="form-label">
                     <i class="fas fa-umbrella"></i>
-                    Mortgage insurance
+                    Mortgage insurance ($ per month)
                 </label>
                 <div class="mortgage-insurance-container">
                     <div class="checkbox-container">
                         <input type="checkbox" id="includeMortgageInsurance" checked>
                         <label for="includeMortgageInsurance">Include mortgage insurance</label>
                     </div>
-                    <div class="mortgage-insurance-amount" id="mortgageInsuranceAmount">$0</div>
+                    <input type="text" id="mortgageInsuranceInput" value="0" class="form-input mortgage-insurance-input" placeholder="Monthly mortgage insurance" inputmode="numeric" readonly>
                 </div>
-                <small class="form-hint">Usually required for down payments below 20%.</small>
+                <small class="form-hint">Usually required for down payments below 20%. Amount calculated automatically.</small>
+                <div class="helper-text" id="mortgageInsuranceWords">(Zero)</div>
             </div>
 
             <div class="form-group">
@@ -270,8 +271,8 @@
             <!-- Column 2: Loan Summary -->
             <div class="mortgage-summary-section">
                 <div class="section-header">
-                    <i class="fas fa-home"></i>
-                    <span>Loan Summary</span>
+                    <i class="fas fa-file-contract"></i>
+                    <span>Loan Overview</span>
                 </div>
                 <div class="summary-content" id="summaryItems">
                     <!-- Dynamic summary items will be inserted here -->
@@ -281,8 +282,8 @@
             <!-- Column 3: Payment Breakdown -->
             <div class="mortgage-breakdown-section">
                 <div class="section-header">
-                    <i class="fas fa-table"></i>
-                    <span id="breakdownTitle">Payment Breakdown</span>
+                    <i class="fas fa-calculator"></i>
+                    <span id="breakdownTitle">Monthly Breakdown</span>
                 </div>
                 <div class="breakdown-content" id="mortgageTableContainer">
                     <!-- Dynamic breakdown items will be inserted here -->

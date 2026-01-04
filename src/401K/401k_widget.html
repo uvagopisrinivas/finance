@@ -10,91 +10,93 @@
         <p class="card__subtitle">Plan your retirement savings with automatic contribution optimization</p>
     </div>
     
-    <div class="form-grid">
-        <div class="form-group">
-            <label class="form-label">Current Base Salary ($)</label>
-            <input type="text" id="baseSalary" value="101700" class="form-input" inputmode="numeric">
-        </div>
-        <div class="form-group">
-            <label class="form-label">% Increase in Base Salary per Year</label>
-            <input type="number" id="salaryIncrease" value="2.5" step="0.1" class="form-input">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Projection Years</label>
-            <input type="number" id="projectionYears" value="5" min="1" max="30" class="form-input">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Annual Rate of Return (%)</label>
-            <input type="number" id="annualReturn" value="12" step="0.1" class="form-input">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Current 401k Balance ($)</label>
-            <input type="text" id="current401kBalance" value="160000" class="form-input" inputmode="numeric">
-        </div>
-        <div class="form-group">
-            <label class="form-label">401k Contributed So Far This Year ($)</label>
-            <input type="text" id="current401kContributed" value="0" class="form-input" inputmode="numeric">
-            <small class="form-help">Enter total 401k contributions made in 2025 (including regular payroll and any bonus contributions)</small>
-        </div>
-    </div>
-
-    <!-- Company Benefits Configuration -->
-    <div class="card mt-md">
-        <div class="card__header">
-            <h3 class="card__title">Company Benefits Configuration</h3>
-            <p class="card__subtitle">Configure your employer's specific benefits (varies by company)</p>
-        </div>
-        
-        <div class="benefits-grid">
-            <!-- Row 1: Bonus Configuration -->
-            <div class="benefit-row">
-                <div class="benefit-checkbox">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="hasBonus" checked>
-                        <label for="hasBonus" class="checkbox-label">My company offers annual bonus</label>
-                    </div>
-                </div>
-                <div class="benefit-input" id="bonusPercentGroup">
-                    <label class="form-label">Annual Bonus (% of salary)</label>
-                    <input type="number" id="bonusPercent" value="10" step="0.1" min="0" max="50" class="form-input">
-                </div>
-                <div class="benefit-input" id="bonusContribGroup">
-                    <label class="form-label">Bonus to 401k (% of bonus)</label>
-                    <input type="number" id="bonusContribPercent" value="50" step="1" min="0" max="100" class="form-input">
-                </div>
+    <div class="main-layout">
+        <!-- Left Column: Main Inputs -->
+        <div class="main-inputs">
+            <h3 class="section-title">📊 Main Parameters</h3>
+            <div class="form-group">
+                <label class="form-label">Current Base Salary ($)</label>
+                <input type="text" id="baseSalary" value="101700" class="form-input" inputmode="numeric">
             </div>
-
-            <!-- Row 2: 401a Configuration -->
-            <div class="benefit-row">
-                <div class="benefit-checkbox">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="has401a" checked>
-                        <label for="has401a" class="checkbox-label">My company offers 401a plan</label>
-                    </div>
-                </div>
-                <div class="benefit-input" id="contrib401aGroup">
-                    <label class="form-label">401a Contribution (% of salary)</label>
-                    <input type="number" id="contrib401aPercent" value="4" step="0.1" min="0" max="10" class="form-input">
-                </div>
-                <div class="benefit-input" id="current401aGroup">
-                    <label class="form-label">Current 401a Balance ($)</label>
-                    <input type="text" id="current401aBalance" value="28567.00" class="form-input" inputmode="numeric">
-                </div>
+            <div class="form-group">
+                <label class="form-label">% Increase in Base Salary per Year</label>
+                <input type="number" id="salaryIncrease" value="2.5" step="0.1" class="form-input">
             </div>
+            <div class="form-group">
+                <label class="form-label">Projection Years</label>
+                <input type="number" id="projectionYears" value="5" min="1" max="30" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Annual Rate of Return (%)</label>
+                <input type="number" id="annualReturn" value="12" step="0.1" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Current 401k Balance ($)</label>
+                <input type="text" id="current401kBalance" value="160000" class="form-input" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label class="form-label">401k Contributed So Far This Year ($)</label>
+                <input type="text" id="current401kContributed" value="0" class="form-input" inputmode="numeric">
+                <small class="form-help">Enter total 401k contributions made in 2025 (including regular payroll and any bonus contributions)</small>
+            </div>
+        </div>
 
-            <!-- Row 3: 401k Matching Configuration -->
-            <div class="benefit-row">
-                <div class="benefit-checkbox">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="hasEmployerMatch" checked>
-                        <label for="hasEmployerMatch" class="checkbox-label">My company offers 401k matching</label>
+        <!-- Right Column: Company Benefits Configuration -->
+        <div class="company-benefits">
+            <h3 class="section-title">🏢 Company Benefits Configuration</h3>
+            <p class="section-subtitle">Configure your employer's specific benefits (varies by company)</p>
+            
+            <div class="benefits-grid">
+                <!-- Row 1: Bonus Configuration -->
+                <div class="benefit-row">
+                    <div class="benefit-checkbox">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="hasBonus" checked>
+                            <label for="hasBonus" class="checkbox-label">My company offers annual bonus</label>
+                        </div>
+                    </div>
+                    <div class="benefit-input" id="bonusPercentGroup">
+                        <label class="form-label">Annual Bonus (% of salary)</label>
+                        <input type="number" id="bonusPercent" value="10" step="0.1" min="0" max="50" class="form-input">
+                    </div>
+                    <div class="benefit-input" id="bonusContribGroup">
+                        <label class="form-label">Bonus to 401k (% of bonus)</label>
+                        <input type="number" id="bonusContribPercent" value="50" step="1" min="0" max="100" class="form-input">
                     </div>
                 </div>
-                <div class="benefit-input" id="employerMatchGroup">
-                    <label class="form-label">Employer Match (% of salary)</label>
-                    <input type="number" id="employerMatchPercent" value="6" step="0.1" min="0" max="15" class="form-input">
+
+                <!-- Row 2: 401a Configuration -->
+                <div class="benefit-row">
+                    <div class="benefit-checkbox">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="has401a" checked>
+                            <label for="has401a" class="checkbox-label">My company offers 401a plan</label>
+                        </div>
+                    </div>
+                    <div class="benefit-input" id="contrib401aGroup">
+                        <label class="form-label">401a Contribution (% of salary)</label>
+                        <input type="number" id="contrib401aPercent" value="4" step="0.1" min="0" max="10" class="form-input">
+                    </div>
+                    <div class="benefit-input" id="current401aGroup">
+                        <label class="form-label">Current 401a Balance ($)</label>
+                        <input type="text" id="current401aBalance" value="28567.00" class="form-input" inputmode="numeric">
+                    </div>
                 </div>
-                <div class="benefit-spacer"></div>
+
+                <!-- Row 3: 401k Matching Configuration -->
+                <div class="benefit-row">
+                    <div class="benefit-checkbox">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="hasEmployerMatch" checked>
+                            <label for="hasEmployerMatch" class="checkbox-label">My company offers 401k matching</label>
+                        </div>
+                    </div>
+                    <div class="benefit-input" id="employerMatchGroup">
+                        <label class="form-label">Employer Match (% of salary)</label>
+                        <input type="number" id="employerMatchPercent" value="6" step="0.1" min="0" max="15" class="form-input">
+                    </div>
+                    <div class="benefit-spacer"></div>
+                </div>
             </div>
         </div>
     </div>

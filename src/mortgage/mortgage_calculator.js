@@ -305,8 +305,11 @@
     }
     
     // Set mortgage currency and update UI
+    // Set mortgage currency and update UI - improved with element checking
     window.setMortgageCurrency = function(currency) {
         try {
+            console.log('Setting mortgage currency to:', currency);
+            
             if (mortgageCurrencyConfig[currency]) {
                 currentMortgageCurrency = currency;
                 
@@ -323,16 +326,22 @@
                 if (currency === 'USD') {
                     if (usSection) {
                         usSection.style.display = 'block';
+                        usSection.classList.add('active');
+                        console.log('US section activated');
                     }
                     if (indianSection) {
                         indianSection.style.display = 'none';
+                        indianSection.classList.remove('active');
                     }
                 } else {
                     if (usSection) {
                         usSection.style.display = 'none';
+                        usSection.classList.remove('active');
                     }
                     if (indianSection) {
                         indianSection.style.display = 'block';
+                        indianSection.classList.add('active');
+                        console.log('Indian section activated');
                     }
                 }
                 
@@ -462,21 +471,16 @@
         
         // Calculate loan amount
         const loanAmount = homePrice - downPayment;
-        const downPaymentPercent = (downPayment / homePrice) * 100;
+        const downPaymentPercent = roundCurrency((downPayment / homePrice) * 100);
         
         // Calculate Mortgage Insurance if down payment < 20%
         let monthlyMortgageInsurance = 0;
         const includeMortgageInsuranceEl = document.getElementById('includeMortgageInsurance');
+        const mortgageInsuranceInput = document.getElementById('mortgageInsuranceInput');
         const includeMortgageInsurance = includeMortgageInsuranceEl ? includeMortgageInsuranceEl.checked : false;
-        if (downPaymentPercent < 20 && includeMortgageInsurance) {
-            // Mortgage insurance is typically 0.3% to 1.5% of loan amount annually, we'll use 0.5%
-            monthlyMortgageInsurance = (loanAmount * 0.005) / 12;
-        }
         
-        // Update mortgage insurance display
-        const mortgageInsuranceAmountEl = document.getElementById('mortgageInsuranceAmount');
-        if (mortgageInsuranceAmountEl) {
-            mortgageInsuranceAmountEl.textContent = formatMortgageCurrency(monthlyMortgageInsurance * 12) + '/year';
+        if (includeMortgageInsurance && mortgageInsuranceInput) {
+            monthlyMortgageInsurance = parseFloat(mortgageInsuranceInput.value.replace(/,/g, '')) || 0;
         }
         
         // Get loan term from program
@@ -496,6 +500,7 @@
         } else {
             monthlyPI = loanAmount / numPayments;
         }
+        monthlyPI = roundCurrency(monthlyPI);
         
         // Get utility values
         const includeUtilities = document.getElementById('includeUtilities');
@@ -531,7 +536,7 @@
         document.getElementById('resultsSubtitle').textContent = 'Here\'s your payment breakdown';
         document.getElementById('paymentLabel').textContent = 'Total Housing';
         document.getElementById('totalMonthlyPayment').textContent = formatMortgageCurrency(totalHousingPayment);
-        document.getElementById('breakdownTitle').textContent = 'Payment Breakdown';
+        document.getElementById('breakdownTitle').textContent = 'Monthly Breakdown';
         
         // Update summary
         const summaryItems = document.getElementById('summaryItems');
@@ -564,15 +569,13 @@
                 </span>
                 <span class="mortgage-summary-value">${(interestRate * 100).toFixed(2)}%</span>
             </div>
-            ${downPaymentPercent < 20 && includeMortgageInsurance ? `
             <div class="mortgage-summary-item">
                 <span class="mortgage-summary-label">
-                    <i class="fas fa-umbrella"></i>
-                    Mortgage Insurance
+                    <i class="fas fa-calendar-alt"></i>
+                    Loan Term
                 </span>
-                <span class="mortgage-summary-value">${formatMortgageCurrency(monthlyMortgageInsurance)}</span>
+                <span class="mortgage-summary-value">${loanTermYears} years</span>
             </div>
-            ` : ''}
             <div class="mortgage-summary-item">
                 <span class="mortgage-summary-label">
                     <i class="fas fa-coins"></i>
@@ -736,6 +739,7 @@
                 { id: 'downPayment', helperId: 'downPayment' },
                 { id: 'propertyTax', helperId: 'propertyTax' },
                 { id: 'homeInsurance', helperId: 'homeInsurance' },
+                { id: 'mortgageInsuranceInput', helperId: 'mortgageInsurance' },
                 { id: 'hoaDues', helperId: 'hoaDues' },
                 { id: 'maintenance', helperId: 'maintenance' }
             ];
@@ -833,12 +837,14 @@
                             const price = parseFloat(this.value.replace(/,/g, '')) || 0;
                             if (price > 0) {
                                 const defaultPercent = 20; // Default 20%
-                                const payment = (price * defaultPercent) / 100;
-                                downPayment.value = formatMortgageNumber(payment.toString());
+                                const payment = roundCurrency((price * defaultPercent) / 100);
+                                downPayment.value = formatMortgageNumber(payment.toFixed(2));
                                 downPaymentPercent.value = defaultPercent.toFixed(1);
                                 updateUSDHelperText('downPayment', payment);
                             }
                         }
+                        // Check mortgage insurance requirement
+                        updateMortgageInsuranceStatus();
                     } catch (error) {
                         console.error('Error in home price input handler:', error);
                     }
@@ -850,8 +856,8 @@
                             const price = parseFloat(this.value.replace(/,/g, '')) || 0;
                             if (price > 0) {
                                 const defaultPercent = 20; // Default 20%
-                                const payment = (price * defaultPercent) / 100;
-                                downPayment.value = formatMortgageNumber(payment.toString());
+                                const payment = roundCurrency((price * defaultPercent) / 100);
+                                downPayment.value = formatMortgageNumber(payment.toFixed(2));
                                 downPaymentPercent.value = defaultPercent.toFixed(1);
                                 updateUSDHelperText('downPayment', payment);
                             }
@@ -867,11 +873,13 @@
                         const price = parseFloat(homePrice.value.replace(/,/g, '')) || 0;
                         const payment = parseFloat(this.value.replace(/,/g, '')) || 0;
                         if (price > 0) {
-                            const percent = (payment / price) * 100;
+                            const percent = roundCurrency((payment / price) * 100);
                             downPaymentPercent.value = percent.toFixed(1);
                             // Mark as user-modified if they changed the amount manually
                             userModifiedDownPaymentPercent = true;
                         }
+                        // Check mortgage insurance requirement
+                        updateMortgageInsuranceStatus();
                     } catch (error) {
                         console.error('Error in down payment blur handler:', error);
                     }
@@ -883,12 +891,14 @@
                         const price = parseFloat(homePrice.value.replace(/,/g, '')) || 0;
                         const percent = parseFloat(this.value) || 0;
                         if (price > 0) {
-                            const payment = (price * percent) / 100;
-                            downPayment.value = formatMortgageNumber(payment.toString());
+                            const payment = roundCurrency((price * percent) / 100);
+                            downPayment.value = formatMortgageNumber(payment.toFixed(2));
                             updateUSDHelperText('downPayment', payment);
                             // Mark as user-modified when they change percentage
                             userModifiedDownPaymentPercent = true;
                         }
+                        // Check mortgage insurance requirement
+                        updateMortgageInsuranceStatus();
                     } catch (error) {
                         console.error('Error in down payment percent handler:', error);
                     }
@@ -1099,11 +1109,73 @@
         }
     }
     
+    // Helper function to round currency values to 2 decimal places
+    function roundCurrency(value) {
+        return Math.round(value * 100) / 100;
+    }
+    
+    // Format currency with exactly 2 decimal places and proper comma formatting
+    function formatCurrencyInput(value) {
+        const rounded = roundCurrency(parseFloat(value) || 0);
+        return formatMortgageNumber(rounded.toFixed(2));
+    }
+    
+    // Update mortgage insurance status based on down payment percentage
+    function updateMortgageInsuranceStatus() {
+        try {
+            const homePrice = document.getElementById('homePrice');
+            const downPaymentPercent = document.getElementById('downPaymentPercent');
+            const includeMortgageInsuranceEl = document.getElementById('includeMortgageInsurance');
+            const mortgageInsuranceInput = document.getElementById('mortgageInsuranceInput');
+            
+            if (homePrice && downPaymentPercent && includeMortgageInsuranceEl && mortgageInsuranceInput) {
+                const price = parseFloat(homePrice.value.replace(/,/g, '')) || 0;
+                const percent = parseFloat(downPaymentPercent.value) || 0;
+                
+                // Auto-check mortgage insurance if down payment < 20%
+                if (percent < 20) {
+                    includeMortgageInsuranceEl.checked = true;
+                    
+                    // Calculate and display mortgage insurance amount
+                    if (price > 0) {
+                        const loanAmount = price - (price * percent / 100);
+                        const annualMortgageInsurance = loanAmount * 0.005; // 0.5% annually
+                        const monthlyMortgageInsurance = roundCurrency(annualMortgageInsurance / 12);
+                        
+                        mortgageInsuranceInput.value = formatCurrencyInput(monthlyMortgageInsurance);
+                        updateUSDHelperText('mortgageInsurance', monthlyMortgageInsurance);
+                    }
+                } else {
+                    // Auto-uncheck if down payment >= 20%
+                    includeMortgageInsuranceEl.checked = false;
+                    mortgageInsuranceInput.value = '0';
+                    updateUSDHelperText('mortgageInsurance', 0);
+                }
+            }
+        } catch (error) {
+            console.error('Error updating mortgage insurance status:', error);
+        }
+    }
+    
     // Initialize mortgage calculator
+    // Initialize mortgage calculator - improved with element checking
     function initializeMortgageCalculator() {
         try {
+            console.log('Initializing mortgage calculator...');
+            
             setupMortgageInputValidation();
-            setMortgageCurrency('USD'); // Initialize with USD
+            setMortgageCurrency('USD'); // This will handle showing/hiding sections
+            updateMortgageInsuranceStatus();
+            hideMortgageResults();
+            
+            // Add currency selector event listener
+            const currencySelector = document.getElementById('mortgageCurrencySelector');
+            if (currencySelector) {
+                currencySelector.addEventListener('change', function() {
+                    console.log('Currency changed to:', this.value);
+                    setMortgageCurrency(this.value);
+                });
+            }
             
             // Setup utilities checkbox functionality
             const includeUtilitiesCheckbox = document.getElementById('includeUtilities');
@@ -1183,11 +1255,39 @@
         }
     }
     
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeMortgageCalculator);
-    } else {
-        initializeMortgageCalculator();
+    // Initialize when DOM is ready - improved initialization
+    function safeInitialize() {
+        try {
+            // Wait a bit for DOM to be fully ready after dynamic loading
+            setTimeout(() => {
+                initializeMortgageCalculator();
+            }, 100);
+        } catch (error) {
+            console.error('Error during mortgage calculator initialization:', error);
+            // Retry once after a longer delay
+            setTimeout(() => {
+                try {
+                    initializeMortgageCalculator();
+                } catch (retryError) {
+                    console.error('Retry failed for mortgage calculator:', retryError);
+                }
+            }, 500);
+        }
     }
+    
+    // Multiple initialization strategies to handle different loading scenarios
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', safeInitialize);
+    } else if (document.readyState === 'interactive' || document.readyState === 'complete') {
+        safeInitialize();
+    }
+    
+    // Also initialize immediately if elements are already present (for dynamic loading)
+    if (document.getElementById('mortgageCurrencySelector')) {
+        safeInitialize();
+    }
+    
+    // Expose initialization function globally for manual triggering if needed
+    window.initializeMortgageCalculator = initializeMortgageCalculator;
 
 })();
