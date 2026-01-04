@@ -1,0 +1,293 @@
+<!-- Multi-Currency Mortgage Calculator Widget -->
+<div class="card">
+    <div class="card__header">
+        <div class="flex items-center gap-sm">
+            <h2 class="card__title mb-0">🏠 Mortgage Calculator</h2>
+        </div>
+        <p class="card__subtitle">Calculate home loan payments for US and Indian markets</p>
+        
+        <!-- Currency Selector -->
+        <div class="currency-selector">
+            <label class="form-label">
+                <i class="fas fa-globe"></i>
+                Market
+            </label>
+            <select id="mortgageCurrencySelector" class="form-input" onchange="setMortgageCurrency(this.value)">
+                <option value="USD">🇺🇸 United States ($)</option>
+                <option value="INR">🇮🇳 India (₹)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- US Mortgage Calculator (Zillow Style) -->
+    <div id="usMortgageCalculator" class="calculator-section active">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-home text-primary"></i> US Mortgage Calculator</h3>
+                <p>Calculate your monthly mortgage payment based on Zillow's calculator format.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-home"></i>
+                    Home price ($)
+                </label>
+                <input type="text" id="homePrice" value="400000" class="form-input" placeholder="Enter total purchase price" inputmode="numeric">
+                <small class="form-hint">Total purchase price</small>
+                <div class="helper-text" id="homePriceWords">(Four Hundred Thousand)</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    Down payment
+                </label>
+                <div class="input-group">
+                    <div class="input-with-unit">
+                        <input type="text" id="downPayment" value="80000" class="form-input" placeholder="Down payment amount" inputmode="numeric">
+                        <span class="input-unit">$</span>
+                    </div>
+                    <div class="input-with-unit">
+                        <input type="number" id="downPaymentPercent" value="20" step="0.1" min="0" max="100" class="form-input" placeholder="Percentage">
+                        <span class="input-unit">%</span>
+                    </div>
+                </div>
+                <small class="form-hint">Upfront payment amount and percentage</small>
+                <div class="helper-text" id="downPaymentWords">(Eighty Thousand)</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-file-contract"></i>
+                    Loan program
+                    (<a href="https://www.zillow.com/homeloans/mortgage-rates/?value=300000&down=60000&auto=true&va=false&fha=true&source=Z_Mortgage_Calc_rates" 
+                       class="rates-link"
+                       title="View current mortgage rates">rates</a>)
+                </label>
+                <select id="loanProgram" class="form-input">
+                    <option value="30-year-fixed">30-year fixed</option>
+                    <option value="15-year-fixed">15-year fixed</option>
+                </select>
+                <small class="form-hint">Type of loan program</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-chart-line"></i>
+                    Interest rate (% per year)
+                </label>
+                <input type="number" id="interestRate" value="6.5" step="0.01" min="1" max="20" class="form-input" placeholder="Annual interest rate">
+                <small class="form-hint">Annual percentage rate (APR)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-receipt"></i>
+                    Property tax
+                </label>
+                <div class="input-group">
+                    <div class="input-with-unit">
+                        <input type="text" id="propertyTax" value="4800" class="form-input" placeholder="Annual property tax amount" inputmode="numeric">
+                        <span class="input-unit">$/year</span>
+                    </div>
+                    <div class="input-with-unit">
+                        <input type="number" id="propertyTaxPercent" value="1.2" step="0.01" min="0" max="10" class="form-input" placeholder="Tax rate">
+                        <span class="input-unit">%</span>
+                    </div>
+                </div>
+                <small class="form-hint">Based on home value and estimated local tax rate. Actual rate may vary.</small>
+                <div class="helper-text" id="propertyTaxWords">(Four Thousand Eight Hundred)</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-shield-alt"></i>
+                    Home insurance ($ per year)
+                </label>
+                <input type="text" id="homeInsurance" value="1200" class="form-input" placeholder="Annual insurance premium" inputmode="numeric">
+                <small class="form-hint">Most lenders require homeowners insurance.</small>
+                <div class="helper-text" id="homeInsuranceWords">(One Thousand Two Hundred)</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-umbrella"></i>
+                    Mortgage insurance
+                </label>
+                <div class="mortgage-insurance-container">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="includeMortgageInsurance" checked>
+                        <label for="includeMortgageInsurance">Include mortgage insurance</label>
+                    </div>
+                    <div class="mortgage-insurance-amount" id="mortgageInsuranceAmount">$0</div>
+                </div>
+                <small class="form-hint">Usually required for down payments below 20%.</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-building"></i>
+                    HOA fees ($ per month)
+                </label>
+                <input type="text" id="hoaDues" value="0" class="form-input" placeholder="Monthly HOA fees" inputmode="numeric">
+                <small class="form-hint">Monthly HOA fees for common amenities.</small>
+                <div class="helper-text" id="hoaDuesWords">(Zero)</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-tools"></i>
+                    Maintenance ($ per month)
+                </label>
+                <input type="text" id="maintenance" value="80" class="form-input" placeholder="Monthly maintenance" inputmode="numeric">
+                <small class="form-hint">Repairs, landscaping, pest control.</small>
+                <div class="helper-text" id="maintenanceWords">(Eighty)</div>
+            </div>
+
+            <div class="form-group utilities-group">
+                <label class="form-label">
+                    <i class="fas fa-bolt"></i>
+                    Utilities
+                    <span class="utilities-status">Not included</span>
+                </label>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="includeUtilities">
+                    <label for="includeUtilities">Include utilities in payment</label>
+                </div>
+                
+                <div class="utilities-grid" id="utilitiesGrid" style="display: none;">
+                    <div class="utility-field">
+                        <label>Water/Sewer</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="waterSewer" value="60" class="form-input" inputmode="numeric">
+                            <span class="input-unit">/mo</span>
+                        </div>
+                    </div>
+                    <div class="utility-field">
+                        <label>Gas</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="gas" value="30" class="form-input" inputmode="numeric">
+                            <span class="input-unit">/mo</span>
+                        </div>
+                    </div>
+                    <div class="utility-field">
+                        <label>Internet</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="internet" value="50" class="form-input" inputmode="numeric">
+                            <span class="input-unit">/mo</span>
+                        </div>
+                    </div>
+                    <div class="utility-field">
+                        <label>Electric</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="electric" value="100" class="form-input" inputmode="numeric">
+                            <span class="input-unit">/mo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary btn--large" onclick="calculateMortgage()">
+                <i class="fas fa-calculator"></i>
+                Calculate Payment
+            </button>
+        </div>
+    </div>
+
+    <!-- Indian Mortgage Calculator (ICICI Style) -->
+    <div id="indianMortgageCalculator" class="calculator-section">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-home text-primary"></i> Indian Home Loan Calculator</h3>
+                <p>Calculate your EMI based on ICICI Bank's calculator format.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Loan Amount
+                </label>
+                <input type="range" id="loanAmountSlider" min="100000" max="50000000" step="100000" value="5000000" class="form-slider">
+                <input type="text" id="loanAmountInput" value="5000000" class="form-input" inputmode="numeric">
+                <div class="helper-text" id="loanAmountWords">(Fifty Lac)</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-chart-line"></i>
+                    Interest Rate (% p.a.)
+                    (<a href="https://www.icici.bank.in/personal-banking/loans/home-loan/interest-rates" 
+                       class="rates-link"
+                       title="View current ICICI home loan rates">rates</a>)
+                </label>
+                <input type="range" id="interestRateSlider" min="6" max="15" step="0.1" value="8.5" class="form-slider">
+                <input type="number" id="interestRateInput" value="8.5" step="0.1" min="6" max="15" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Loan Term (Years)
+                </label>
+                <input type="range" id="loanTermSlider" min="5" max="30" step="1" value="20" class="form-slider">
+                <input type="number" id="loanTermInput" value="20" min="5" max="30" class="form-input">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary btn--large" onclick="calculateMortgage()">
+                <i class="fas fa-calculator"></i>
+                Calculate EMI
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="mortgageResults" class="results-area hidden">
+        <div class="results-header">
+            <h3><i class="fas fa-chart-pie"></i> <span id="resultsTitle">Your Monthly Payment</span></h3>
+            <p id="resultsSubtitle">Here's your payment breakdown</p>
+        </div>
+        
+        <!-- Professional Three-Column Layout -->
+        <div class="mortgage-results-panel">
+            <!-- Column 1: Payment Circle -->
+            <div class="mortgage-circle-section">
+                <div class="mortgage-payment-circle">
+                    <div class="circle-content">
+                        <span class="circle-label" id="paymentLabel">Monthly Payment</span>
+                        <span class="circle-amount" id="totalMonthlyPayment">$0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Column 2: Loan Summary -->
+            <div class="mortgage-summary-section">
+                <div class="section-header">
+                    <i class="fas fa-home"></i>
+                    <span>Loan Summary</span>
+                </div>
+                <div class="summary-content" id="summaryItems">
+                    <!-- Dynamic summary items will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Column 3: Payment Breakdown -->
+            <div class="mortgage-breakdown-section">
+                <div class="section-header">
+                    <i class="fas fa-table"></i>
+                    <span id="breakdownTitle">Payment Breakdown</span>
+                </div>
+                <div class="breakdown-content" id="mortgageTableContainer">
+                    <!-- Dynamic breakdown items will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

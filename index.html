@@ -37,18 +37,75 @@
           <div class="brand__text">
             <h1 class="brand__title">Uva Kondisetty</h1>
             <p class="brand__subtitle">Sr.Developer - comprehensive financial tools</p>
+            <a href="https://www.linkedin.com/in/uva-kondisetty-b74517131/" class="brand__linkedin" title="Connect on LinkedIn">
+              <i class="fab fa-linkedin"></i>
+              LinkedIn Profile
+            </a>
           </div>
         </div>
         <nav class="nav">
-          <button class="nav__tab" data-tab="about">About</button>
-          <button class="nav__tab" data-tab="sepp">SEPP</button>
-          <button class="nav__tab" data-tab="401k">401k</button>
-          <button class="nav__tab" data-tab="plans">Plans</button>
-          <button class="nav__tab" data-tab="links">Links</button>
-          <button id="calculatorToggle" class="calculator-toggle" title="Open Calculator">
-            <i class="fas fa-calculator"></i>
-          </button>
-          <button id="globalThemeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
+          <!-- Desktop Navigation -->
+          <div class="nav__desktop">
+            <button class="nav__tab" data-tab="about">About</button>
+            <button class="nav__tab" data-tab="sepp">SEPP</button>
+            <button class="nav__tab" data-tab="401k">401k</button>
+            <button class="nav__tab" data-tab="plans">Plans</button>
+            <button class="nav__tab" data-tab="mortgage">Mortgage</button>
+            <button class="nav__tab" data-tab="links">Links</button>
+            <button id="calculatorToggle" class="calculator-toggle" title="Open Calculator">
+              <i class="fas fa-calculator"></i>
+            </button>
+            <button id="globalThemeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
+          </div>
+          
+          <!-- Mobile Navigation -->
+          <div class="nav__mobile">
+            <button class="nav__hamburger" id="mobileMenuToggle" aria-label="Toggle mobile menu">
+              <span class="hamburger__line"></span>
+              <span class="hamburger__line"></span>
+              <span class="hamburger__line"></span>
+            </button>
+            
+            <div class="nav__mobile-utils">
+              <button id="mobileCalculatorToggle" class="mobile-util-btn" title="Open Calculator">
+                <i class="fas fa-calculator"></i>
+              </button>
+              <button id="mobileThemeToggle" class="mobile-util-btn" aria-pressed="false" title="Toggle theme">🌙</button>
+            </div>
+          </div>
+          
+          <!-- Mobile Menu Overlay -->
+          <div class="nav__mobile-menu" id="mobileMenu">
+            <div class="mobile-menu__header">
+              <h3>Navigation</h3>
+            </div>
+            <div class="mobile-menu__content">
+              <button class="mobile-menu__item" data-tab="about">
+                <i class="fas fa-info-circle"></i>
+                <span>About</span>
+              </button>
+              <button class="mobile-menu__item" data-tab="sepp">
+                <i class="fas fa-chart-line"></i>
+                <span>SEPP Calculator</span>
+              </button>
+              <button class="mobile-menu__item" data-tab="401k">
+                <i class="fas fa-piggy-bank"></i>
+                <span>401k Projector</span>
+              </button>
+              <button class="mobile-menu__item" data-tab="plans">
+                <i class="fas fa-calculator"></i>
+                <span>Financial Plans</span>
+              </button>
+              <button class="mobile-menu__item" data-tab="mortgage">
+                <i class="fas fa-home"></i>
+                <span>Mortgage Calculator</span>
+              </button>
+              <button class="mobile-menu__item" data-tab="links">
+                <i class="fas fa-link"></i>
+                <span>Live Data Links</span>
+              </button>
+            </div>
+          </div>
         </nav>
       </div>
     </div>
@@ -114,6 +171,22 @@
                     <li>✓ Retirement Planner with goal-based planning</li>
                     <li>✓ Intelligent number formatting with number-to-words</li>
                     <li>✓ Year-wise detailed projections & cash flow analysis</li>
+                    <li>✓ Mobile-optimized responsive interface</li>
+                  </ul>
+                </div>
+                
+                <div class="tool-card">
+                  <div class="tool-card__icon">🏠</div>
+                  <h3 class="tool-card__title">Mortgage Calculator</h3>
+                  <p class="tool-card__description">Calculate home loan payments and affordability for US and Indian markets. Includes PMI, taxes, insurance, and detailed amortization schedules with multi-currency support.</p>
+                  <ul class="tool-card__features">
+                    <li>✓ Multi-currency support (USD $ & INR ₹)</li>
+                    <li>✓ Mortgage payment calculator with PMI</li>
+                    <li>✓ Property tax and insurance calculations</li>
+                    <li>✓ Affordability calculator with DTI analysis</li>
+                    <li>✓ Detailed amortization schedule</li>
+                    <li>✓ Country-specific defaults and rates</li>
+                    <li>✓ Interactive payment breakdown visualization</li>
                     <li>✓ Mobile-optimized responsive interface</li>
                   </ul>
                 </div>
@@ -195,7 +268,7 @@
                   <div class="usage-step__number">1</div>
                   <div class="usage-step__content">
                     <h4>Choose Your Tool</h4>
-                    <p>Navigate to <strong>SEPP</strong> for early withdrawal planning, <strong>401k</strong> for retirement projections, <strong>Plans</strong> for multi-currency financial planning, or <strong>Links</strong> for live financial data.</p>
+                    <p>Navigate to <strong>SEPP</strong> for early withdrawal planning, <strong>401k</strong> for retirement projections, <strong>Plans</strong> for multi-currency financial planning, <strong>Mortgage</strong> for home loan calculations, or <strong>Links</strong> for live financial data.</p>
                   </div>
                 </div>
                 <div class="usage-step">
@@ -256,6 +329,9 @@
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;plans&quot;]').click()">
                   📊 Try Financial Planning Tools
                 </button>
+                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;mortgage&quot;]').click()">
+                  🏠 Try Mortgage Calculator
+                </button>
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;links&quot;]').click()">
                   🔗 View Live Financial Data
                 </button>
@@ -273,6 +349,9 @@
       <section id="plans" class="tab-content" style="display:none">
         <div id="plansContainer">Loading…</div>
       </section>
+      <section id="mortgage" class="tab-content" style="display:none">
+        <div id="mortgageContainer">Loading…</div>
+      </section>
       <section id="links" class="tab-content" style="display:none">
         <div id="linksContainer">Loading…</div>
       </section>
@@ -282,41 +361,46 @@
   <!-- Floating Calculator Widget -->
   <div id="calculatorWidget" class="calculator-widget">
     <div class="calculator-widget__header">
-      <span class="calculator-widget__title">Calculator</span>
-      <div class="calculator-widget__controls">
-        <button id="calculatorMinimize" class="calculator-widget__btn" title="Minimize">
-          <i class="fas fa-minus"></i>
-        </button>
-        <button id="calculatorClose" class="calculator-widget__btn" title="Close">
-          <i class="fas fa-times"></i>
-        </button>
+      <div class="calculator-widget__traffic-lights">
+        <button class="traffic-light traffic-light--red" id="calculatorClose" title="Close">×</button>
+        <button class="traffic-light traffic-light--yellow" id="calculatorMinimize" title="Minimize">−</button>
       </div>
+      <span class="calculator-widget__title">Calculator</span>
     </div>
     <div class="calculator-widget__body">
       <div class="calculator__display">
-        <input type="text" id="calculatorDisplay" class="calculator__screen" value="0">
+        <div class="calculator__expression" id="calculatorExpression"></div>
+        <div class="calculator__result">
+          <span id="calculatorDisplay">0</span>
+          <span class="calculator__cursor" id="calculatorCursor">|</span>
+        </div>
       </div>
       <div class="calculator__buttons">
-        <button class="calculator__btn calculator__btn--clear" onclick="calculatorClear()">C</button>
-        <button class="calculator__btn calculator__btn--clear" onclick="calculatorClearEntry()">CE</button>
-        <button class="calculator__btn calculator__btn--operator" onclick="calculatorBackspace()">⌫</button>
+        <!-- Row 1 -->
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorClear()">AC</button>
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorPlusMinus()">+/-</button>
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorPercent()">%</button>
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('÷')">÷</button>
         
+        <!-- Row 2 -->
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('7')">7</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('8')">8</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('9')">9</button>
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('×')">×</button>
         
+        <!-- Row 3 -->
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('4')">4</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('5')">5</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('6')">6</button>
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('-')">-</button>
         
+        <!-- Row 4 -->
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('1')">1</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('2')">2</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('3')">3</button>
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('+')">+</button>
         
+        <!-- Row 5 -->
         <button class="calculator__btn calculator__btn--number calculator__btn--zero" onclick="calculatorNumber('0')">0</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorDecimal()">.</button>
         <button class="calculator__btn calculator__btn--equals" onclick="calculatorEquals()">=</button>
@@ -332,6 +416,138 @@
     // Tabs logic and lazy-load SEPP widget
     document.getElementById('year').textContent = new Date().getFullYear();
     const tabs = document.querySelectorAll('.nav__tab');
+    
+    // Mobile hamburger menu functionality
+    function initializeMobileMenu() {
+      const hamburgerBtn = document.getElementById('mobileMenuToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const mobileMenuItems = document.querySelectorAll('.mobile-menu__item[data-tab]');
+      const mobileCalculatorToggle = document.getElementById('mobileCalculatorToggle');
+      const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+      
+      // Toggle mobile menu
+      function toggleMobileMenu() {
+        const isActive = mobileMenu.classList.contains('nav__mobile-menu--active');
+        if (isActive) {
+          closeMobileMenu();
+        } else {
+          openMobileMenu();
+        }
+      }
+      
+      function openMobileMenu() {
+        mobileMenu.classList.add('nav__mobile-menu--active');
+        hamburgerBtn.classList.add('nav__hamburger--active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      }
+      
+      function closeMobileMenu() {
+        mobileMenu.classList.remove('nav__mobile-menu--active');
+        hamburgerBtn.classList.remove('nav__hamburger--active');
+        document.body.style.overflow = ''; // Restore scrolling
+      }
+      
+      // Event listeners
+      if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', toggleMobileMenu);
+      }
+      
+      // Close menu when clicking outside
+      if (mobileMenu) {
+        mobileMenu.addEventListener('click', function(e) {
+          if (e.target === mobileMenu) {
+            closeMobileMenu();
+          }
+        });
+      }
+      
+      // Handle mobile menu item clicks
+      mobileMenuItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const tabName = this.getAttribute('data-tab');
+          if (tabName) {
+            setActive(tabName);
+            loadTabContent(tabName);
+            closeMobileMenu();
+            
+            // Update active state in mobile menu
+            mobileMenuItems.forEach(mi => mi.classList.remove('mobile-menu__item--active'));
+            this.classList.add('mobile-menu__item--active');
+          }
+        });
+      });
+      
+      // Handle mobile calculator toggle (outside menu)
+      if (mobileCalculatorToggle) {
+        mobileCalculatorToggle.addEventListener('click', function() {
+          const calculatorToggle = document.getElementById('calculatorToggle');
+          if (calculatorToggle) {
+            calculatorToggle.click();
+          }
+        });
+      }
+      
+      // Handle mobile theme toggle (outside menu)
+      if (mobileThemeToggle) {
+        mobileThemeToggle.addEventListener('click', function() {
+          const themeToggle = document.getElementById('globalThemeToggle');
+          if (themeToggle) {
+            themeToggle.click();
+          }
+          
+          // Update mobile theme button icon
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          this.textContent = currentTheme === 'dark' ? '☀' : '🌙';
+        });
+      }
+      
+      // Close menu on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('nav__mobile-menu--active')) {
+          closeMobileMenu();
+        }
+      });
+      
+      // Update mobile menu active state based on current tab
+      function updateMobileMenuActiveState() {
+        const currentTab = getCurrentTab();
+        mobileMenuItems.forEach(item => {
+          const tabName = item.getAttribute('data-tab');
+          item.classList.toggle('mobile-menu__item--active', tabName === currentTab);
+        });
+      }
+      
+      // Initialize active state
+      updateMobileMenuActiveState();
+      
+      // Update active state when tab changes
+      window.addEventListener('hashchange', updateMobileMenuActiveState);
+      
+      // Sync mobile theme button with main theme
+      function syncMobileThemeButton() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (mobileThemeToggle) {
+          mobileThemeToggle.textContent = currentTheme === 'dark' ? '☀' : '🌙';
+        }
+      }
+      
+      // Initialize theme button
+      syncMobileThemeButton();
+      
+      // Listen for theme changes to update mobile button
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+            syncMobileThemeButton();
+          }
+        });
+      });
+      
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+      });
+    }
     
     function setActive(tabName, updateHash = true){
       tabs.forEach(t=>t.classList.toggle('nav__tab--active', t.dataset.tab===tabName));
@@ -356,7 +572,7 @@
     // Function to get current tab from URL hash or default to 'about'
     function getCurrentTab() {
       const hash = window.location.hash.substring(1);
-      const validTabs = ['about', 'sepp', '401k', 'plans', 'links'];
+      const validTabs = ['about', 'sepp', '401k', 'plans', 'mortgage', 'links'];
       return validTabs.includes(hash) ? hash : 'about';
     }
     
@@ -509,6 +725,22 @@
           }, 100);
         }
       }
+      if(tabName==='mortgage'){
+        // load Mortgage calculator widget html
+        const container = document.getElementById('mortgageContainer');
+        if(!container.dataset.loaded){
+          const html = await fetch('src/mortgage/mortgage_widget.html').then(r=>r.text());
+          container.innerHTML = html;
+          // inject JS for mortgage calculator
+          const script = document.createElement('script');
+          script.src = 'src/mortgage/mortgage_calculator.js?v=' + Date.now();
+          script.onload = function() {
+            console.log('Mortgage calculator initialized');
+          };
+          document.body.appendChild(script);
+          container.dataset.loaded = 'true';
+        }
+      }
       if(tabName==='links'){
         // load links widget html (expandable links page)
         const container = document.getElementById('linksContainer');
@@ -523,6 +755,13 @@
       const name = t.dataset.tab; 
       setActive(name);
       await loadTabContent(name);
+      
+      // Update mobile menu active state
+      const mobileMenuItems = document.querySelectorAll('.mobile-menu__item[data-tab]');
+      mobileMenuItems.forEach(item => {
+        const tabName = item.getAttribute('data-tab');
+        item.classList.toggle('mobile-menu__item--active', tabName === name);
+      });
     }));
 
     // Theme: read/persist and apply site-wide
@@ -549,6 +788,9 @@
     setActive(initialTab);
     // Load content for the initial tab
     loadTabContent(initialTab);
+    
+    // Initialize mobile menu
+    initializeMobileMenu();
 
     // Remove any BrowserSync injected nodes that may still appear (defensive)
     (function removeBS(){
@@ -622,25 +864,41 @@
       window.location.href = url;
     };
 
-    // Calculator functionality
+    // Calculator functionality - Enhanced macOS style
     let calculatorState = {
       display: '0',
       previousValue: null,
       operation: null,
-      waitingForOperand: false
+      waitingForOperand: false,
+      expression: ''
     };
 
     function updateCalculatorDisplay() {
       const display = document.getElementById('calculatorDisplay');
+      const expression = document.getElementById('calculatorExpression');
+      const cursor = document.getElementById('calculatorCursor');
+      
       if (display) {
         // Format the display value to remove unnecessary decimal places
         let displayValue = calculatorState.display;
         if (!isNaN(parseFloat(displayValue))) {
           const num = parseFloat(displayValue);
-          // Show up to 2 decimal places, but remove trailing zeros
-          displayValue = num % 1 === 0 ? num.toString() : num.toFixed(2).replace(/\.?0+$/, '');
+          // Show up to 8 decimal places, but remove trailing zeros
+          displayValue = num % 1 === 0 ? num.toString() : num.toFixed(8).replace(/\.?0+$/, '');
         }
-        display.value = displayValue;
+        display.textContent = displayValue;
+      }
+      
+      if (expression) {
+        expression.textContent = calculatorState.expression;
+      }
+      
+      // Start cursor blinking
+      if (cursor) {
+        cursor.style.animation = 'none';
+        setTimeout(() => {
+          cursor.style.animation = 'blink 1s infinite';
+        }, 10);
       }
     }
 
@@ -669,6 +927,21 @@
       calculatorState.previousValue = null;
       calculatorState.operation = null;
       calculatorState.waitingForOperand = false;
+      calculatorState.expression = '';
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorPlusMinus = function() {
+      const currentValue = parseFloat(calculatorState.display);
+      if (currentValue !== 0) {
+        calculatorState.display = (currentValue * -1).toString();
+        updateCalculatorDisplay();
+      }
+    };
+
+    window.calculatorPercent = function() {
+      const currentValue = parseFloat(calculatorState.display);
+      calculatorState.display = (currentValue / 100).toString();
       updateCalculatorDisplay();
     };
 
@@ -691,17 +964,22 @@
 
       if (calculatorState.previousValue === null) {
         calculatorState.previousValue = inputValue;
+        calculatorState.expression = inputValue + ' ' + nextOperation;
       } else if (calculatorState.operation) {
         const currentValue = calculatorState.previousValue || 0;
         const newValue = calculate(currentValue, inputValue, calculatorState.operation);
 
         calculatorState.display = String(newValue);
         calculatorState.previousValue = newValue;
+        calculatorState.expression = newValue + ' ' + nextOperation;
         updateCalculatorDisplay();
+      } else {
+        calculatorState.expression = inputValue + ' ' + nextOperation;
       }
 
       calculatorState.waitingForOperand = true;
       calculatorState.operation = nextOperation;
+      updateCalculatorDisplay();
     };
 
     window.calculatorEquals = function() {
@@ -710,7 +988,8 @@
       if (calculatorState.previousValue !== null && calculatorState.operation) {
         const newValue = calculate(calculatorState.previousValue, inputValue, calculatorState.operation);
         
-        // Format the result to 2 decimal places max
+        // Show the complete expression
+        calculatorState.expression = calculatorState.previousValue + ' ' + calculatorState.operation + ' ' + inputValue + ' =';
         calculatorState.display = newValue.toString();
         calculatorState.previousValue = null;
         calculatorState.operation = null;
@@ -738,8 +1017,8 @@
           result = secondValue;
       }
       
-      // Round to 2 decimal places and remove trailing zeros
-      return Math.round(result * 100) / 100;
+      // Round to avoid floating point precision issues
+      return Math.round(result * 100000000) / 100000000;
     }
 
     // Calculator widget controls
@@ -765,10 +1044,6 @@
         calculatorWidget.classList.toggle('active');
         if (calculatorWidget.classList.contains('active')) {
           updateCalculatorDisplay();
-          // Focus on display for immediate paste functionality
-          setTimeout(() => {
-            if (calculatorDisplay) calculatorDisplay.focus();
-          }, 100);
         }
       });
 
@@ -780,6 +1055,18 @@
       function minimizeCalculator() {
         console.log('Minimizing calculator');
         calculatorWidget.classList.toggle('minimized');
+        
+        // Update the yellow button symbol based on minimized state
+        const yellowButton = document.getElementById('calculatorMinimize');
+        if (yellowButton) {
+          if (calculatorWidget.classList.contains('minimized')) {
+            yellowButton.textContent = '+';
+            yellowButton.title = 'Expand';
+          } else {
+            yellowButton.textContent = '−';
+            yellowButton.title = 'Minimize';
+          }
+        }
       }
 
       if (calculatorClose) {
@@ -833,8 +1120,8 @@
       if (calculatorHeader) {
         // Mouse events for desktop
         calculatorHeader.addEventListener('mousedown', function(e) {
-          // Don't start dragging if click is on a button
-          if (e.target.closest('.calculator-widget__btn')) {
+          // Don't start dragging if click is on a traffic light button
+          if (e.target.closest('.traffic-light')) {
             return;
           }
           
@@ -847,8 +1134,8 @@
 
         // Touch events for mobile
         calculatorHeader.addEventListener('touchstart', function(e) {
-          // Don't start dragging if touch is on a button
-          if (e.target.closest('.calculator-widget__btn')) {
+          // Don't start dragging if touch is on a traffic light button
+          if (e.target.closest('.traffic-light')) {
             return;
           }
           
@@ -914,40 +1201,20 @@
 
       // Enhanced display input handling with paste support
       if (calculatorDisplay) {
-        // Allow manual input and paste
-        calculatorDisplay.addEventListener('input', function(e) {
-          let value = this.value.replace(/[^0-9.-]/g, ''); // Only allow numbers, decimal, and minus
-          
-          // Validate the number
-          if (value === '' || value === '-') {
-            value = '0';
-          } else if (!isNaN(parseFloat(value))) {
-            value = parseFloat(value).toString();
-          } else {
-            value = calculatorState.display; // Revert to previous value if invalid
-          }
-          
-          calculatorState.display = value;
-          calculatorState.waitingForOperand = false;
-          this.value = value;
-        });
-
         // Handle paste events
-        calculatorDisplay.addEventListener('paste', function(e) {
-          e.preventDefault();
-          const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-          const cleanNumber = pastedText.replace(/[^0-9.-]/g, '');
-          
-          if (cleanNumber && !isNaN(parseFloat(cleanNumber))) {
-            calculatorState.display = parseFloat(cleanNumber).toString();
-            calculatorState.waitingForOperand = false;
-            updateCalculatorDisplay();
+        document.addEventListener('paste', function(e) {
+          if (calculatorWidget.classList.contains('active')) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const cleanNumber = pastedText.replace(/[^0-9.-]/g, '');
+            
+            if (cleanNumber && !isNaN(parseFloat(cleanNumber))) {
+              calculatorState.display = parseFloat(cleanNumber).toString();
+              calculatorState.waitingForOperand = false;
+              calculatorState.expression = '';
+              updateCalculatorDisplay();
+            }
           }
-        });
-
-        // Handle focus/blur for better UX
-        calculatorDisplay.addEventListener('focus', function() {
-          this.select(); // Select all text when focused
         });
       }
 
@@ -958,18 +1225,23 @@
         }
       });
 
-      // Keyboard support for calculator (only when calculator is active and focused)
+      // Keyboard support for calculator (only when calculator is active)
       document.addEventListener('keydown', function(e) {
         if (!calculatorWidget.classList.contains('active')) return;
 
         const key = e.key;
         
-        // Only handle calculator keys if display is focused or no other input is focused
+        // Only handle calculator keys if no input/textarea is focused
         const activeElement = document.activeElement;
-        const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
+        const isInputFocused = activeElement && (
+          activeElement.tagName === 'INPUT' || 
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.contentEditable === 'true'
+        );
         
-        if (isInputFocused && activeElement !== calculatorDisplay) return;
+        if (isInputFocused) return;
         
+        // Prevent default and handle calculator operations
         if (key >= '0' && key <= '9') {
           e.preventDefault();
           calculatorNumber(key);
@@ -997,6 +1269,9 @@
         } else if (key === 'Delete' || key.toLowerCase() === 'c') {
           e.preventDefault();
           calculatorClear();
+        } else if (key === '%') {
+          e.preventDefault();
+          calculatorPercent();
         }
       });
     }
