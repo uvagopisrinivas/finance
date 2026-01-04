@@ -253,15 +253,27 @@
                 if (value && value !== '0') {
                     const formatted = formatUSNumber(value);
                     
-                    // Calculate new cursor position
-                    const oldCommas = (oldValue.match(/,/g) || []).length;
-                    const newCommas = (formatted.match(/,/g) || []).length;
-                    const commasDiff = newCommas - oldCommas;
+                    // Better cursor position calculation
+                    // Count digits before cursor in old value
+                    const oldValueBeforeCursor = oldValue.substring(0, cursorPosition);
+                    const digitsBeforeCursor = (oldValueBeforeCursor.match(/\d/g) || []).length;
+                    
+                    // Find position in new formatted value that has same number of digits before it
+                    let newCursorPosition = 0;
+                    let digitCount = 0;
+                    
+                    for (let i = 0; i < formatted.length; i++) {
+                        if (/\d/.test(formatted[i])) {
+                            digitCount++;
+                            if (digitCount > digitsBeforeCursor) {
+                                newCursorPosition = i;
+                                break;
+                            }
+                        }
+                        newCursorPosition = i + 1;
+                    }
                     
                     this.value = formatted;
-                    
-                    // Restore cursor position, adjusting for added/removed commas
-                    const newCursorPosition = Math.min(cursorPosition + commasDiff, formatted.length);
                     this.setSelectionRange(newCursorPosition, newCursorPosition);
                     
                     updateUSDHelperText(this, formatted);
