@@ -382,7 +382,7 @@
         <div class="calculator-intro">
             <div class="intro-card">
                 <h3><i class="fas fa-user-clock text-info"></i> Retirement Planning Calculator</h3>
-                <p>Plan your retirement with goal-based financial planning. Set your life goals, consider inflation, and calculate the corpus needed for a comfortable retirement.</p>
+                <p>Set your target retirement age and life goals. The calculator will determine the total corpus required and the monthly savings needed to achieve your retirement dream.</p>
             </div>
         </div>
 
@@ -398,26 +398,34 @@
             </div>
             <div class="form-group">
                 <label class="form-label">
+                    <i class="fas fa-flag-checkered"></i>
+                    Target Retirement Age (Years)
+                </label>
+                <input type="number" id="retirementTargetAge" value="41" min="30" max="75" class="form-input" placeholder="When you want to retire">
+                <small class="form-hint">The age at which you want to retire</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
                     <i class="fas fa-piggy-bank"></i>
                     Monthly Savings (₹)
                 </label>
-                <input type="text" id="retirementMonthlySavings" value="200000" class="form-input" placeholder="Amount you can save monthly" inputmode="numeric">
-                <small class="form-hint">How much you can invest every month</small>
+                <input type="text" id="retirementMonthlySavings" value="270000" class="form-input" placeholder="Amount you can save monthly" inputmode="numeric">
+                <small class="form-hint">How much you can invest every month until retirement</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
                     <i class="fas fa-wallet"></i>
                     Current Corpus (₹) - Optional
                 </label>
-                <input type="text" id="retirementCurrentCorpus" value="0" class="form-input" placeholder="Your existing investments" inputmode="numeric">
-                <small class="form-hint">Total value of your current investments ( optional )</small>
+                <input type="text" id="retirementCurrentCorpus" value="40000000" class="form-input" placeholder="Your existing investments" inputmode="numeric">
+                <small class="form-hint">Total value of your current investments (optional)</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
                     <i class="fas fa-percentage"></i>
                     Expected Return Rate (% p.a.)
                 </label>
-                <input type="number" id="retirementReturnRate" value="10" step="0.1" min="8" max="18" class="form-input" placeholder="Expected investment returns">
+                <input type="number" id="retirementReturnRate" value="12" step="0.1" min="8" max="18" class="form-input" placeholder="Expected investment returns">
                 <small class="form-hint">Expected annual investment returns</small>
             </div>
             <div class="form-group">
@@ -427,14 +435,6 @@
                 </label>
                 <input type="number" id="retirementInflationRate" value="3" step="0.1" min="3" max="10" class="form-input" placeholder="Expected inflation rate">
                 <small class="form-hint">Expected annual inflation rate</small>
-            </div>
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-shopping-cart"></i>
-                    Monthly Expenses in Retirement (₹)
-                </label>
-                <input type="text" id="retirementMonthlyExpenses" value="160000" class="form-input" placeholder="Monthly expenses after retirement" inputmode="numeric">
-                <small class="form-hint">Current value - will be adjusted for inflation</small>
             </div>
             <div class="form-group">
                 <label class="form-label">
@@ -449,8 +449,8 @@
                     <i class="fas fa-receipt"></i>
                     Tax Rate on Withdrawals (%)
                 </label>
-                <input type="number" id="retirementTaxRate" value="30" step="0.1" min="0" max="50" class="form-input" placeholder="Tax rate on withdrawals">
-                <small class="form-hint">Tax on all withdrawals (expenses + goals). Higher tax = need larger corpus</small>
+                <input type="number" id="retirementTaxRate" value="20" step="0.1" min="0" max="50" class="form-input" placeholder="Tax rate on withdrawals">
+                <small class="form-hint">Tax on all withdrawals (expenses + goals)</small>
             </div>
         </div>
 
@@ -460,13 +460,28 @@
                 <i class="fas fa-bullseye"></i>
                 Financial Goals
             </h3>
-            <p class="section-subtitle">Add your life goals and target amounts. The calculator will adjust for inflation.</p>
+            <p class="section-subtitle">Add your life goals and target amounts. The calculator will adjust for inflation. <strong>Note:</strong> Recurring goals are monthly expenses that continue over multiple years.</p>
             
-            <div id="goalsContainer">
-                <!-- Default goals will be added here -->
+            <div class="goals-table-wrapper">
+                <table class="goals-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"></th>
+                            <th style="width: 200px;">Goal Name</th>
+                            <th style="width: 180px;">Type</th>
+                            <th style="width: 150px;">Amount (₹)</th>
+                            <th style="width: 100px;">Starts (Yrs)</th>
+                            <th style="width: 100px;" class="recurring-header">Duration (Yrs)</th>
+                            <th style="width: 100px;" class="recurring-header">Increase (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="goalsContainer">
+                        <!-- Goals will be added here -->
+                    </tbody>
+                </table>
             </div>
             
-            <button type="button" class="btn btn--secondary" onclick="addNewGoal()">
+            <button type="button" class="btn btn--secondary" onclick="addNewGoal()" style="margin-top: var(--space-md);">
                 <i class="fas fa-plus"></i>
                 Add New Goal
             </button>
@@ -482,13 +497,13 @@
         <div id="retirementResults" class="results-area hidden">
             <div class="results-header">
                 <h3><i class="fas fa-chart-pie"></i> Your Retirement Plan</h3>
-                <p>Based on your savings and goals, here's when you can retire</p>
+                <p>Based on your target retirement age and goals, here's what you need</p>
             </div>
             
             <div class="retirement-summary">
                 <div class="retirement-main-result">
                     <div class="retirement-age-display">
-                        <span class="retirement-age-label">You Can Retire At Age</span>
+                        <span class="retirement-age-label">Target Retirement Age</span>
                         <span class="retirement-age-value" id="retirementCalculatedAge">0 years</span>
                     </div>
                     <div class="retirement-years-display">
@@ -498,33 +513,25 @@
                 </div>
                 
                 <div class="retirement-details">
-                    <div class="retirement-detail-item">
-                        <span class="detail-label">Total Goals</span>
-                        <span class="detail-value" id="retirementTotalGoals">0</span>
-                    </div>
-                    <div class="retirement-detail-item">
-                        <span class="detail-label">Goals Value (Today)</span>
-                        <span class="detail-value" id="retirementGoalsCorpus">₹0</span>
-                    </div>
-                    <div class="retirement-detail-item">
-                        <span class="detail-label">Goals Value (Future)</span>
-                        <span class="detail-value" id="retirementGoalsCorpusFuture">₹0</span>
-                    </div>
-                    <div class="retirement-detail-item">
-                        <span class="detail-label">Retirement Corpus Needed</span>
-                        <span class="detail-value" id="retirementCorpusNeeded">₹0</span>
-                    </div>
-                    <div class="retirement-detail-item" title="Total money needed for retirement expenses + all your life goals">
+                    <div class="retirement-detail-item highlight" title="Total money needed for retirement expenses + all your life goals">
                         <span class="detail-label">📊 Total Corpus Required</span>
                         <span class="detail-value" id="retirementTotalCorpus">₹0</span>
                     </div>
-                    <div class="retirement-detail-item" title="Your current monthly savings amount used for calculations">
-                        <span class="detail-label">💳 Monthly Investment</span>
-                        <span class="detail-value" id="retirementMonthlySIP">₹0</span>
+                    <div class="retirement-detail-item" title="Your current monthly savings amount">
+                        <span class="detail-label">💰 Current Monthly Savings</span>
+                        <span class="detail-value" id="retirementCurrentSavings">₹0</span>
                     </div>
-                    <div class="retirement-detail-item highlight" title="Money left over after meeting all retirement needs and goals. Shows ₹0 if money runs out during retirement.">
-                        <span class="detail-label">💰 Extra Corpus</span>
-                        <span class="detail-value" id="retirementIncomeAllocation">₹0</span>
+                    <div class="retirement-detail-item highlight" title="Monthly savings you need to achieve your retirement goal">
+                        <span class="detail-label">💳 Required Monthly Savings</span>
+                        <span class="detail-value" id="retirementRequiredSavings">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item" title="Total corpus you will accumulate with current savings">
+                        <span class="detail-label">📈 Accumulated Corpus</span>
+                        <span class="detail-value" id="retirementAccumulatedCorpus">₹0</span>
+                    </div>
+                    <div class="retirement-detail-item" title="Difference between what you need and what you'll have">
+                        <span class="detail-label">⚠️ Shortfall</span>
+                        <span class="detail-value" id="retirementShortfall">₹0</span>
                     </div>
                 </div>
             </div>

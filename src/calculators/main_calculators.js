@@ -26,7 +26,7 @@
                 swpTaxRate: '10',
                 lumpsumAmount: '25000',
                 lumpsumTimePeriod: '10',
-                retirementMonthlySavings: '200000',
+                retirementMonthlySavings: '270000',
                 retirementMonthlyExpenses: '160000',
                 goalAmount: '500000'
             },
