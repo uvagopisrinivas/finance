@@ -6020,7 +6020,7 @@ input.form-input[type="text"] {
 }
 
 .expenses-list::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: var(--color-bg);
   border-radius: var(--border-radius-sm);
 }
 
@@ -6034,7 +6034,7 @@ input.form-input[type="text"] {
 }
 
 .expense-item {
-  background: var(--color-bg-secondary);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-md);
   padding: var(--space-xs) var(--space-sm);
@@ -6090,7 +6090,7 @@ input.form-input[type="text"] {
   padding: var(--space-xs) var(--space-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
-  background: var(--color-bg-primary);
+  background: var(--color-surface);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
   transition: all 0.2s ease;
@@ -6142,7 +6142,7 @@ input.form-input[type="text"] {
 }
 
 .expenses-summary-compact {
-  background: var(--color-bg-secondary);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: var(--space-md);
