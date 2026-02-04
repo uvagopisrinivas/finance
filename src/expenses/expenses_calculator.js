@@ -10,28 +10,36 @@
         if (currentCurrency === 'USD') {
             return [
                 { name: 'Rent/Mortgage', amount: 1500, category: 'housing' },
+                { name: 'Groceries', amount: 500, category: 'food' },
+                { name: 'Travel', amount: 400, category: 'travel' },
+                { name: 'Children Education', amount: 300, category: 'education' },
+                { name: 'Health Insurance', amount: 250, category: 'health' },
+                { name: 'Fuel/Gas', amount: 200, category: 'transportation' },
+                { name: 'Miscellaneous', amount: 200, category: 'other' },
+                { name: 'Festivals', amount: 150, category: 'festivals' },
                 { name: 'House Insurance', amount: 150, category: 'insurance' },
                 { name: 'Car Insurance', amount: 120, category: 'insurance' },
+                { name: 'Power Bill', amount: 100, category: 'utilities' },
                 { name: 'Phone Bill', amount: 80, category: 'phone' },
                 { name: 'Internet Bill', amount: 60, category: 'internet' },
-                { name: 'Power Bill', amount: 100, category: 'utilities' },
-                { name: 'Fuel/Gas', amount: 200, category: 'transportation' },
-                { name: 'Groceries', amount: 500, category: 'food' },
-                { name: 'Subscriptions (Netflix, etc)', amount: 50, category: 'entertainment' },
-                { name: 'Miscellaneous', amount: 200, category: 'other' }
+                { name: 'Subscriptions (Netflix, etc)', amount: 50, category: 'entertainment' }
             ];
         } else {
             return [
                 { name: 'Rent/Mortgage', amount: 25000, category: 'housing' },
-                { name: 'House Insurance', amount: 2000, category: 'insurance' },
+                { name: 'Groceries', amount: 20000, category: 'food' },
+                { name: 'Travel', amount: 15000, category: 'travel' },
+                { name: 'Children Education', amount: 10000, category: 'education' },
+                { name: 'Health Insurance', amount: 8000, category: 'health' },
+                { name: 'Fuel/Gas', amount: 6000, category: 'transportation' },
+                { name: 'Miscellaneous', amount: 5000, category: 'other' },
+                { name: 'Festivals', amount: 4000, category: 'festivals' },
                 { name: 'Car Insurance', amount: 3000, category: 'insurance' },
+                { name: 'Power Bill', amount: 3000, category: 'utilities' },
+                { name: 'House Insurance', amount: 2000, category: 'insurance' },
                 { name: 'Phone Bill', amount: 500, category: 'phone' },
                 { name: 'Internet Bill', amount: 1000, category: 'internet' },
-                { name: 'Power Bill', amount: 2000, category: 'utilities' },
-                { name: 'Fuel/Gas', amount: 5000, category: 'transportation' },
-                { name: 'Groceries', amount: 15000, category: 'food' },
-                { name: 'Subscriptions (Netflix, etc)', amount: 1500, category: 'entertainment' },
-                { name: 'Miscellaneous', amount: 5000, category: 'other' }
+                { name: 'Subscriptions (Netflix, etc)', amount: 1500, category: 'entertainment' }
             ];
         }
     }
@@ -70,12 +78,16 @@
                         <input type="text" class="expense-name-input" value="${name}" placeholder="Expense name">
                         <select class="expense-category-select-hidden" style="display: none;">
                             <option value="housing" ${category === 'housing' ? 'selected' : ''}>Housing</option>
+                            <option value="food" ${category === 'food' ? 'selected' : ''}>Food</option>
+                            <option value="travel" ${category === 'travel' ? 'selected' : ''}>Travel</option>
+                            <option value="education" ${category === 'education' ? 'selected' : ''}>Education</option>
+                            <option value="health" ${category === 'health' ? 'selected' : ''}>Health</option>
+                            <option value="transportation" ${category === 'transportation' ? 'selected' : ''}>Transportation</option>
+                            <option value="festivals" ${category === 'festivals' ? 'selected' : ''}>Festivals</option>
                             <option value="insurance" ${category === 'insurance' ? 'selected' : ''}>Insurance</option>
                             <option value="utilities" ${category === 'utilities' ? 'selected' : ''}>Utilities</option>
                             <option value="phone" ${category === 'phone' ? 'selected' : ''}>Phone</option>
                             <option value="internet" ${category === 'internet' ? 'selected' : ''}>Internet</option>
-                            <option value="transportation" ${category === 'transportation' ? 'selected' : ''}>Transportation</option>
-                            <option value="food" ${category === 'food' ? 'selected' : ''}>Food</option>
                             <option value="entertainment" ${category === 'entertainment' ? 'selected' : ''}>Entertainment</option>
                             <option value="other" ${category === 'other' ? 'selected' : ''}>Other</option>
                         </select>
@@ -101,7 +113,7 @@
         
         categoryIcon.addEventListener('click', function() {
             // Cycle through categories
-            const categories = ['housing', 'insurance', 'utilities', 'phone', 'internet', 'transportation', 'food', 'entertainment', 'other'];
+            const categories = ['housing', 'food', 'travel', 'education', 'health', 'transportation', 'festivals', 'insurance', 'utilities', 'phone', 'internet', 'entertainment', 'other'];
             const currentCategory = this.getAttribute('data-category');
             const currentIndex = categories.indexOf(currentCategory);
             const nextIndex = (currentIndex + 1) % categories.length;
@@ -125,6 +137,10 @@
             entertainment: '🎬',
             phone: '📱',
             internet: '🌐',
+            travel: '✈️',
+            education: '👶',
+            health: '🏥',
+            festivals: '🎉',
             other: '📦'
         };
         return icons[category] || '📦';
@@ -256,6 +272,20 @@
 
             const remainingAmount = monthlyIncome - totalExpenses;
             const savingsPercentage = (remainingAmount / monthlyIncome) * 100;
+            
+            // Check if inflation and years are provided for future calculation
+            const inflationRate = parseFloat(document.getElementById('expensesInflationRate').value) || 0;
+            const years = parseInt(document.getElementById('expensesYears').value) || 0;
+            const hasFutureCalculation = inflationRate > 0 && years > 0;
+            
+            let futureExpenses = 0;
+            let futureSavings = 0;
+            
+            if (hasFutureCalculation) {
+                // Calculate future expenses with inflation: FV = PV * (1 + r)^n
+                futureExpenses = totalExpenses * Math.pow(1 + (inflationRate / 100), years);
+                futureSavings = monthlyIncome - futureExpenses;
+            }
 
             // Update summary
             document.getElementById('expensesMonthlyIncome').textContent = formatCurrency(monthlyIncome);
@@ -279,6 +309,35 @@
                 remainingElement.style.color = 'var(--color-warning)';
             } else {
                 remainingElement.style.color = 'var(--color-success)';
+            }
+            
+            // Show/hide future values section
+            const futureSection = document.getElementById('expensesFutureSection');
+            if (hasFutureCalculation) {
+                futureSection.style.display = 'block';
+                
+                // Update future section label
+                document.getElementById('expensesFutureYearsLabel').textContent = `After ${years} Year${years > 1 ? 's' : ''} (${inflationRate}% inflation)`;
+                
+                // Update future expenses
+                document.getElementById('expensesFutureExpenses').textContent = formatCurrency(futureExpenses);
+                document.getElementById('expensesFutureExpensesWords').textContent = numberToWords(Math.round(futureExpenses));
+                
+                // Update future savings
+                const futureSavingsElement = document.getElementById('expensesFutureSavings');
+                futureSavingsElement.textContent = formatCurrency(futureSavings);
+                document.getElementById('expensesFutureSavingsWords').textContent = numberToWords(Math.round(futureSavings));
+                
+                // Style future savings based on value
+                if (futureSavings < 0) {
+                    futureSavingsElement.style.color = 'var(--color-error)';
+                } else if (futureSavings < monthlyIncome * 0.1) {
+                    futureSavingsElement.style.color = 'var(--color-warning)';
+                } else {
+                    futureSavingsElement.style.color = 'var(--color-success)';
+                }
+            } else {
+                futureSection.style.display = 'none';
             }
 
             // Show results (no tables needed)
@@ -356,7 +415,7 @@
                     const incomeInput = document.getElementById('expensesIncomeAmount');
                     if (incomeInput) {
                         const currentCurrency = window.currentCurrency || 'INR';
-                        const defaultIncome = currentCurrency === 'USD' ? '5000' : '100000';
+                        const defaultIncome = currentCurrency === 'USD' ? '6000' : '200000';
                         incomeInput.value = formatNumber(defaultIncome);
                         updateHelperText(incomeInput, formatNumber(defaultIncome));
                     }
