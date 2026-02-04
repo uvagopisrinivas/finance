@@ -787,99 +787,32 @@
         if (calculatorType === 'retirement') {
             setTimeout(() => {
                 initializeDefaultGoals();
-                setupRetirementInputValidation();
+                
+                // Format and show helper text for retirement inputs (don't re-attach listeners)
+                setTimeout(() => {
+                    const retirementInputs = document.querySelectorAll('#retirementMonthlySavings, #retirementCurrentCorpus, #retirementMonthlyExpenses');
+                    retirementInputs.forEach(input => {
+                        if (input.value && input.value.trim() !== '' && input.value !== '0') {
+                            const cleanValue = input.value.replace(/,/g, '');
+                            const formatted = formatNumber(cleanValue);
+                            input.value = formatted;
+                            updateHelperText(input, formatted);
+                        }
+                    });
+                }, 50);
                 
                 // Force update helper text for all goal inputs after initialization
                 setTimeout(() => {
                     const allGoalInputs = document.querySelectorAll('.goal-amount-input');
-                    allGoalInputs.forEach((input, index) => {
+                    allGoalInputs.forEach(input => {
                         if (input.value && input.value.trim() !== '') {
-                            console.log(`Initializing helper text for goal ${index + 1}:`, input.value);
                             updateHelperText(input, input.value);
                         }
                     });
-                }, 200);
-            }, 100);
+                }, 150);
+            }, 50);
         }
     };
-
-    function setupRetirementInputValidation() {
-        // Setup validation for retirement-specific inputs
-        const currencyInputs = document.querySelectorAll('#retirementMonthlySavings, #retirementCurrentCorpus, #retirementMonthlyExpenses');
-        
-        currencyInputs.forEach(input => {
-            input.removeAttribute('maxlength');
-            
-            if (input.value) {
-                const formatted = formatNumber(input.value);
-                input.value = formatted;
-                updateHelperText(input, formatted);
-            }
-            
-            input.addEventListener('input', function(e) {
-                // Store cursor position before formatting
-                const cursorPosition = this.selectionStart;
-                const oldValue = this.value;
-                
-                let value = this.value.replace(/,/g, '');
-                value = value.replace(/[^\d]/g, '');
-                
-                if (value.length > 15) {
-                    value = value.substring(0, 15);
-                }
-                
-                if (value && value !== '0') {
-                    const formatted = formatNumber(value);
-                    
-                    // Better cursor position calculation
-                    // Count digits before cursor in old value
-                    const oldValueBeforeCursor = oldValue.substring(0, cursorPosition);
-                    const digitsBeforeCursor = (oldValueBeforeCursor.match(/\d/g) || []).length;
-                    
-                    // Find position in new formatted value that has same number of digits before it
-                    let newCursorPosition = 0;
-                    let digitCount = 0;
-                    
-                    for (let i = 0; i < formatted.length; i++) {
-                        if (/\d/.test(formatted[i])) {
-                            digitCount++;
-                            if (digitCount > digitsBeforeCursor) {
-                                newCursorPosition = i;
-                                break;
-                            }
-                        }
-                        newCursorPosition = i + 1;
-                    }
-                    
-                    this.value = formatted;
-                    this.setSelectionRange(newCursorPosition, newCursorPosition);
-                    
-                    updateHelperText(this, formatted);
-                } else {
-                    this.value = '';
-                    removeHelperText(this);
-                }
-            });
-
-            input.addEventListener('focus', function(e) {
-                // Keep helper text visible, just remove commas for easier editing
-                this.value = this.value.replace(/,/g, '');
-            });
-
-            input.addEventListener('blur', function(e) {
-                let value = this.value.replace(/,/g, '');
-                
-                if (value && !isNaN(value) && value !== '0') {
-                    const formatted = formatNumber(value);
-                    this.value = formatted;
-                    updateHelperText(this, formatted);
-                } else if (value === '' || value === '0') {
-                    this.value = '';
-                    removeHelperText(this);
-                }
-            });
-        });
-    }
 
     // Initialize default goals when the retirement calculator loads
     if (document.readyState === 'loading') {

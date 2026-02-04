@@ -818,7 +818,7 @@
     // Input validation and formatting
     function setupInputValidation() {
         // Get currency inputs (now text inputs with inputmode="numeric")
-        const currencyInputs = document.querySelectorAll('#sipAmount, #swpTotalInvestment, #swpWithdrawal, #lumpsumAmount');
+        const currencyInputs = document.querySelectorAll('#sipAmount, #swpTotalInvestment, #swpWithdrawal, #lumpsumAmount, #retirementMonthlySavings, #retirementCurrentCorpus, #retirementMonthlyExpenses');
         const percentageInputs = document.querySelectorAll('#sipReturnRate, #sipStepUp, #swpReturnRate, #swpTaxRate');
         const yearInputs = document.querySelectorAll('#sipTimePeriod, #swpTimePeriod, #lumpsumTimePeriod');
         
@@ -1042,6 +1042,7 @@
     window.getFrequencyMultiplier = getFrequencyMultiplier;
     window.copyToClipboard = copyToClipboard;
     window.addCopyButtons = addCopyButtons;
+    window.setupInputValidation = setupInputValidation;
 
     // Setup input validation when DOM is ready
     if (document.readyState === 'loading') {
