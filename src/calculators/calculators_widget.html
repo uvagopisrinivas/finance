@@ -41,6 +41,11 @@
             <span>Retirement Planner</span>
             <small>Goal-based Planning</small>
         </button>
+        <button class="calculator-tab" data-calculator="expenses" onclick="switchCalculator('expenses')">
+            <i class="fas fa-wallet"></i>
+            <span>Expenses Tracker</span>
+            <small>Monthly Budget</small>
+        </button>
     </div>
 
     <!-- SIP Calculator -->
@@ -529,3 +534,115 @@
     </div>
 </div>
 
+
+    <!-- Monthly Expenses Calculator -->
+    <div id="expensesCalculator" class="calculator-section" style="display: none;">
+        <div class="calculator-intro">
+            <div class="intro-card">
+                <h3><i class="fas fa-wallet text-primary"></i> Monthly Expenses Calculator</h3>
+                <p>Track your income and expenses to calculate your monthly savings. The remaining amount can be used in other calculators.</p>
+            </div>
+        </div>
+
+        <div class="expenses-three-column-layout">
+            <!-- Left Column: Income Inputs -->
+            <div class="expenses-left-column">
+                <h3 class="section-title">
+                    <i class="fas fa-money-bill-wave" style="color: var(--color-primary);"></i> Income
+                </h3>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-calendar"></i>
+                        Income Frequency
+                    </label>
+                    <select id="expensesIncomeFrequency" class="form-input">
+                        <option value="monthly">Monthly</option>
+                        <option value="biweekly">Bi-weekly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                    <small class="form-hint">How often you receive income</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-dollar-sign"></i>
+                        Take Home Amount (₹)
+                    </label>
+                    <input type="text" id="expensesIncomeAmount" value="100000" class="form-input" placeholder="Your take home salary" inputmode="numeric">
+                    <small class="form-hint">After-tax income per period</small>
+                </div>
+
+                <!-- Calculate Button -->
+                <button type="button" class="btn btn--primary btn--large" onclick="calculateExpenses()" style="width: 100%; margin-top: var(--space-md);">
+                    <i class="fas fa-calculator"></i> Calculate Budget
+                </button>
+            </div>
+
+            <!-- Middle Column: Expenses List -->
+            <div class="expenses-middle-column">
+                <div class="expenses-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-receipt" style="color: var(--color-primary);"></i> Monthly Expenses
+                    </h3>
+                    <button type="button" class="btn btn--secondary btn--small" onclick="addNewExpense()">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+                
+                <div id="expensesContainer" class="expenses-list">
+                    <!-- Expenses will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="expenses-right-column">
+                <div id="expensesResults" class="expenses-results-sidebar" style="display: none;">
+                    <h3 class="section-title" style="border-bottom: 2px solid var(--color-primary); padding-bottom: var(--space-md); margin-bottom: var(--space-lg);">
+                        <i class="fas fa-chart-bar" style="color: var(--color-primary);"></i> Budget Summary
+                    </h3>
+                    
+                    <div class="expenses-summary-compact">
+                        <div class="expenses-summary-row">
+                            <span class="summary-label-compact">
+                                <i class="fas fa-money-bill-wave"></i> Monthly Income
+                            </span>
+                            <div class="summary-value-wrapper">
+                                <span class="summary-value-compact" id="expensesMonthlyIncome">₹0</span>
+                                <small class="summary-value-words" id="expensesMonthlyIncomeWords"></small>
+                            </div>
+                        </div>
+                        
+                        <div class="expenses-summary-row">
+                            <span class="summary-label-compact">
+                                <i class="fas fa-shopping-cart"></i> Total Expenses
+                            </span>
+                            <div class="summary-value-wrapper">
+                                <span class="summary-value-compact" id="expensesTotalExpenses">₹0</span>
+                                <small class="summary-value-words" id="expensesTotalExpensesWords"></small>
+                            </div>
+                        </div>
+                        
+                        <div class="expenses-summary-row expenses-summary-row--highlight">
+                            <span class="summary-label-compact">
+                                <i class="fas fa-piggy-bank"></i> Savings
+                            </span>
+                            <div class="summary-value-wrapper">
+                                <span class="summary-value-compact summary-value" id="expensesRemaining" data-raw-value="0">₹0</span>
+                                <small class="summary-value-words" id="expensesRemainingWords"></small>
+                            </div>
+                        </div>
+                        
+                        <div class="expenses-summary-row">
+                            <span class="summary-label-compact">
+                                <i class="fas fa-percentage"></i> Savings Rate
+                            </span>
+                            <div class="summary-value-wrapper">
+                                <span class="summary-value-compact" id="expensesSavingsPercent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

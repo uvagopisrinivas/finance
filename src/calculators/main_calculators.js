@@ -806,7 +806,24 @@
             copyBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                copyToClipboard(element.textContent, copyBtn);
+                
+                // Check if element has raw value in data attribute
+                const rawValue = element.getAttribute('data-raw-value');
+                if (rawValue) {
+                    // Use raw value directly
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(rawValue).then(() => {
+                            showCopyFeedback(copyBtn, 'Copied!');
+                        }).catch(() => {
+                            fallbackCopyToClipboard(rawValue, copyBtn);
+                        });
+                    } else {
+                        fallbackCopyToClipboard(rawValue, copyBtn);
+                    }
+                } else {
+                    // Fallback to text content cleaning
+                    copyToClipboard(element.textContent, copyBtn);
+                }
             });
             
             // Insert the copy button after the summary value
@@ -818,7 +835,7 @@
     // Input validation and formatting
     function setupInputValidation() {
         // Get currency inputs (now text inputs with inputmode="numeric")
-        const currencyInputs = document.querySelectorAll('#sipAmount, #swpTotalInvestment, #swpWithdrawal, #lumpsumAmount, #retirementMonthlySavings, #retirementCurrentCorpus, #retirementMonthlyExpenses');
+        const currencyInputs = document.querySelectorAll('#sipAmount, #swpTotalInvestment, #swpWithdrawal, #lumpsumAmount, #retirementMonthlySavings, #retirementCurrentCorpus, #retirementMonthlyExpenses, #expensesIncomeAmount');
         const percentageInputs = document.querySelectorAll('#sipReturnRate, #sipStepUp, #swpReturnRate, #swpTaxRate');
         const yearInputs = document.querySelectorAll('#sipTimePeriod, #swpTimePeriod, #lumpsumTimePeriod');
         

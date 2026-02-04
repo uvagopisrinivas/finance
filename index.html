@@ -164,16 +164,33 @@
                 <div class="tool-card">
                   <div class="tool-card__icon">🇮🇳</div>
                   <h3 class="tool-card__title">Financial Planning Tools</h3>
-                  <p class="tool-card__description">Comprehensive financial planning suite with SIP, SWP, Lumpsum, and Retirement Planning tools. Support for multiple currencies (USD & INR) with advanced features.</p>
+                  <p class="tool-card__description">Comprehensive financial planning suite with SIP, SWP, Lumpsum, Retirement Planning, and Monthly Expenses tools. Support for multiple currencies (USD & INR) with advanced features.</p>
                   <ul class="tool-card__features">
                     <li>✓ Multi-currency support (USD $ & INR ₹)</li>
                     <li>✓ SIP Calculator with step-up option & frequency selection</li>
                     <li>✓ SWP Calculator with tax planning & active trading mode</li>
                     <li>✓ Lumpsum Calculator with compound growth analysis</li>
                     <li>✓ Retirement Planner with goal-based planning</li>
+                    <li>✓ Monthly Expenses Calculator with budget tracking</li>
                     <li>✓ Intelligent number formatting with number-to-words</li>
                     <li>✓ Year-wise detailed projections & cash flow analysis</li>
                     <li>✓ Mobile-optimized responsive interface</li>
+                  </ul>
+                </div>
+                
+                <div class="tool-card">
+                  <div class="tool-card__icon">💳</div>
+                  <h3 class="tool-card__title">Monthly Expenses Calculator</h3>
+                  <p class="tool-card__description">Track your income and expenses to calculate monthly savings. Perfect for budget planning and identifying how much you can invest in other financial tools.</p>
+                  <ul class="tool-card__features">
+                    <li>✓ Multiple income frequencies (Monthly/Bi-weekly/Weekly)</li>
+                    <li>✓ 10 default expense categories with emoji icons</li>
+                    <li>✓ Add/remove expenses dynamically</li>
+                    <li>✓ Real-time budget summary with savings rate</li>
+                    <li>✓ Copy-to-clipboard for easy data transfer</li>
+                    <li>✓ Currency-aware defaults (USD $ & INR ₹)</li>
+                    <li>✓ Mobile-optimized card-based layout</li>
+                    <li>✓ Touch-friendly interface with large tap targets</li>
                   </ul>
                 </div>
                 
@@ -645,7 +662,8 @@
             'src/calculators/widgets/sip_calculator.js',
             'src/calculators/widgets/swp_calculator.js', 
             'src/calculators/widgets/lumpsum_calculator.js',
-            'src/calculators/widgets/retirement_calculator.js'
+            'src/calculators/widgets/retirement_calculator.js',
+            'src/expenses/expenses_calculator.js'
           ];
           
           let loadedScripts = 0;

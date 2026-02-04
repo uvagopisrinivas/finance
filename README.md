@@ -30,6 +30,13 @@ A sophisticated web-based platform for retirement planning, investment analysis,
 - **SWP Calculator** with tax planning and active trading mode
 - **Lumpsum Calculator** with compound growth analysis
 - **Retirement Planner** with goal-based planning and life expectancy calculations
+- **Monthly Expenses Calculator** with income tracking, expense management, and budget analysis
+  - Multiple income frequencies (Monthly/Bi-weekly/Weekly)
+  - 10 default expense categories with clickable emoji icons
+  - Add/remove expenses dynamically
+  - Real-time budget summary with savings rate calculation
+  - Copy-to-clipboard for easy data transfer to other calculators
+  - Mobile-optimized card-based layout
 - **Multi-currency support** - USD ($) and Indian Rupee (₹) with intelligent formatting
 - **Currency-specific defaults** and tax rates for US and Indian markets
 - **Number-to-words conversion** supporting both Western and Indian numbering systems
@@ -122,6 +129,9 @@ retirement-planning-tools/
 │   │       ├── swp_calculator.js   # SWP calculations
 │   │       ├── lumpsum_calculator.js # Lumpsum calculations
 │   │       └── retirement_calculator.js # Retirement planning
+│   ├── 📁 expenses/          # Monthly Expenses Calculator
+│   │   ├── expenses_widget.html    # Expenses UI (integrated in calculators)
+│   │   └── expenses_calculator.js  # Budget tracking logic
 │   ├── 📁 links/             # Live financial data links
 │   │   └── links_widget.html # External data sources
 │   └── 📁 styles/            # Styling system
@@ -178,6 +188,11 @@ retirement-planning-tools/
 - **SWP (Systematic Withdrawal Plan)**: Regular withdrawals with tax planning and active trading modes  
 - **Lumpsum**: One-time investment with compound growth analysis
 - **Retirement Planning**: Goal-based planning with inflation adjustment and life expectancy calculations
+- **Monthly Expenses**: Income tracking with multiple frequencies, expense categorization, and budget analysis
+  - Income conversion: Bi-weekly (×26÷12) and Weekly (×52÷12) to monthly
+  - Expense tracking: 10 default categories with customizable amounts
+  - Budget metrics: Total expenses, remaining savings, and savings rate percentage
+  - Currency-aware defaults: Different expense amounts for USD vs INR
 - **Multi-Currency**: Calculations in both USD ($) and Indian Rupees (₹) with proper formatting
 - **Currency-Specific Defaults**: Appropriate default values and tax rates for US and Indian markets
 - **Number Systems**: Western (Trillion, Billion, Million) and Indian (Crore, Lac, Thousand) numbering

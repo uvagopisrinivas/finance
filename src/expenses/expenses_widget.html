@@ -1,0 +1,120 @@
+<!-- Monthly Expenses Calculator -->
+<div id="expensesCalculator" class="calculator-section" style="display: none;">
+    <div class="calculator-header">
+        <h2 class="calculator-title">
+            <i class="fas fa-wallet"></i> Monthly Expenses Calculator
+        </h2>
+        <p class="calculator-description">
+            Track your income and expenses to see how much you can save each month. Calculate your remaining amount after all expenses.
+        </p>
+    </div>
+
+    <div class="calculator-form">
+        <!-- Income Section -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-money-bill-wave"></i> Income
+            </h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-calendar"></i>
+                        Income Frequency
+                    </label>
+                    <select id="expensesIncomeFrequency" class="form-input">
+                        <option value="monthly">Monthly</option>
+                        <option value="biweekly">Bi-weekly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                    <small class="form-hint">How often you receive income</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-dollar-sign"></i>
+                        Take Home Amount (₹)
+                    </label>
+                    <input type="text" id="expensesIncomeAmount" value="100000" class="form-input" placeholder="Your take home salary" inputmode="numeric">
+                    <small class="form-hint">After-tax income per period</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-receipt"></i> Monthly Expenses
+                </h3>
+                <button type="button" class="btn btn--secondary btn--small" onclick="addNewExpense()">
+                    <i class="fas fa-plus"></i> Add Expense
+                </button>
+            </div>
+            
+            <div id="expensesContainer" class="expenses-container">
+                <!-- Expenses will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="form-actions">
+            <button type="button" class="btn btn--primary btn--large" onclick="calculateExpenses()">
+                <i class="fas fa-calculator"></i> Calculate Budget
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="expensesResults" class="results-section" style="display: none;">
+        <h3 class="results-title">
+            <i class="fas fa-chart-bar"></i> Budget Summary
+        </h3>
+        
+        <div class="summary-grid">
+            <div class="summary-card summary-card--info">
+                <div class="summary-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-label">Monthly Income</span>
+                    <span class="summary-value" id="expensesMonthlyIncome">₹0</span>
+                </div>
+            </div>
+            
+            <div class="summary-card summary-card--warning">
+                <div class="summary-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-label">Total Expenses</span>
+                    <span class="summary-value" id="expensesTotalExpenses">₹0</span>
+                </div>
+            </div>
+            
+            <div class="summary-card summary-card--success">
+                <div class="summary-icon">
+                    <i class="fas fa-piggy-bank"></i>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-label">Savings</span>
+                    <span class="summary-value" id="expensesRemaining">₹0</span>
+                </div>
+            </div>
+            
+            <div class="summary-card summary-card--primary">
+                <div class="summary-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="summary-content">
+                    <span class="summary-label">Savings Rate</span>
+                    <span class="summary-value" id="expensesSavingsPercent">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Container -->
+        <div id="expensesTableContainer" class="tables-container">
+            <!-- Tables will be generated here -->
+        </div>
+    </div>
+</div>
