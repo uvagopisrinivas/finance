@@ -31,7 +31,7 @@ A sophisticated web-based platform for retirement planning, investment analysis,
 - **Lumpsum Calculator** with compound growth analysis
 - **Retirement Planner** with goal-based planning and life expectancy calculations
 - **Monthly Expenses Calculator** with income tracking, expense management, and budget analysis
-  - Multiple income frequencies (Monthly/Bi-weekly/Weekly)
+  - Monthly income tracking
   - 10 default expense categories with clickable emoji icons
   - Add/remove expenses dynamically
   - Real-time budget summary with savings rate calculation

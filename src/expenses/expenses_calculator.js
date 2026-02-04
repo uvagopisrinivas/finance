@@ -199,26 +199,18 @@
     // Calculate expenses
     window.calculateExpenses = function() {
         try {
-            // Get income inputs
-            const incomeFrequency = document.getElementById('expensesIncomeFrequency').value;
+            // Get income input (always monthly now)
             const incomeAmountInput = document.getElementById('expensesIncomeAmount').value.replace(/,/g, '');
-            const incomeAmount = parseFloat(incomeAmountInput);
+            const monthlyIncome = parseFloat(incomeAmountInput);
 
-            if (isNaN(incomeAmount) || incomeAmount <= 0) {
-                throw new Error('Please enter a valid income amount');
-            }
-
-            // Convert to monthly income
-            let monthlyIncome = incomeAmount;
-            if (incomeFrequency === 'biweekly') {
-                monthlyIncome = incomeAmount * 26 / 12; // 26 biweekly periods per year
-            } else if (incomeFrequency === 'weekly') {
-                monthlyIncome = incomeAmount * 52 / 12; // 52 weeks per year
+            if (isNaN(monthlyIncome) || monthlyIncome <= 0) {
+                throw new Error('Please enter a valid monthly income amount');
             }
 
             // Collect all expenses
             const expenseElements = document.querySelectorAll('.expense-item');
             const expenses = [];
+            const expensesWithZero = [];
             let totalExpenses = 0;
             const categoryTotals = {};
 
@@ -241,16 +233,25 @@
                         categoryTotals[category] = 0;
                     }
                     categoryTotals[category] += amount;
+                } else {
+                    // Keep track of zero/empty amount items to put at bottom
+                    expensesWithZero.push({
+                        element: expenseElement,
+                        amount: amount
+                    });
                 }
             });
 
             // Sort expenses by amount in descending order (highest first)
             expenses.sort((a, b) => b.amount - a.amount);
             
-            // Reorder DOM elements to match sorted order
+            // Reorder DOM elements: sorted expenses first, then zero-amount items
             const container = document.getElementById('expensesContainer');
             expenses.forEach(expense => {
                 container.appendChild(expense.element);
+            });
+            expensesWithZero.forEach(item => {
+                container.appendChild(item.element);
             });
 
             const remainingAmount = monthlyIncome - totalExpenses;
