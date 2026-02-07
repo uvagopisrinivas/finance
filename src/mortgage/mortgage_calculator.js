@@ -305,7 +305,7 @@
     }
     
     // Set mortgage currency and update UI
-    // Set mortgage currency and update UI - improved with element checking
+    // Set mortgage currency and update UI - syncs with main currency selector
     window.setMortgageCurrency = function(currency) {
         try {
             Logger.debug('Setting mortgage currency to:', currency);
@@ -313,11 +313,7 @@
             if (mortgageCurrencyConfig[currency]) {
                 currentMortgageCurrency = currency;
                 
-                // Update currency selector
-                const selector = document.getElementById('mortgageCurrencySelector');
-                if (selector) {
-                    selector.value = currency;
-                }
+                // No need to update selector - it's handled by the main currency selector
                 
                 // Show/hide appropriate calculator sections
                 const usSection = document.getElementById('usMortgageCalculator');
@@ -1163,24 +1159,22 @@
         try {
             Logger.debug('Initializing mortgage calculator...');
             
-            // Ensure currency selector is set to USD first
-            const currencySelector = document.getElementById('mortgageCurrencySelector');
-            if (currencySelector) {
-                currencySelector.value = 'USD';
-                Logger.debug('Currency selector set to USD');
-            }
+            // Sync with main currency selector
+            const mainCurrencySelector = document.getElementById('currencySelector');
+            const currentCurrency = mainCurrencySelector ? mainCurrencySelector.value : 'USD';
             
             setupMortgageInputValidation();
-            setMortgageCurrency('USD'); // This will handle showing/hiding sections
+            setMortgageCurrency(currentCurrency); // Use the main currency selector value
             updateMortgageInsuranceStatus();
             hideMortgageResults();
             
-            // Add currency selector event listener
-            if (currencySelector) {
-                // Remove any existing listeners first
-                currencySelector.removeEventListener('change', handleCurrencyChange);
-                currencySelector.addEventListener('change', handleCurrencyChange);
-                Logger.debug('Currency selector event listener added');
+            // Listen to main currency selector changes
+            if (mainCurrencySelector) {
+                // Add event listener to sync mortgage calculator when main currency changes
+                mainCurrencySelector.addEventListener('change', function() {
+                    setMortgageCurrency(this.value);
+                });
+                Logger.debug('Synced with main currency selector');
             }
             
             // Setup utilities checkbox functionality
@@ -1299,7 +1293,7 @@
     }
     
     // Also initialize immediately if elements are already present (for dynamic loading)
-    if (document.getElementById('mortgageCurrencySelector')) {
+    if (document.getElementById('usMortgageCalculator') || document.getElementById('indianMortgageCalculator')) {
         safeInitialize();
     }
     
