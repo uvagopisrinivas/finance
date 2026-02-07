@@ -320,6 +320,32 @@
     window.switchCalculator = function(calculatorType) {
         Logger.debug('Switching to calculator:', calculatorType);
         
+        // Handle mortgage calculator loading
+        if (calculatorType === 'mortgage') {
+            const mortgageSection = document.getElementById('mortgageCalculator');
+            if (mortgageSection && !mortgageSection.dataset.loaded) {
+                Logger.debug('Loading mortgage calculator HTML...');
+                fetch('src/mortgage/mortgage_widget.html')
+                    .then(r => r.text())
+                    .then(html => {
+                        mortgageSection.innerHTML = html;
+                        mortgageSection.dataset.loaded = 'true';
+                        Logger.debug('Mortgage calculator HTML loaded');
+                        
+                        // Initialize mortgage calculator if function exists
+                        if (window.initializeMortgageCalculator) {
+                            setTimeout(() => {
+                                window.initializeMortgageCalculator();
+                                Logger.debug('Mortgage calculator initialized');
+                            }, 100);
+                        }
+                    })
+                    .catch(err => {
+                        Logger.error('Failed to load mortgage calculator:', err);
+                    });
+            }
+        }
+        
         // Update tab states
         document.querySelectorAll('.calculator-tab').forEach(tab => {
             tab.classList.remove('active');

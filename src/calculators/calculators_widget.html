@@ -1,10 +1,10 @@
-<!-- Multi-Currency Financial Planning Tools Widget -->
+<!-- Multi-Currency Investment Planning Tools Widget -->
 <div class="card">
     <div class="card__header">
         <div class="flex items-center gap-sm">
-            <h2 class="card__title mb-0">📊 Financial Planning Tools</h2>
+            <h2 class="card__title mb-0">📊 Investment Planning Tools</h2>
         </div>
-        <p class="card__subtitle">Plan your financial future with SIP, SWP, Lumpsum, and Retirement planning tools in multiple currencies</p>
+        <p class="card__subtitle">Plan your financial future with SIP, SWP, Lumpsum, Retirement, and Mortgage planning tools in multiple currencies</p>
         
         <!-- Currency Selector -->
         <div class="currency-selector">
@@ -45,6 +45,11 @@
             <i class="fas fa-wallet"></i>
             <span>Expenses Tracker</span>
             <small>Monthly Budget</small>
+        </button>
+        <button class="calculator-tab" data-calculator="mortgage" onclick="switchCalculator('mortgage')">
+            <i class="fas fa-home"></i>
+            <span>Mortgage Calculator</span>
+            <small>Home Loan Planning</small>
         </button>
     </div>
 
@@ -686,4 +691,9 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Mortgage Calculator -->
+    <div id="mortgageCalculator" class="calculator-section" style="display: none;">
+        <!-- Mortgage calculator content will be loaded dynamically -->
     </div>

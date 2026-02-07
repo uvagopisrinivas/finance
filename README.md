@@ -25,7 +25,7 @@ A sophisticated web-based platform for retirement planning, investment analysis,
 - **Colorful analytics dashboard** with key insights and projections
 - **Interactive help system** with detailed explanations
 
-### 📊 Multi-Currency Financial Planning Tools
+### 📊 Multi-Currency Investment Planning Tools
 - **SIP Calculator** with step-up options and frequency selection (Monthly/Quarterly/Half-yearly/Yearly)
 - **SWP Calculator** with tax planning and active trading mode
 - **Lumpsum Calculator** with compound growth analysis
@@ -121,8 +121,8 @@ retirement-planning-tools/
 │   ├── 📁 401K/               # 401k Projector module
 │   │   ├── 401k_widget.html   # 401k UI components
 │   │   └── 401k_calculator.js # 401k calculation logic
-│   ├── 📁 calculators/        # Multi-Currency Financial Planning Tools
-│   │   ├── calculators_widget.html # Financial planning UI
+│   ├── 📁 calculators/        # Multi-Currency Investment Planning Tools
+│   │   ├── calculators_widget.html # Investment planning UI
 │   │   ├── main_calculators.js     # Multi-currency utilities
 │   │   └── 📁 widgets/             # Individual calculator widgets
 │   │       ├── sip_calculator.js   # SIP calculations
@@ -182,7 +182,7 @@ retirement-planning-tools/
 - **401a Contribution**: `4% of Salary (fixed)`
 - **Annual Growth**: Compound interest with salary increases
 
-### Multi-Currency Financial Planning Calculations
+### Multi-Currency Investment Planning Calculations
 
 - **SIP (Systematic Investment Plan)**: Monthly/Quarterly/Half-yearly/Yearly investments with step-up options
 - **SWP (Systematic Withdrawal Plan)**: Regular withdrawals with tax planning and active trading modes  

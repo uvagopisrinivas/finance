@@ -4204,6 +4204,49 @@ input.form-input[type="text"] {
   margin: 0;
 }
 
+/* Copy button - positioned on the right */
+.calculator-copy-btn {
+  position: absolute;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.calculator-copy-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.calculator-copy-btn:active {
+  transform: scale(0.95);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.calculator-copy-btn.copied {
+  background: #28a745;
+  color: white;
+}
+
+.calculator-copy-btn.copied::after {
+  content: '✓';
+  position: absolute;
+  font-size: 16px;
+}
+
+.calculator-copy-btn.copied i {
+  opacity: 0;
+}
+
 /* Remove the old controls section */
 .calculator-widget__controls {
   display: none;
@@ -4375,6 +4418,25 @@ input.form-input[type="text"] {
   color: #e6eef6;
 }
 
+[data-theme="dark"] .calculator-copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #9aa5b0;
+}
+
+[data-theme="dark"] .calculator-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #e6eef6;
+}
+
+[data-theme="dark"] .calculator-copy-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .calculator-copy-btn.copied {
+  background: #28a745;
+  color: white;
+}
+
 [data-theme="dark"] .calculator-widget__body {
   background: #0b1220;
 }
@@ -4455,6 +4517,25 @@ input.form-input[type="text"] {
 
 [data-theme="light"] .calculator-widget__title {
   color: #212529;
+}
+
+[data-theme="light"] .calculator-copy-btn {
+  background: rgba(0, 0, 0, 0.05);
+  color: #495057;
+}
+
+[data-theme="light"] .calculator-copy-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #212529;
+}
+
+[data-theme="light"] .calculator-copy-btn:active {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .calculator-copy-btn.copied {
+  background: #28a745;
+  color: white;
 }
 
 [data-theme="light"] .calculator__display {

@@ -49,10 +49,9 @@
           <!-- Desktop Navigation -->
           <div class="nav__desktop">
             <button class="nav__tab" data-tab="about">About</button>
-            <button class="nav__tab" data-tab="sepp">SEPP</button>
+            <button class="nav__tab" data-tab="plans">Invest</button>
             <button class="nav__tab" data-tab="401k">401k</button>
-            <button class="nav__tab" data-tab="plans">Plans</button>
-            <button class="nav__tab" data-tab="mortgage">Mortgage</button>
+            <button class="nav__tab" data-tab="sepp">SEPP</button>
             <button class="nav__tab" data-tab="links">Links</button>
             <button id="calculatorToggle" class="calculator-toggle" title="Open Calculator">
               <i class="fas fa-calculator"></i>
@@ -86,21 +85,17 @@
                 <i class="fas fa-info-circle"></i>
                 <span>About</span>
               </button>
-              <button class="mobile-menu__item" data-tab="sepp">
-                <i class="fas fa-chart-line"></i>
-                <span>SEPP Calculator</span>
+              <button class="mobile-menu__item" data-tab="plans">
+                <i class="fas fa-calculator"></i>
+                <span>Invest</span>
               </button>
               <button class="mobile-menu__item" data-tab="401k">
                 <i class="fas fa-piggy-bank"></i>
                 <span>401k Projector</span>
               </button>
-              <button class="mobile-menu__item" data-tab="plans">
-                <i class="fas fa-calculator"></i>
-                <span>Financial Plans</span>
-              </button>
-              <button class="mobile-menu__item" data-tab="mortgage">
-                <i class="fas fa-home"></i>
-                <span>Mortgage Calculator</span>
+              <button class="mobile-menu__item" data-tab="sepp">
+                <i class="fas fa-chart-line"></i>
+                <span>SEPP Calculator</span>
               </button>
               <button class="mobile-menu__item" data-tab="links">
                 <i class="fas fa-link"></i>
@@ -163,8 +158,8 @@
                 
                 <div class="tool-card">
                   <div class="tool-card__icon">🇮🇳</div>
-                  <h3 class="tool-card__title">Financial Planning Tools</h3>
-                  <p class="tool-card__description">Comprehensive financial planning suite with SIP, SWP, Lumpsum, Retirement Planning, and Monthly Expenses tools. Support for multiple currencies (USD & INR) with advanced features.</p>
+                  <h3 class="tool-card__title">Investment Planning Tools</h3>
+                  <p class="tool-card__description">Comprehensive investment planning suite with SIP, SWP, Lumpsum, Retirement Planning, Monthly Expenses, and Mortgage calculators. Support for multiple currencies (USD & INR) with advanced features.</p>
                   <ul class="tool-card__features">
                     <li>✓ Multi-currency support (USD $ & INR ₹)</li>
                     <li>✓ SIP Calculator with step-up option & frequency selection</li>
@@ -172,6 +167,7 @@
                     <li>✓ Lumpsum Calculator with compound growth analysis</li>
                     <li>✓ Retirement Planner with goal-based planning</li>
                     <li>✓ Monthly Expenses Calculator with budget tracking</li>
+                    <li>✓ Mortgage Calculator with PMI, taxes & amortization</li>
                     <li>✓ Intelligent number formatting with number-to-words</li>
                     <li>✓ Year-wise detailed projections & cash flow analysis</li>
                     <li>✓ Mobile-optimized responsive interface</li>
@@ -195,20 +191,6 @@
                 </div>
                 
                 <div class="tool-card">
-                  <div class="tool-card__icon">🏠</div>
-                  <h3 class="tool-card__title">Mortgage Calculator</h3>
-                  <p class="tool-card__description">Calculate home loan payments and affordability for US and Indian markets. Includes PMI, taxes, insurance, and detailed amortization schedules with multi-currency support.</p>
-                  <ul class="tool-card__features">
-                    <li>✓ Multi-currency support (USD $ & INR ₹)</li>
-                    <li>✓ Mortgage payment calculator with PMI</li>
-                    <li>✓ Property tax and insurance calculations</li>
-                    <li>✓ Affordability calculator with DTI analysis</li>
-                    <li>✓ Detailed amortization schedule</li>
-                    <li>✓ Country-specific defaults and rates</li>
-                    <li>✓ Interactive payment breakdown visualization</li>
-                    <li>✓ Mobile-optimized responsive interface</li>
-                  </ul>
-                </div>
                 
                 <div class="tool-card">
                   <div class="tool-card__icon">🔗</div>
@@ -287,7 +269,7 @@
                   <div class="usage-step__number">1</div>
                   <div class="usage-step__content">
                     <h4>Choose Your Tool</h4>
-                    <p>Navigate to <strong>SEPP</strong> for early withdrawal planning, <strong>401k</strong> for retirement projections, <strong>Plans</strong> for multi-currency financial planning, <strong>Mortgage</strong> for home loan calculations, or <strong>Links</strong> for live financial data.</p>
+                    <p>Navigate to <strong>SEPP</strong> for early withdrawal planning, <strong>401k</strong> for retirement projections, <strong>Invest</strong> for multi-currency financial planning including SIP, SWP, Lumpsum, Retirement, Expenses, and Mortgage calculators, or <strong>Links</strong> for live financial data.</p>
                   </div>
                 </div>
                 <div class="usage-step">
@@ -346,10 +328,7 @@
                   💰 Try 401k Projector
                 </button>
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;plans&quot;]').click()">
-                  📊 Try Financial Planning Tools
-                </button>
-                <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;mortgage&quot;]').click()">
-                  🏠 Try Mortgage Calculator
+                  📊 Try Investment Planning Tools (SIP, SWP, Lumpsum, Retirement, Expenses, Mortgage)
                 </button>
                 <button class="btn btn--primary btn--large" onclick="document.querySelector('[data-tab=&quot;links&quot;]').click()">
                   🔗 View Live Financial Data
@@ -368,14 +347,6 @@
       <section id="plans" class="tab-content" style="display:none">
         <div id="plansContainer">Loading…</div>
       </section>
-      <section id="mortgage" class="tab-content" style="display:none">
-        <div id="mortgageContainer">
-          <div class="loading-state">
-            <div class="loading-spinner"></div>
-            <p>Loading Mortgage Calculator...</p>
-          </div>
-        </div>
-      </section>
       <section id="links" class="tab-content" style="display:none">
         <div id="linksContainer">Loading…</div>
       </section>
@@ -390,6 +361,9 @@
         <button class="traffic-light traffic-light--yellow" id="calculatorMinimize" title="Minimize">−</button>
       </div>
       <span class="calculator-widget__title">Calculator</span>
+      <button class="calculator-copy-btn" id="calculatorCopy" title="Copy result">
+        <i class="fas fa-copy"></i>
+      </button>
     </div>
     <div class="calculator-widget__body">
       <div class="calculator__display">
@@ -402,8 +376,8 @@
       <div class="calculator__buttons">
         <!-- Row 1 -->
         <button class="calculator__btn calculator__btn--function" onclick="calculatorClear()">AC</button>
-        <button class="calculator__btn calculator__btn--function" onclick="calculatorPlusMinus()">+/-</button>
-        <button class="calculator__btn calculator__btn--function" onclick="calculatorPercent()">%</button>
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorBracket('(')">(</button>
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorBracket(')')">)</button>
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('÷')">÷</button>
         
         <!-- Row 2 -->
@@ -479,11 +453,28 @@
       // Close menu when clicking outside
       if (mobileMenu) {
         mobileMenu.addEventListener('click', function(e) {
-          if (e.target === mobileMenu) {
+          // Check if click is on the overlay (not on menu content)
+          // The menu content has class 'mobile-menu__content' or 'mobile-menu__header'
+          const menuContent = e.target.closest('.mobile-menu__content, .mobile-menu__header');
+          
+          // If click is not on menu content, close the menu
+          if (!menuContent) {
             closeMobileMenu();
           }
         });
       }
+      
+      // Also close menu when clicking anywhere on the page outside the menu
+      document.addEventListener('click', function(e) {
+        const isMenuOpen = mobileMenu && mobileMenu.classList.contains('nav__mobile-menu--active');
+        const clickedInsideMenu = e.target.closest('.nav__mobile-menu');
+        const clickedHamburger = e.target.closest('.nav__hamburger');
+        
+        // Close menu if it's open and click is outside menu and not on hamburger button
+        if (isMenuOpen && !clickedInsideMenu && !clickedHamburger) {
+          closeMobileMenu();
+        }
+      });
       
       // Handle mobile menu item clicks
       mobileMenuItems.forEach(item => {
@@ -596,7 +587,7 @@
     // Function to get current tab from URL hash or default to 'about'
     function getCurrentTab() {
       const hash = window.location.hash.substring(1);
-      const validTabs = ['about', 'sepp', '401k', 'plans', 'mortgage', 'links'];
+      const validTabs = ['about', 'sepp', '401k', 'plans', 'links'];
       return validTabs.includes(hash) ? hash : 'about';
     }
     
@@ -656,14 +647,15 @@
         if(!container.dataset.loaded){
           const html = await fetch('src/calculators/calculators_widget.html').then(r=>r.text());
           container.innerHTML = html;
-          // inject JS for financial planning tools
+          // inject JS for investment planning tools
           const scripts = [
             'src/calculators/main_calculators.js',
             'src/calculators/widgets/sip_calculator.js',
             'src/calculators/widgets/swp_calculator.js', 
             'src/calculators/widgets/lumpsum_calculator.js',
             'src/calculators/widgets/retirement_calculator.js',
-            'src/expenses/expenses_calculator.js'
+            'src/expenses/expenses_calculator.js',
+            'src/mortgage/mortgage_calculator.js'
           ];
           
           let loadedScripts = 0;
@@ -677,7 +669,7 @@
               if (loadedScripts === totalScripts) {
                 // All scripts loaded, initialize
                 setTimeout(() => {
-                  Logger.debug('Initializing financial planning tools...');
+                  Logger.debug('Initializing investment planning tools...');
                   
                   // Ensure only SIP is visible initially
                   const sections = document.querySelectorAll('.calculator-section');
@@ -748,60 +740,6 @@
           setTimeout(() => {
             if (window.setupInputValidation) window.setupInputValidation();
           }, 100);
-        }
-      }
-      if(tabName==='mortgage'){
-        // load Mortgage calculator widget html
-        const container = document.getElementById('mortgageContainer');
-        if(!container.dataset.loaded){
-          try {
-            const html = await fetch('src/mortgage/mortgage_widget.html').then(r=>r.text());
-            container.innerHTML = html;
-            
-            // inject JS for mortgage calculator with proper initialization
-            const script = document.createElement('script');
-            script.src = 'src/mortgage/mortgage_calculator.js?v=' + Date.now();
-            script.onload = function() {
-              Logger.debug('Mortgage calculator script loaded');
-              // Ensure initialization happens after script load with multiple attempts
-              let attempts = 0;
-              const maxAttempts = 5;
-              
-              function tryInitialize() {
-                attempts++;
-                Logger.debug(`Initialization attempt ${attempts}`);
-                
-                if (window.initializeMortgageCalculator) {
-                  window.initializeMortgageCalculator();
-                  
-                  // Verify initialization worked
-                  setTimeout(() => {
-                    const usSection = document.getElementById('usMortgageCalculator');
-                    if (usSection && usSection.style.display === 'none') {
-                      Logger.debug('US section still hidden, forcing visibility');
-                      usSection.style.display = 'block';
-                      usSection.classList.add('active');
-                    }
-                  }, 100);
-                } else if (attempts < maxAttempts) {
-                  Logger.debug('Initialization function not ready, retrying...');
-                  setTimeout(tryInitialize, 100);
-                } else {
-                  Logger.error('Failed to initialize mortgage calculator after multiple attempts');
-                }
-              }
-              
-              tryInitialize();
-            };
-            script.onerror = function() {
-              Logger.error('Failed to load mortgage calculator script');
-            };
-            document.body.appendChild(script);
-            container.dataset.loaded = 'true';
-          } catch (error) {
-            Logger.error('Error loading mortgage calculator:', error);
-            container.innerHTML = '<div class="error-message">Error loading mortgage calculator. Please refresh the page.</div>';
-          }
         }
       }
       if(tabName==='links'){
@@ -927,13 +865,12 @@
       window.location.href = url;
     };
 
-    // Calculator functionality - Enhanced macOS style
+    // Calculator functionality - Enhanced with bracket support
     let calculatorState = {
       display: '0',
-      previousValue: null,
-      operation: null,
-      waitingForOperand: false,
-      expression: ''
+      expression: '',
+      lastResult: null,
+      justCalculated: false
     };
 
     function updateCalculatorDisplay() {
@@ -942,14 +879,7 @@
       const cursor = document.getElementById('calculatorCursor');
       
       if (display) {
-        // Format the display value to remove unnecessary decimal places
-        let displayValue = calculatorState.display;
-        if (!isNaN(parseFloat(displayValue))) {
-          const num = parseFloat(displayValue);
-          // Show up to 8 decimal places, but remove trailing zeros
-          displayValue = num % 1 === 0 ? num.toString() : num.toFixed(8).replace(/\.?0+$/, '');
-        }
-        display.textContent = displayValue;
+        display.textContent = calculatorState.display;
       }
       
       if (expression) {
@@ -966,19 +896,23 @@
     }
 
     window.calculatorNumber = function(num) {
-      if (calculatorState.waitingForOperand) {
+      if (calculatorState.justCalculated) {
         calculatorState.display = num;
-        calculatorState.waitingForOperand = false;
+        calculatorState.expression = '';
+        calculatorState.justCalculated = false;
+      } else if (calculatorState.display === '0') {
+        calculatorState.display = num;
       } else {
-        calculatorState.display = calculatorState.display === '0' ? num : calculatorState.display + num;
+        calculatorState.display += num;
       }
       updateCalculatorDisplay();
     };
 
     window.calculatorDecimal = function() {
-      if (calculatorState.waitingForOperand) {
+      if (calculatorState.justCalculated) {
         calculatorState.display = '0.';
-        calculatorState.waitingForOperand = false;
+        calculatorState.expression = '';
+        calculatorState.justCalculated = false;
       } else if (calculatorState.display.indexOf('.') === -1) {
         calculatorState.display += '.';
       }
@@ -987,99 +921,133 @@
 
     window.calculatorClear = function() {
       calculatorState.display = '0';
-      calculatorState.previousValue = null;
-      calculatorState.operation = null;
-      calculatorState.waitingForOperand = false;
       calculatorState.expression = '';
+      calculatorState.lastResult = null;
+      calculatorState.justCalculated = false;
       updateCalculatorDisplay();
     };
 
-    window.calculatorPlusMinus = function() {
-      const currentValue = parseFloat(calculatorState.display);
-      if (currentValue !== 0) {
-        calculatorState.display = (currentValue * -1).toString();
-        updateCalculatorDisplay();
+    window.calculatorBracket = function(bracket) {
+      if (calculatorState.justCalculated) {
+        calculatorState.expression = '';
+        calculatorState.justCalculated = false;
       }
-    };
-
-    window.calculatorPercent = function() {
-      const currentValue = parseFloat(calculatorState.display);
-      calculatorState.display = (currentValue / 100).toString();
-      updateCalculatorDisplay();
-    };
-
-    window.calculatorClearEntry = function() {
-      calculatorState.display = '0';
-      updateCalculatorDisplay();
-    };
-
-    window.calculatorBackspace = function() {
-      if (calculatorState.display.length > 1) {
-        calculatorState.display = calculatorState.display.slice(0, -1);
+      
+      if (bracket === '(') {
+        // Add opening bracket
+        if (calculatorState.display !== '0' && calculatorState.display !== '') {
+          calculatorState.expression += calculatorState.display + ' ';
+        }
+        calculatorState.expression += '( ';
+        calculatorState.display = '0';
       } else {
+        // Add closing bracket
+        if (calculatorState.display !== '0' && calculatorState.display !== '') {
+          calculatorState.expression += calculatorState.display + ' ';
+        }
+        calculatorState.expression += ') ';
         calculatorState.display = '0';
       }
       updateCalculatorDisplay();
     };
 
-    window.calculatorOperation = function(nextOperation) {
-      const inputValue = parseFloat(calculatorState.display);
-
-      if (calculatorState.previousValue === null) {
-        calculatorState.previousValue = inputValue;
-        calculatorState.expression = inputValue + ' ' + nextOperation;
-      } else if (calculatorState.operation) {
-        const currentValue = calculatorState.previousValue || 0;
-        const newValue = calculate(currentValue, inputValue, calculatorState.operation);
-
-        calculatorState.display = String(newValue);
-        calculatorState.previousValue = newValue;
-        calculatorState.expression = newValue + ' ' + nextOperation;
-        updateCalculatorDisplay();
-      } else {
-        calculatorState.expression = inputValue + ' ' + nextOperation;
+    window.calculatorOperation = function(operation) {
+      if (calculatorState.justCalculated) {
+        calculatorState.expression = calculatorState.display + ' ';
+        calculatorState.justCalculated = false;
+      } else if (calculatorState.display !== '0' && calculatorState.display !== '') {
+        calculatorState.expression += calculatorState.display + ' ';
       }
-
-      calculatorState.waitingForOperand = true;
-      calculatorState.operation = nextOperation;
+      
+      calculatorState.expression += operation + ' ';
+      calculatorState.display = '0';
       updateCalculatorDisplay();
     };
 
     window.calculatorEquals = function() {
-      const inputValue = parseFloat(calculatorState.display);
-
-      if (calculatorState.previousValue !== null && calculatorState.operation) {
-        const newValue = calculate(calculatorState.previousValue, inputValue, calculatorState.operation);
+      try {
+        // Build the complete expression
+        let fullExpression = calculatorState.expression;
+        if (calculatorState.display !== '0' && calculatorState.display !== '') {
+          fullExpression += calculatorState.display;
+        }
         
-        // Show the complete expression
-        calculatorState.expression = calculatorState.previousValue + ' ' + calculatorState.operation + ' ' + inputValue + ' =';
-        calculatorState.display = newValue.toString();
-        calculatorState.previousValue = null;
-        calculatorState.operation = null;
-        calculatorState.waitingForOperand = true;
+        if (!fullExpression || fullExpression.trim() === '') {
+          return;
+        }
+        
+        // Evaluate the expression
+        const result = evaluateExpression(fullExpression);
+        
+        // Update display
+        calculatorState.expression = fullExpression + ' =';
+        calculatorState.display = result.toString();
+        calculatorState.lastResult = result;
+        calculatorState.justCalculated = true;
+        updateCalculatorDisplay();
+      } catch (error) {
+        Logger.error('Calculator error:', error);
+        calculatorState.display = 'Error';
         updateCalculatorDisplay();
       }
     };
 
-    function calculate(firstValue, secondValue, operation) {
-      let result;
-      switch (operation) {
-        case '+':
-          result = firstValue + secondValue;
-          break;
-        case '-':
-          result = firstValue - secondValue;
-          break;
-        case '×':
-          result = firstValue * secondValue;
-          break;
-        case '÷':
-          result = secondValue !== 0 ? firstValue / secondValue : 0;
-          break;
-        default:
-          result = secondValue;
+    // Expression evaluator with bracket support
+    function evaluateExpression(expr) {
+      // Replace calculator symbols with JavaScript operators
+      expr = expr.replace(/×/g, '*').replace(/÷/g, '/');
+      
+      // Tokenize the expression
+      const tokens = expr.match(/(\d+\.?\d*|\+|\-|\*|\/|\(|\))/g);
+      if (!tokens) return 0;
+      
+      // Convert infix to postfix (Shunting Yard algorithm)
+      const output = [];
+      const operators = [];
+      const precedence = { '+': 1, '-': 1, '*': 2, '/': 2 };
+      
+      for (let token of tokens) {
+        if (!isNaN(parseFloat(token))) {
+          output.push(parseFloat(token));
+        } else if (token === '(') {
+          operators.push(token);
+        } else if (token === ')') {
+          while (operators.length && operators[operators.length - 1] !== '(') {
+            output.push(operators.pop());
+          }
+          operators.pop(); // Remove '('
+        } else if (['+', '-', '*', '/'].includes(token)) {
+          while (operators.length && 
+                 operators[operators.length - 1] !== '(' &&
+                 precedence[operators[operators.length - 1]] >= precedence[token]) {
+            output.push(operators.pop());
+          }
+          operators.push(token);
+        }
       }
       
+      while (operators.length) {
+        output.push(operators.pop());
+      }
+      
+      // Evaluate postfix expression
+      const stack = [];
+      for (let token of output) {
+        if (typeof token === 'number') {
+          stack.push(token);
+        } else {
+          const b = stack.pop();
+          const a = stack.pop();
+          switch (token) {
+            case '+': stack.push(a + b); break;
+            case '-': stack.push(a - b); break;
+            case '*': stack.push(a * b); break;
+            case '/': stack.push(b !== 0 ? a / b : 0); break;
+          }
+        }
+      }
+      
+      const result = stack[0] || 0;
       // Round to avoid floating point precision issues
       return Math.round(result * 100000000) / 100000000;
     }
@@ -1089,6 +1057,7 @@
     const calculatorWidget = document.getElementById('calculatorWidget');
     const calculatorClose = document.getElementById('calculatorClose');
     const calculatorMinimize = document.getElementById('calculatorMinimize');
+    const calculatorCopy = document.getElementById('calculatorCopy');
     const calculatorHeader = document.querySelector('.calculator-widget__header');
     const calculatorDisplay = document.getElementById('calculatorDisplay');
 
@@ -1098,6 +1067,7 @@
       widget: !!calculatorWidget,
       close: !!calculatorClose,
       minimize: !!calculatorMinimize,
+      copy: !!calculatorCopy,
       header: !!calculatorHeader,
       display: !!calculatorDisplay
     });
@@ -1176,6 +1146,58 @@
         });
       }
 
+      // Copy button functionality
+      if (calculatorCopy) {
+        calculatorCopy.addEventListener('click', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          
+          const displayValue = calculatorState.display;
+          
+          // Copy to clipboard
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(displayValue).then(() => {
+              Logger.debug('Calculator result copied:', displayValue);
+              
+              // Visual feedback
+              calculatorCopy.classList.add('copied');
+              setTimeout(() => {
+                calculatorCopy.classList.remove('copied');
+              }, 1500);
+            }).catch(err => {
+              Logger.error('Failed to copy:', err);
+            });
+          } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = displayValue;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+              document.execCommand('copy');
+              Logger.debug('Calculator result copied (fallback):', displayValue);
+              
+              // Visual feedback
+              calculatorCopy.classList.add('copied');
+              setTimeout(() => {
+                calculatorCopy.classList.remove('copied');
+              }, 1500);
+            } catch (err) {
+              Logger.error('Failed to copy (fallback):', err);
+            }
+            document.body.removeChild(textArea);
+          }
+        });
+        
+        calculatorCopy.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          calculatorCopy.click();
+        });
+      }
+
       // Make calculator draggable
       let isDragging = false;
       let dragOffset = { x: 0, y: 0 };
@@ -1183,8 +1205,8 @@
       if (calculatorHeader) {
         // Mouse events for desktop
         calculatorHeader.addEventListener('mousedown', function(e) {
-          // Don't start dragging if click is on a traffic light button
-          if (e.target.closest('.traffic-light')) {
+          // Don't start dragging if click is on a traffic light button or copy button
+          if (e.target.closest('.traffic-light') || e.target.closest('.calculator-copy-btn')) {
             return;
           }
           
@@ -1197,8 +1219,8 @@
 
         // Touch events for mobile
         calculatorHeader.addEventListener('touchstart', function(e) {
-          // Don't start dragging if touch is on a traffic light button
-          if (e.target.closest('.traffic-light')) {
+          // Don't start dragging if touch is on a traffic light button or copy button
+          if (e.target.closest('.traffic-light') || e.target.closest('.calculator-copy-btn')) {
             return;
           }
           
@@ -1323,18 +1345,27 @@
         } else if (key === '/') {
           e.preventDefault();
           calculatorOperation('÷');
+        } else if (key === '(' || key === '9' && e.shiftKey) {
+          e.preventDefault();
+          calculatorBracket('(');
+        } else if (key === ')' || key === '0' && e.shiftKey) {
+          e.preventDefault();
+          calculatorBracket(')');
         } else if (key === 'Enter' || key === '=') {
           e.preventDefault();
           calculatorEquals();
         } else if (key === 'Backspace') {
           e.preventDefault();
-          calculatorBackspace();
+          // Backspace functionality - clear last character from display
+          if (calculatorState.display.length > 1) {
+            calculatorState.display = calculatorState.display.slice(0, -1);
+          } else {
+            calculatorState.display = '0';
+          }
+          updateCalculatorDisplay();
         } else if (key === 'Delete' || key.toLowerCase() === 'c') {
           e.preventDefault();
           calculatorClear();
-        } else if (key === '%') {
-          e.preventDefault();
-          calculatorPercent();
         }
       });
     }
