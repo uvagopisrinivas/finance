@@ -29,7 +29,16 @@ A sophisticated web-based platform for retirement planning, investment analysis,
 - **SIP Calculator** with step-up options and frequency selection (Monthly/Quarterly/Half-yearly/Yearly)
 - **SWP Calculator** with tax planning and active trading mode
 - **Lumpsum Calculator** with compound growth analysis
-- **Retirement Planner** with goal-based planning and life expectancy calculations
+- **Retirement Planner** with advanced goal-based planning
+  - **Accurate required savings calculation** using iterative binary search algorithm
+  - **Pre-retirement and post-retirement goal tracking** with inflation adjustment
+  - **Year-by-year cash flow analysis** showing portfolio growth and withdrawals
+  - **Money depletion detection** with age-specific warnings
+  - **Tax-aware calculations** on all withdrawals (expenses + goals)
+  - **One-time and recurring goals** with customizable timelines and annual increases
+  - **Living expenses tracking** with automatic retirement phase adjustment
+  - **Intelligent surplus/shortfall display** showing exactly what you need to save
+  - **Life expectancy calculations** with conservative post-retirement return rates
 - **Monthly Expenses Calculator** with income tracking, expense management, and budget analysis
   - Monthly income tracking
   - 10 default expense categories with clickable emoji icons
