@@ -99,6 +99,11 @@
             // Update goals section if in retirement calculator
             updateGoalsSection();
             
+            // Update expenses calculator if available
+            if (window.updateExpensesCurrency) {
+                window.updateExpensesCurrency();
+            }
+            
             Logger.debug('Currency changed to:', currency);
         }
     };
@@ -238,7 +243,8 @@
             'sipResults',
             'swpResults', 
             'lumpsumResults',
-            'retirementResults'
+            'retirementResults',
+            'expensesResults'
         ];
         
         resultSections.forEach(sectionId => {

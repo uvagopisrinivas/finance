@@ -53,6 +53,10 @@
         expenseCounter = 0;
         
         const defaultExpenses = getDefaultExpenses();
+        
+        // Sort expenses by amount in descending order (highest first)
+        defaultExpenses.sort((a, b) => b.amount - a.amount);
+        
         defaultExpenses.forEach(expense => {
             addExpenseItem(expense.name, expense.amount, expense.category);
         });
@@ -100,7 +104,7 @@
             </div>
         `;
         
-        container.insertAdjacentHTML('afterbegin', expenseHtml);
+        container.insertAdjacentHTML('beforeend', expenseHtml);
         
         // Setup input validation for the new expense
         const expenseElement = document.getElementById(`expense-${expenseCounter}`);
@@ -275,16 +279,22 @@
             
             // Check if inflation and years are provided for future calculation
             const inflationRate = parseFloat(document.getElementById('expensesInflationRate').value) || 0;
+            const incomeHike = parseFloat(document.getElementById('expensesIncomeHike').value) || 0;
             const years = parseInt(document.getElementById('expensesYears').value) || 0;
-            const hasFutureCalculation = inflationRate > 0 && years > 0;
+            const hasFutureCalculation = (inflationRate > 0 || incomeHike > 0) && years > 0;
             
             let futureExpenses = 0;
+            let futureIncome = 0;
             let futureSavings = 0;
             
             if (hasFutureCalculation) {
                 // Calculate future expenses with inflation: FV = PV * (1 + r)^n
                 futureExpenses = totalExpenses * Math.pow(1 + (inflationRate / 100), years);
-                futureSavings = monthlyIncome - futureExpenses;
+                
+                // Calculate future income with hike: FV = PV * (1 + r)^n
+                futureIncome = monthlyIncome * Math.pow(1 + (incomeHike / 100), years);
+                
+                futureSavings = futureIncome - futureExpenses;
             }
 
             // Update summary
@@ -316,8 +326,18 @@
             if (hasFutureCalculation) {
                 futureSection.style.display = 'block';
                 
+                // Build label with inflation and/or income hike
+                let labelParts = [];
+                if (inflationRate > 0) labelParts.push(`${inflationRate}% inflation`);
+                if (incomeHike > 0) labelParts.push(`${incomeHike}% income hike`);
+                const labelText = labelParts.join(', ');
+                
                 // Update future section label
-                document.getElementById('expensesFutureYearsLabel').textContent = `After ${years} Year${years > 1 ? 's' : ''} (${inflationRate}% inflation)`;
+                document.getElementById('expensesFutureYearsLabel').textContent = `After ${years} Year${years > 1 ? 's' : ''} (${labelText})`;
+                
+                // Update future income
+                document.getElementById('expensesFutureIncome').textContent = formatCurrency(futureIncome);
+                document.getElementById('expensesFutureIncomeWords').textContent = numberToWords(Math.round(futureIncome));
                 
                 // Update future expenses
                 document.getElementById('expensesFutureExpenses').textContent = formatCurrency(futureExpenses);
@@ -331,7 +351,7 @@
                 // Style future savings based on value
                 if (futureSavings < 0) {
                     futureSavingsElement.style.color = 'var(--color-error)';
-                } else if (futureSavings < monthlyIncome * 0.1) {
+                } else if (futureSavings < futureIncome * 0.1) {
                     futureSavingsElement.style.color = 'var(--color-warning)';
                 } else {
                     futureSavingsElement.style.color = 'var(--color-success)';
@@ -383,14 +403,24 @@
                     initializeDefaultExpenses();
                     setupIncomeInputValidation();
                     
-                    // Format income input
+                    // Set and format income input with currency-aware default
                     setTimeout(() => {
                         const incomeInput = document.getElementById('expensesIncomeAmount');
-                        if (incomeInput && incomeInput.value) {
-                            const cleanValue = incomeInput.value.replace(/,/g, '');
-                            const formatted = formatNumber(cleanValue);
-                            incomeInput.value = formatted;
-                            updateHelperText(incomeInput, formatted);
+                        if (incomeInput) {
+                            const currentCurrency = window.currentCurrency || 'INR';
+                            const defaultIncome = currentCurrency === 'USD' ? '6000' : '200000';
+                            
+                            // Only set default if input is empty
+                            if (!incomeInput.value || incomeInput.value.trim() === '') {
+                                incomeInput.value = formatNumber(defaultIncome);
+                                updateHelperText(incomeInput, formatNumber(defaultIncome));
+                            } else {
+                                // Format existing value
+                                const cleanValue = incomeInput.value.replace(/,/g, '');
+                                const formatted = formatNumber(cleanValue);
+                                incomeInput.value = formatted;
+                                updateHelperText(incomeInput, formatted);
+                            }
                         }
                     }, 50);
                 }, 50);
@@ -398,39 +428,56 @@
         };
     }
 
-    // Listen for currency changes
-    const originalSetCurrency = window.setCurrency;
-    if (originalSetCurrency) {
-        window.setCurrency = function(currency) {
-            originalSetCurrency(currency);
-            
-            // Check if expenses calculator is active
-            const expensesCalculator = document.getElementById('expensesCalculator');
-            if (expensesCalculator && expensesCalculator.classList.contains('active')) {
-                // Reinitialize expenses with new currency defaults
-                setTimeout(() => {
-                    initializeDefaultExpenses();
-                    
-                    // Update income input with new currency default
-                    const incomeInput = document.getElementById('expensesIncomeAmount');
-                    if (incomeInput) {
-                        const currentCurrency = window.currentCurrency || 'INR';
-                        const defaultIncome = currentCurrency === 'USD' ? '6000' : '200000';
-                        incomeInput.value = formatNumber(defaultIncome);
-                        updateHelperText(incomeInput, formatNumber(defaultIncome));
-                    }
-                }, 100);
-            }
-        };
-    }
+    // Function to update expenses for currency change
+    window.updateExpensesCurrency = function() {
+        // Reinitialize expenses with new currency defaults
+        initializeDefaultExpenses();
+        
+        // Update income input with new currency default
+        const incomeInput = document.getElementById('expensesIncomeAmount');
+        if (incomeInput) {
+            const currentCurrency = window.currentCurrency || 'INR';
+            const defaultIncome = currentCurrency === 'USD' ? '6000' : '200000';
+            incomeInput.value = formatNumber(defaultIncome);
+            updateHelperText(incomeInput, formatNumber(defaultIncome));
+        }
+        
+        // Hide results since currency changed
+        const resultsSection = document.getElementById('expensesResults');
+        if (resultsSection) {
+            resultsSection.style.display = 'none';
+        }
+    };
 
     // Initialize on page load
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initializeDefaultExpenses, 500);
+            setTimeout(() => {
+                initializeDefaultExpenses();
+                
+                // Set income default value
+                const incomeInput = document.getElementById('expensesIncomeAmount');
+                if (incomeInput && (!incomeInput.value || incomeInput.value.trim() === '')) {
+                    const currentCurrency = window.currentCurrency || 'INR';
+                    const defaultIncome = currentCurrency === 'USD' ? '6000' : '200000';
+                    incomeInput.value = formatNumber(defaultIncome);
+                    updateHelperText(incomeInput, formatNumber(defaultIncome));
+                }
+            }, 500);
         });
     } else {
-        setTimeout(initializeDefaultExpenses, 500);
+        setTimeout(() => {
+            initializeDefaultExpenses();
+            
+            // Set income default value
+            const incomeInput = document.getElementById('expensesIncomeAmount');
+            if (incomeInput && (!incomeInput.value || incomeInput.value.trim() === '')) {
+                const currentCurrency = window.currentCurrency || 'INR';
+                const defaultIncome = currentCurrency === 'USD' ? '6000' : '200000';
+                incomeInput.value = formatNumber(defaultIncome);
+                updateHelperText(incomeInput, formatNumber(defaultIncome));
+            }
+        }, 500);
     }
 
 })();
