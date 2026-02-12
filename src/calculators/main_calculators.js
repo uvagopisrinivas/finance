@@ -28,7 +28,7 @@
                 lumpsumTimePeriod: '10',
                 retirementMonthlySavings: '270000',
                 retirementMonthlyExpenses: '160000',
-                retirementCurrentCorpus: '',
+                retirementCurrentCorpus: '40000000',
                 goalAmount: '500000'
             },
             taxHints: {
@@ -55,7 +55,7 @@
                 lumpsumTimePeriod: '30',
                 retirementMonthlySavings: '3000',
                 retirementMonthlyExpenses: '3000',
-                retirementCurrentCorpus: '',
+                retirementCurrentCorpus: '500000',
                 goalAmount: '20000'
             },
             taxHints: {
@@ -129,12 +129,6 @@
         Object.entries(inputMappings).forEach(([inputId, defaultValue]) => {
             const input = document.getElementById(inputId);
             if (input) {
-                // Skip if default value is empty string (optional field)
-                if (defaultValue === '') {
-                    input.value = '';
-                    return;
-                }
-                
                 // For currency inputs, format the number
                 if (inputId.includes('Amount') || inputId.includes('Investment') || inputId.includes('Withdrawal') || inputId.includes('Savings') || inputId.includes('Expenses') || inputId.includes('Corpus')) {
                     const formatted = formatNumber(defaultValue);

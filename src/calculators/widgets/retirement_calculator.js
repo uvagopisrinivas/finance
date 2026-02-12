@@ -384,8 +384,8 @@
             // Get basic inputs with better validation
             const currentAge = parseInt(document.getElementById('retirementCurrentAge').value);
             const targetRetirementAge = parseInt(document.getElementById('retirementTargetAge').value);
-            const monthlySavingsInput = document.getElementById('retirementMonthlySavings').value.replace(/,/g, '');
-            const monthlySavings = parseFloat(monthlySavingsInput);
+            const monthlySavingsInput = document.getElementById('retirementMonthlySavings').value.replace(/,/g, '').trim();
+            const monthlySavings = monthlySavingsInput === '' ? 0 : parseFloat(monthlySavingsInput) || 0;
             const currentCorpusInput = document.getElementById('retirementCurrentCorpus').value.replace(/,/g, '').trim();
             const currentCorpus = currentCorpusInput === '' ? 0 : parseFloat(currentCorpusInput) || 0;
             const returnRate = parseFloat(document.getElementById('retirementReturnRate').value) / 100;
@@ -1031,8 +1031,18 @@
                 const yearlyInvestment = params.monthlySavings * 12;
                 cumulativeInvestment += yearlyInvestment;
                 
-                // Apply returns to existing portfolio + add new investment with returns
-                portfolioValue = (portfolioValue * (1 + params.returnRate)) + (yearlyInvestment * (1 + params.returnRate));
+                // Apply monthly compounding for accurate returns (matching SIP calculator)
+                // Start with existing portfolio
+                let yearEndValue = portfolioValue;
+                
+                // Add monthly savings with proper compounding
+                const monthlyRate = Math.pow(1 + params.returnRate, 1 / 12) - 1;
+                for (let month = 1; month <= 12; month++) {
+                    // Add this month's savings first, then apply returns
+                    yearEndValue = (yearEndValue + params.monthlySavings) * (1 + monthlyRate);
+                }
+                
+                portfolioValue = yearEndValue;
                 
                 // Deduct one-time goal expenses if any goals are due this year (including taxes)
                 const grossOnetimeGoalExpenses = totalOnetimeGoalExpenses / (1 - params.taxRate);
@@ -1453,14 +1463,29 @@
                             }
                             // Add breakdown details for portfolio growth
                             else if (row.phase === 'accumulation' && row.yearlyInvestment > 0) {
-                                // Calculate returns separately for portfolio and savings
-                                const portfolioReturns = portfolioStart * returnRate;
-                                const savingsReturns = row.yearlyInvestment * returnRate;
+                                // Calculate actual returns separately for portfolio and savings
+                                const portfolioStart = index === 0 ? params.currentCorpus : yearlyData[index - 1].portfolioValue;
+                                const portfolioReturns = portfolioEnd - portfolioStart - row.yearlyInvestment + totalWithdrawals + totalTax;
+                                
+                                // For better breakdown, calculate portfolio and savings returns separately
+                                // Portfolio returns = returns on starting portfolio
+                                // Savings returns = returns on new savings added this year
+                                const monthlyRate = Math.pow(1 + returnRate, 1 / 12) - 1;
+                                
+                                // Calculate what portfolio would be without new savings
+                                let portfolioOnlyEnd = portfolioStart;
+                                for (let m = 1; m <= 12; m++) {
+                                    portfolioOnlyEnd = portfolioOnlyEnd * (1 + monthlyRate);
+                                }
+                                const portfolioOnlyReturns = portfolioOnlyEnd - portfolioStart;
+                                
+                                // Savings returns = total returns - portfolio only returns
+                                const savingsReturns = portfolioReturns - portfolioOnlyReturns;
                                 
                                 const breakdownItems = [];
                                 if (portfolioStart > 0) {
                                     breakdownItems.push(`<div style="margin-bottom: 4px;"><strong>Start:</strong> ${formatCurrency(portfolioStart)}</div>`);
-                                    breakdownItems.push(`<div style="margin-bottom: 4px;"><strong>Returns on Portfolio:</strong> ${formatCurrency(portfolioReturns)} <small style="color: var(--color-text-secondary);">(@${(returnRate * 100).toFixed(0)}%)</small></div>`);
+                                    breakdownItems.push(`<div style="margin-bottom: 4px;"><strong>Returns on Portfolio:</strong> ${formatCurrency(portfolioOnlyReturns)} <small style="color: var(--color-text-secondary);">(@${(returnRate * 100).toFixed(0)}%)</small></div>`);
                                 }
                                 breakdownItems.push(`<div style="margin-bottom: 4px;"><strong>Savings:</strong> ${formatCurrency(row.yearlyInvestment)}</div>`);
                                 breakdownItems.push(`<div style="margin-bottom: 4px;"><strong>Returns on Savings:</strong> ${formatCurrency(savingsReturns)} <small style="color: var(--color-text-secondary);">(@${(returnRate * 100).toFixed(0)}%)</small></div>`);
