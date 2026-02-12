@@ -1017,7 +1017,11 @@
                     const monthlyAmountThisYear = monthlyAmountAtStart * Math.pow(1 + goal.annualIncrease, yearsIntoGoal);
                     const annualAmount = monthlyAmountThisYear * 12;
                     
-                    totalRecurringGoalExpenses += annualAmount;
+                    // Only add to total if it's NOT a living expense (living expenses are handled separately)
+                    if (!goal.isLivingExpense) {
+                        totalRecurringGoalExpenses += annualAmount;
+                    }
+                    
                     activeRecurringGoals.push({
                         ...goal,
                         monthlyAmountThisYear: monthlyAmountThisYear,
@@ -1217,11 +1221,11 @@
                 <table class="table table--indian table--cashflow">
                     <thead class="table__header">
                         <tr>
-                            <th>AGE</th>
-                            <th>PORTFOLIO START</th>
-                            <th>WITHDRAWALS</th>
-                            <th>TAX ON WITHDRAWALS</th>
-                            <th>PORTFOLIO END</th>
+                            <th style="width: 60px;">AGE</th>
+                            <th style="width: 150px;">PORTFOLIO START</th>
+                            <th style="width: 200px;">WITHDRAWALS</th>
+                            <th style="width: 250px;">TAX ON WITHDRAWALS</th>
+                            <th style="width: 250px;">PORTFOLIO END</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1525,12 +1529,48 @@
                                 }
                             }
                             
+                            // Build tax breakdown display
+                            let taxDisplay = formatCurrency(totalTax);
+                            
+                            // Add detailed breakdown for retirement phase when there are withdrawals
+                            if (row.phase === 'retirement' && totalWithdrawals > 0 && totalTax > 0) {
+                                const grossWithdrawals = totalWithdrawals + totalTax;
+                                
+                                // Calculate gross and tax for each component
+                                const grossLiving = livingExpenses > 0 ? livingExpenses / (1 - params.taxRate) : 0;
+                                const taxLiving = grossLiving - livingExpenses;
+                                
+                                const grossRecurring = recurringGoalExpenses > 0 ? recurringGoalExpenses / (1 - params.taxRate) : 0;
+                                const taxRecurring = grossRecurring - recurringGoalExpenses;
+                                
+                                const grossOnetime = onetimeGoalExpenses > 0 ? onetimeGoalExpenses / (1 - params.taxRate) : 0;
+                                const taxOnetime = grossOnetime - onetimeGoalExpenses;
+                                
+                                const breakdownItems = [];
+                                
+                                // Show gross breakdown with net + tax
+                                if (grossLiving > 0) {
+                                    breakdownItems.push(`<div style="margin-bottom: 4px;">🏠 Living: ${formatCurrency(grossLiving)}<br><small style="color: var(--color-text-secondary);">(${formatCurrency(livingExpenses)} + Tax: ${formatCurrency(taxLiving)})</small></div>`);
+                                }
+                                if (grossRecurring > 0) {
+                                    breakdownItems.push(`<div style="margin-bottom: 4px;">📚 Recurring Goals: ${formatCurrency(grossRecurring)}<br><small style="color: var(--color-text-secondary);">(${formatCurrency(recurringGoalExpenses)} + Tax: ${formatCurrency(taxRecurring)})</small></div>`);
+                                }
+                                if (grossOnetime > 0) {
+                                    breakdownItems.push(`<div style="margin-bottom: 4px;">🎯 One-time Goals: ${formatCurrency(grossOnetime)}<br><small style="color: var(--color-text-secondary);">(${formatCurrency(onetimeGoalExpenses)} + Tax: ${formatCurrency(taxOnetime)})</small></div>`);
+                                }
+                                
+                                // Show total tax
+                                breakdownItems.push(`<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); color: var(--color-error); font-weight: var(--font-weight-semibold);">Tax (${(params.taxRate * 100).toFixed(0)}%): ${formatCurrency(totalTax)}</div>`);
+                                
+                                taxDisplay = breakdownItems.join('');
+                            }
+                            
                             return `
                             <tr class="${row.phase === 'retirement' ? 'retirement-phase' : 'accumulation-phase'} ${(onetimeGoalExpenses > 0 || recurringGoalExpenses > 0) ? 'goal-expense-year' : ''} ${row.moneyDepleted ? 'money-depleted' : ''}">
                                 <td class="table__age">${row.age}</td>
                                 <td class="table__balance">${formatCurrency(portfolioStart)}</td>
                                 <td class="table__withdrawals">${withdrawalsDisplay}</td>
-                                <td class="table__tax">${formatCurrency(totalTax)}</td>
+                                <td class="table__tax">${taxDisplay}</td>
                                 <td class="table__balance">${portfolioEndDisplay}</td>
                             </tr>
                         `}).join('')}

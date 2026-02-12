@@ -5105,11 +5105,11 @@ input.form-input[type="text"] {
 }
 
 .table--cashflow .table__balance {
-  width: 13% !important;
+  width: 15% !important;
 }
 
 .table--cashflow .table__withdrawals {
-  width: 35% !important;
+  width: 28% !important;
   font-size: 0.9rem !important;
   line-height: 1.6 !important;
   word-wrap: break-word;
@@ -5119,12 +5119,14 @@ input.form-input[type="text"] {
 }
 
 .table--cashflow .table__tax {
-  width: 13% !important;
+  width: 25% !important;
   color: var(--color-error);
+  font-size: 0.85rem !important;
+  line-height: 1.5 !important;
 }
 
 .table--cashflow td.table__balance:last-child {
-  width: 35% !important;
+  width: 28% !important;
 }
 
 /* Ensure header columns match body columns */
@@ -5138,19 +5140,19 @@ input.form-input[type="text"] {
 }
 
 .table--cashflow thead th:nth-child(2) {
-  width: 13% !important;
+  width: 15% !important;
 }
 
 .table--cashflow thead th:nth-child(3) {
-  width: 35% !important;
+  width: 28% !important;
 }
 
 .table--cashflow thead th:nth-child(4) {
-  width: 13% !important;
+  width: 25% !important;
 }
 
 .table--cashflow thead th:nth-child(5) {
-  width: 35% !important;
+  width: 28% !important;
 }
 
 /* Mobile responsiveness for cashflow table */
