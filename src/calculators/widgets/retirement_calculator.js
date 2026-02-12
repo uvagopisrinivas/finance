@@ -1218,18 +1218,19 @@
                 <h4 style="margin: var(--space-xl) 0 var(--space-md) 0; color: var(--color-text-primary);">
                     <i class="fas fa-chart-area"></i> Year-wise Cash Flow Analysis
                 </h4>
-                <table class="table table--indian table--cashflow">
-                    <thead class="table__header">
-                        <tr>
-                            <th style="width: 60px;">AGE</th>
-                            <th style="width: 150px;">PORTFOLIO START</th>
-                            <th style="width: 200px;">WITHDRAWALS</th>
-                            <th style="width: 250px;">TAX ON WITHDRAWALS</th>
-                            <th style="width: 250px;">PORTFOLIO END</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${yearlyData.map((row, index) => {
+                <div class="cashflow-grid-wrapper">
+                    <div class="cashflow-grid">
+                        <div class="cashflow-grid__header">
+                            <div class="cashflow-grid__cell cashflow-grid__cell--age">AGE</div>
+                            <div class="cashflow-grid__cell cashflow-grid__cell--balance">PORTFOLIO START</div>
+                            <div class="cashflow-grid__cell cashflow-grid__cell--withdrawals">WITHDRAWALS</div>
+                            <div class="cashflow-grid__cell cashflow-grid__cell--tax">TAX ON WITHDRAWALS</div>
+                            <div class="cashflow-grid__cell cashflow-grid__cell--balance">PORTFOLIO END</div>
+                        </div>
+                    </div>
+                    <div class="cashflow-grid-scroll">
+                        <div class="cashflow-grid">
+                            ${yearlyData.map((row, index) => {
                             // Use pre-calculated values from row data
                             let portfolioStart, totalWithdrawals, totalTax, portfolioEnd;
                             
@@ -1529,7 +1530,7 @@
                                 }
                             }
                             
-                            // Build tax breakdown display
+                            // Build tax breakdown display with tooltip
                             let taxDisplay = formatCurrency(totalTax);
                             
                             // Add detailed breakdown for retirement phase when there are withdrawals
@@ -1548,38 +1549,101 @@
                                 
                                 const breakdownItems = [];
                                 
+                                // Build tooltip explanation for each component
+                                const tooltipItems = [];
+                                
                                 // Show gross breakdown with net + tax
                                 if (grossLiving > 0) {
-                                    breakdownItems.push(`<div style="margin-bottom: 4px;">🏠 Living: ${formatCurrency(grossLiving)}<br><small style="color: var(--color-text-secondary);">(${formatCurrency(livingExpenses)} + Tax: ${formatCurrency(taxLiving)})</small></div>`);
+                                    breakdownItems.push(`<div style="margin-bottom: 8px;">🏠 <span style="color: #FF6B6B;">Living: ${formatCurrency(grossLiving)}</span><br><small style="color: #B0B0B0;">(${formatCurrency(livingExpenses)} + Tax: ${formatCurrency(taxLiving)})</small></div>`);
+                                    
+                                    // Add tooltip explanation
+                                    tooltipItems.push(`
+                                        <div style="margin-bottom: 12px; padding: 8px; background: rgba(40, 40, 50, 0.6); border-radius: 4px;">
+                                            <strong style="color: #4FC3F7;">🏠 Living Expenses:</strong><br>
+                                            <span style="color: #B0B0B0;">You need: ${formatCurrency(livingExpenses)} (net, after tax)</span><br>
+                                            <span style="color: #FFA500;">If you withdraw only ${formatCurrency(livingExpenses)}:</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Tax = ${formatCurrency(livingExpenses)} × ${(params.taxRate * 100).toFixed(0)}% = ${formatCurrency(livingExpenses * params.taxRate)}</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Net left = ${formatCurrency(livingExpenses)} - ${formatCurrency(livingExpenses * params.taxRate)} = ${formatCurrency(livingExpenses * (1 - params.taxRate))}</span><br>
+                                            <span style="padding-left: 12px; color: #FF6B6B;">You're short by ${formatCurrency(livingExpenses * params.taxRate)}! ❌</span><br><br>
+                                            <span style="color: #66BB6A;">So you must withdraw MORE:</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Gross = ${formatCurrency(livingExpenses)} ÷ (1 - ${(params.taxRate * 100).toFixed(0)}%) = ${formatCurrency(grossLiving)}</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Tax = ${formatCurrency(grossLiving)} × ${(params.taxRate * 100).toFixed(0)}% = ${formatCurrency(taxLiving)}</span><br>
+                                            <span style="padding-left: 12px; color: #66BB6A;">Net = ${formatCurrency(grossLiving)} - ${formatCurrency(taxLiving)} = ${formatCurrency(livingExpenses)} ✓</span>
+                                        </div>
+                                    `);
                                 }
                                 if (grossRecurring > 0) {
-                                    breakdownItems.push(`<div style="margin-bottom: 4px;">📚 Recurring Goals: ${formatCurrency(grossRecurring)}<br><small style="color: var(--color-text-secondary);">(${formatCurrency(recurringGoalExpenses)} + Tax: ${formatCurrency(taxRecurring)})</small></div>`);
+                                    breakdownItems.push(`<div style="margin-bottom: 8px;">📚 <span style="color: #FF6B6B;">Recurring Goals: ${formatCurrency(grossRecurring)}</span><br><small style="color: #B0B0B0;">(${formatCurrency(recurringGoalExpenses)} + Tax: ${formatCurrency(taxRecurring)})</small></div>`);
+                                    
+                                    tooltipItems.push(`
+                                        <div style="margin-bottom: 12px; padding: 8px; background: rgba(40, 40, 50, 0.6); border-radius: 4px;">
+                                            <strong style="color: #4FC3F7;">📚 Recurring Goals:</strong><br>
+                                            <span style="color: #B0B0B0;">You need: ${formatCurrency(recurringGoalExpenses)} (net, after tax)</span><br>
+                                            <span style="color: #66BB6A;">Gross withdrawal needed:</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Gross = ${formatCurrency(recurringGoalExpenses)} ÷ (1 - ${(params.taxRate * 100).toFixed(0)}%) = ${formatCurrency(grossRecurring)}</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Tax = ${formatCurrency(grossRecurring)} × ${(params.taxRate * 100).toFixed(0)}% = ${formatCurrency(taxRecurring)}</span><br>
+                                            <span style="padding-left: 12px; color: #66BB6A;">Net = ${formatCurrency(grossRecurring)} - ${formatCurrency(taxRecurring)} = ${formatCurrency(recurringGoalExpenses)} ✓</span>
+                                        </div>
+                                    `);
                                 }
                                 if (grossOnetime > 0) {
-                                    breakdownItems.push(`<div style="margin-bottom: 4px;">🎯 One-time Goals: ${formatCurrency(grossOnetime)}<br><small style="color: var(--color-text-secondary);">(${formatCurrency(onetimeGoalExpenses)} + Tax: ${formatCurrency(taxOnetime)})</small></div>`);
+                                    breakdownItems.push(`<div style="margin-bottom: 8px;">🎯 <span style="color: #4FC3F7;">One-time Goals: ${formatCurrency(grossOnetime)}</span><br><small style="color: #B0B0B0;">(${formatCurrency(onetimeGoalExpenses)} + Tax: ${formatCurrency(taxOnetime)})</small></div>`);
+                                    
+                                    tooltipItems.push(`
+                                        <div style="margin-bottom: 12px; padding: 8px; background: rgba(40, 40, 50, 0.6); border-radius: 4px;">
+                                            <strong style="color: #4FC3F7;">🎯 One-time Goals:</strong><br>
+                                            <span style="color: #B0B0B0;">You need: ${formatCurrency(onetimeGoalExpenses)} (net, after tax)</span><br>
+                                            <span style="color: #66BB6A;">Gross withdrawal needed:</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Gross = ${formatCurrency(onetimeGoalExpenses)} ÷ (1 - ${(params.taxRate * 100).toFixed(0)}%) = ${formatCurrency(grossOnetime)}</span><br>
+                                            <span style="padding-left: 12px; color: #E0E0E0;">Tax = ${formatCurrency(grossOnetime)} × ${(params.taxRate * 100).toFixed(0)}% = ${formatCurrency(taxOnetime)}</span><br>
+                                            <span style="padding-left: 12px; color: #66BB6A;">Net = ${formatCurrency(grossOnetime)} - ${formatCurrency(taxOnetime)} = ${formatCurrency(onetimeGoalExpenses)} ✓</span>
+                                        </div>
+                                    `);
                                 }
                                 
-                                // Show total tax
-                                breakdownItems.push(`<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); color: var(--color-error); font-weight: var(--font-weight-semibold);">Tax (${(params.taxRate * 100).toFixed(0)}%): ${formatCurrency(totalTax)}</div>`);
+                                // Create tooltip content
+                                const tooltipContent = `
+                                    <div style="font-size: 0.9em; line-height: 1.6;">
+                                        <div style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                                            <strong style="color: #FFA500; font-size: 1.05em;">💡 Why Withdraw More Than You Need?</strong><br>
+                                            <span style="color: #B0B0B0;">Tax is deducted from your withdrawal, so you must withdraw extra to cover the tax and still have enough left for your expenses.</span>
+                                        </div>
+                                        ${tooltipItems.join('')}
+                                        <div style="margin-top: 12px; padding: 8px; background: rgba(255,100,100,0.08); border-left: 3px solid #FF6B6B; border-radius: 4px;">
+                                            <strong style="color: #FF6B6B;">Total Tax (${(params.taxRate * 100).toFixed(0)}%):</strong> ${formatCurrency(totalTax)}<br>
+                                            <span style="color: #B0B0B0;">Total Gross Withdrawal: ${formatCurrency(grossWithdrawals)}</span><br>
+                                            <span style="color: #B0B0B0;">Total Net (After Tax): ${formatCurrency(totalWithdrawals)}</span>
+                                        </div>
+                                    </div>
+                                `.replace(/\n\s+/g, ' ');
                                 
-                                taxDisplay = breakdownItems.join('');
+                                // Show total tax - make entire cell hoverable with dotted line separator
+                                breakdownItems.push(`<div style="margin-top: 8px; padding-top: 8px; border-top: 2px dashed rgba(255,255,255,0.4);"><span style="color: #FF6B6B; font-weight: 600;">Tax (${(params.taxRate * 100).toFixed(0)}%): ${formatCurrency(totalTax)}</span></div>`);
+                                
+                                taxDisplay = `<div class="tax-hover-cell" data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}">${breakdownItems.join('')}</div>`;
                             }
                             
                             return `
-                            <tr class="${row.phase === 'retirement' ? 'retirement-phase' : 'accumulation-phase'} ${(onetimeGoalExpenses > 0 || recurringGoalExpenses > 0) ? 'goal-expense-year' : ''} ${row.moneyDepleted ? 'money-depleted' : ''}">
-                                <td class="table__age">${row.age}</td>
-                                <td class="table__balance">${formatCurrency(portfolioStart)}</td>
-                                <td class="table__withdrawals">${withdrawalsDisplay}</td>
-                                <td class="table__tax">${taxDisplay}</td>
-                                <td class="table__balance">${portfolioEndDisplay}</td>
-                            </tr>
+                            <div class="cashflow-grid__row ${row.phase === 'retirement' ? 'retirement-phase' : 'accumulation-phase'} ${(onetimeGoalExpenses > 0 || recurringGoalExpenses > 0) ? 'goal-expense-year' : ''} ${row.moneyDepleted ? 'money-depleted' : ''}">
+                                <div class="cashflow-grid__cell cashflow-grid__cell--age">${row.age}</div>
+                                <div class="cashflow-grid__cell cashflow-grid__cell--balance">${formatCurrency(portfolioStart)}</div>
+                                <div class="cashflow-grid__cell cashflow-grid__cell--withdrawals">${withdrawalsDisplay}</div>
+                                <div class="cashflow-grid__cell cashflow-grid__cell--tax">${taxDisplay}</div>
+                                <div class="cashflow-grid__cell cashflow-grid__cell--balance">${portfolioEndDisplay}</div>
+                            </div>
                         `}).join('')}
-                    </tbody>
-                </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
 
         document.getElementById('retirementTableContainer').innerHTML = goalsTableHtml + projectionTableHtml;
+        
+        // Initialize tooltips after table is rendered
+        setTimeout(() => {
+            initializeTaxTooltips();
+        }, 100);
         
         // Return information about money depletion and actual corpus at retirement
         return {
@@ -1588,6 +1652,76 @@
             legacyAmount: legacyAmount,
             corpusAtRetirement: corpusAtRetirement
         };
+    }
+
+    // Initialize tax breakdown tooltips
+    function initializeTaxTooltips() {
+        // Remove any existing tooltip
+        const existingTooltip = document.querySelector('.tax-tooltip');
+        if (existingTooltip) {
+            existingTooltip.remove();
+        }
+        
+        // Create tooltip element
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tax-tooltip';
+        document.body.appendChild(tooltip);
+        
+        // Add event listeners to all tax hover cells
+        const taxCells = document.querySelectorAll('.tax-hover-cell');
+        
+        taxCells.forEach(cell => {
+            cell.addEventListener('mouseenter', function(e) {
+                const tooltipContent = this.getAttribute('data-tooltip');
+                if (tooltipContent) {
+                    tooltip.innerHTML = tooltipContent;
+                    tooltip.classList.add('visible');
+                    positionTooltip(e, tooltip);
+                }
+            });
+            
+            cell.addEventListener('mousemove', function(e) {
+                positionTooltip(e, tooltip);
+            });
+            
+            cell.addEventListener('mouseleave', function() {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
+    
+    // Position tooltip near cursor
+    function positionTooltip(e, tooltip) {
+        const offset = 15;
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        let left = e.clientX + offset;
+        let top = e.clientY + offset;
+        
+        // Adjust if tooltip goes off right edge
+        if (left + tooltipRect.width > viewportWidth - 20) {
+            left = e.clientX - tooltipRect.width - offset;
+        }
+        
+        // Adjust if tooltip goes off bottom edge
+        if (top + tooltipRect.height > viewportHeight - 20) {
+            top = e.clientY - tooltipRect.height - offset;
+        }
+        
+        // Ensure tooltip doesn't go off left edge
+        if (left < 20) {
+            left = 20;
+        }
+        
+        // Ensure tooltip doesn't go off top edge
+        if (top < 20) {
+            top = 20;
+        }
+        
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
     }
 
     // Manual function to refresh all helper texts

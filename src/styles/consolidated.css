@@ -5071,107 +5071,185 @@ input.form-input[type="text"] {
 }
 
 /* Cash flow table styling - fits panel width */
-.table--cashflow {
-  width: 100% !important;
-  min-width: auto !important;
-  table-layout: fixed;
-  border-collapse: collapse !important;
+/* Cash flow grid layout - replaces table for perfect alignment */
+.cashflow-grid-wrapper {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.table--cashflow th,
-.table--cashflow td {
-  padding: var(--space-sm) var(--space-xs) !important;
-  font-size: 0.9rem !important;
+.cashflow-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 6% 14% 26% 24% 30%;
+}
+
+.cashflow-grid__header {
+  display: contents;
+}
+
+.cashflow-grid__header .cashflow-grid__cell {
+  background: var(--color-bg-secondary);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--space-md) var(--space-sm);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-right: none;
+}
+
+.cashflow-grid__header .cashflow-grid__cell:last-child {
+  border-right: none;
+}
+
+/* Scrollable body container */
+.cashflow-grid-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.table-container:not(.has-scroll) .cashflow-grid-scroll {
+  max-height: none;
+  overflow: visible;
+}
+
+.cashflow-grid__body {
+  display: contents;
+}
+
+.cashflow-grid__row {
+  display: contents;
+}
+
+.cashflow-grid__cell {
+  padding: var(--space-sm) var(--space-xs);
+  font-size: 0.9rem;
   word-wrap: break-word;
   word-break: break-word;
   white-space: normal;
   overflow-wrap: break-word;
-  vertical-align: top;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.table--cashflow thead th {
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.table--cashflow tbody tr {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Column widths for cash flow table */
-.table--cashflow .table__age {
-  width: 4% !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
   text-align: center;
+  vertical-align: middle;
 }
 
-.table--cashflow .table__balance {
-  width: 15% !important;
+.cashflow-grid__cell:nth-child(5n) {
+  border-right: none;
 }
 
-.table--cashflow .table__withdrawals {
-  width: 28% !important;
-  font-size: 0.9rem !important;
-  line-height: 1.6 !important;
-  word-wrap: break-word;
-  word-break: break-word;
-  white-space: normal;
-  overflow-wrap: break-word;
+.cashflow-grid__cell--age {
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
 }
 
-.table--cashflow .table__tax {
-  width: 25% !important;
+.cashflow-grid__cell--balance {
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cashflow-grid__cell--withdrawals {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.cashflow-grid__cell--tax {
   color: var(--color-error);
-  font-size: 0.85rem !important;
-  line-height: 1.5 !important;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 12px 8px;
 }
 
-.table--cashflow td.table__balance:last-child {
-  width: 28% !important;
+/* Row styling */
+.cashflow-grid__row.retirement-phase .cashflow-grid__cell {
+  background: linear-gradient(135deg, rgba(79, 195, 247, 0.08), rgba(79, 195, 247, 0.03));
 }
 
-/* Ensure header columns match body columns */
-.table--cashflow thead th {
-  width: inherit !important;
+.cashflow-grid__row.accumulation-phase .cashflow-grid__cell {
+  background: linear-gradient(135deg, rgba(102, 187, 106, 0.08), rgba(102, 187, 106, 0.03));
 }
 
-.table--cashflow thead th:nth-child(1) {
-  width: 4% !important;
-  text-align: center;
+.cashflow-grid__row.goal-expense-year .cashflow-grid__cell {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.06));
 }
 
-.table--cashflow thead th:nth-child(2) {
-  width: 15% !important;
+.cashflow-grid__row.money-depleted .cashflow-grid__cell:first-child {
+  border-left: 4px solid var(--color-error);
 }
 
-.table--cashflow thead th:nth-child(3) {
-  width: 28% !important;
+.cashflow-grid__row.money-depleted .cashflow-grid__cell {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(239, 68, 68, 0.15));
 }
 
-.table--cashflow thead th:nth-child(4) {
-  width: 25% !important;
+/* Custom scrollbar for grid scroll container */
+.cashflow-grid-scroll::-webkit-scrollbar {
+  width: 8px;
 }
 
-.table--cashflow thead th:nth-child(5) {
-  width: 28% !important;
+.cashflow-grid-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
-/* Mobile responsiveness for cashflow table */
+.cashflow-grid-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.cashflow-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark theme scrollbar */
+[data-theme="dark"] .cashflow-grid-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .cashflow-grid-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .cashflow-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Light theme scrollbar */
+[data-theme="light"] .cashflow-grid-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .cashflow-grid-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .cashflow-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile responsiveness */
 @media (max-width: 768px) {
-  .table--cashflow {
-    min-width: 900px !important;
-    display: table !important;
+  .cashflow-grid {
+    font-size: 0.75rem;
   }
   
-  .table--cashflow th,
-  .table--cashflow td {
-    font-size: 0.75rem !important;
-    padding: var(--space-xs) !important;
+  .cashflow-grid__cell {
+    padding: var(--space-xs);
   }
   
-  /* Ensure table container is scrollable */
   .table-container {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .cashflow-grid-scroll {
+    max-height: 350px;
+  }
+  
+  .cashflow-grid-scroll::-webkit-scrollbar {
+    width: 6px;
   }
 }
 
@@ -6803,4 +6881,38 @@ input.form-input[type="text"] {
     padding-bottom: var(--space-lg);
     margin-bottom: var(--space-xl);
   }
+}
+
+/* Custom Tooltip Styles for Tax Breakdown */
+.tax-tooltip {
+  position: fixed;
+  background: linear-gradient(135deg, #1a1a24 0%, #252530 100%);
+  border: 1px solid rgba(79, 195, 247, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 500px;
+  z-index: 10000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 1px rgba(79, 195, 247, 0.5);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #E0E0E0;
+}
+
+.tax-tooltip.visible {
+  opacity: 1;
+}
+
+.tax-hover-cell {
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+  cursor: help;
+  display: block;
+  width: 100%;
+}
+
+.tax-hover-cell:hover {
+  background-color: rgba(79, 195, 247, 0.08);
 }
