@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="src/assets/images/favicon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="src/styles/consolidated.css?v=2.8">
+  <link rel="stylesheet" href="src/styles/consolidated.css?v=3.0">
   <!-- Production-ready logging utility -->
   <script src="src/shared/logger.js"></script>
   <!-- Ensure CSS loads properly with cache busting -->
@@ -376,8 +376,8 @@
       <div class="calculator__buttons">
         <!-- Row 1 -->
         <button class="calculator__btn calculator__btn--function" onclick="calculatorClear()">AC</button>
-        <button class="calculator__btn calculator__btn--function" onclick="calculatorBracket('(')">(</button>
-        <button class="calculator__btn calculator__btn--function" onclick="calculatorBracket(')')">)</button>
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorSmartBracket()">()</button>
+        <button class="calculator__btn calculator__btn--function" onclick="calculatorBackspace()">⌫</button>
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('÷')">÷</button>
         
         <!-- Row 2 -->
@@ -399,9 +399,9 @@
         <button class="calculator__btn calculator__btn--operator" onclick="calculatorOperation('+')">+</button>
         
         <!-- Row 5 -->
-        <button class="calculator__btn calculator__btn--number calculator__btn--zero" onclick="calculatorNumber('0')">0</button>
+        <button class="calculator__btn calculator__btn--number" onclick="calculatorNumber('0')">0</button>
         <button class="calculator__btn calculator__btn--number" onclick="calculatorDecimal()">.</button>
-        <button class="calculator__btn calculator__btn--equals" onclick="calculatorEquals()">=</button>
+        <button class="calculator__btn calculator__btn--equals" onclick="calculatorEquals()" style="grid-column: span 2;">=</button>
       </div>
     </div>
   </div>
@@ -927,6 +927,44 @@
       updateCalculatorDisplay();
     };
 
+    window.calculatorBackspace = function() {
+      if (calculatorState.justCalculated) {
+        return; // Don't allow backspace after calculation
+      }
+      
+      if (calculatorState.display !== '0' && calculatorState.display !== '') {
+        // Remove last character from display
+        calculatorState.display = calculatorState.display.slice(0, -1);
+        
+        // If display becomes empty, set to '0'
+        if (calculatorState.display === '' || calculatorState.display === '-') {
+          calculatorState.display = '0';
+        }
+      }
+      
+      updateCalculatorDisplay();
+    };
+
+    window.calculatorSmartBracket = function() {
+      if (calculatorState.justCalculated) {
+        calculatorState.expression = '';
+        calculatorState.justCalculated = false;
+      }
+      
+      // Count open and close brackets in expression
+      const fullExpression = calculatorState.expression + calculatorState.display;
+      const openCount = (fullExpression.match(/\(/g) || []).length;
+      const closeCount = (fullExpression.match(/\)/g) || []).length;
+      
+      // If we have more open brackets than close brackets, add close bracket
+      // Otherwise, add open bracket
+      if (openCount > closeCount && calculatorState.display !== '0') {
+        calculatorBracket(')');
+      } else {
+        calculatorBracket('(');
+      }
+    };
+
     window.calculatorBracket = function(bracket) {
       if (calculatorState.justCalculated) {
         calculatorState.expression = '';
@@ -1356,13 +1394,7 @@
           calculatorEquals();
         } else if (key === 'Backspace') {
           e.preventDefault();
-          // Backspace functionality - clear last character from display
-          if (calculatorState.display.length > 1) {
-            calculatorState.display = calculatorState.display.slice(0, -1);
-          } else {
-            calculatorState.display = '0';
-          }
-          updateCalculatorDisplay();
+          calculatorBackspace();
         } else if (key === 'Delete' || key.toLowerCase() === 'c') {
           e.preventDefault();
           calculatorClear();
