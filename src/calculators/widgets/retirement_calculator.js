@@ -386,12 +386,13 @@
             const targetRetirementAge = parseInt(document.getElementById('retirementTargetAge').value);
             const monthlySavingsInput = document.getElementById('retirementMonthlySavings').value.replace(/,/g, '');
             const monthlySavings = parseFloat(monthlySavingsInput);
-            const currentCorpusInput = document.getElementById('retirementCurrentCorpus').value.replace(/,/g, '');
-            const currentCorpus = parseFloat(currentCorpusInput) || 0;
+            const currentCorpusInput = document.getElementById('retirementCurrentCorpus').value.replace(/,/g, '').trim();
+            const currentCorpus = currentCorpusInput === '' ? 0 : parseFloat(currentCorpusInput) || 0;
             const returnRate = parseFloat(document.getElementById('retirementReturnRate').value) / 100;
             const inflationRate = parseFloat(document.getElementById('retirementInflationRate').value) / 100;
             const lifeExpectancy = parseInt(document.getElementById('retirementLifeExpectancy').value);
-            const taxRate = parseFloat(document.getElementById('retirementTaxRate').value) / 100;
+            const taxRateInput = document.getElementById('retirementTaxRate').value.trim();
+            const taxRate = taxRateInput === '' ? 0 : parseFloat(taxRateInput) / 100;
 
             // Enhanced validation
             if (isNaN(currentAge) || currentAge < 18 || currentAge > 65) {
@@ -416,7 +417,7 @@
                 throw new Error('Please enter a valid life expectancy greater than current age');
             }
             if (isNaN(taxRate) || taxRate < 0 || taxRate > 0.5) {
-                throw new Error('Please enter a valid tax rate between 0% and 50%');
+                throw new Error('Please enter a valid tax rate between 0% and 50% (or leave empty for 0%)');
             }
 
             // Collect goals
@@ -991,8 +992,8 @@
         
         for (let year = 1; year <= totalYears; year++) {
             const currentAgeInYear = params.currentAge + year;
-            const isRetired = currentAgeInYear >= params.retirementAge;
-            const yearsIntoRetirement = Math.max(0, currentAgeInYear - params.retirementAge);
+            const isRetired = currentAgeInYear > params.retirementAge;
+            const yearsIntoRetirement = Math.max(0, currentAgeInYear - params.retirementAge - 1);
             
             // Check if any one-time goals are due this year
             const onetimeGoalsThisYear = onetimeGoals.filter(goal => {
@@ -1030,8 +1031,8 @@
                 const yearlyInvestment = params.monthlySavings * 12;
                 cumulativeInvestment += yearlyInvestment;
                 
-                // Apply returns to existing portfolio + add new investment
-                portfolioValue = (portfolioValue * (1 + params.returnRate)) + yearlyInvestment;
+                // Apply returns to existing portfolio + add new investment with returns
+                portfolioValue = (portfolioValue * (1 + params.returnRate)) + (yearlyInvestment * (1 + params.returnRate));
                 
                 // Deduct one-time goal expenses if any goals are due this year (including taxes)
                 const grossOnetimeGoalExpenses = totalOnetimeGoalExpenses / (1 - params.taxRate);
