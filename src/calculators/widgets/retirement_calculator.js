@@ -432,17 +432,16 @@
             goalElements.forEach(goalElement => {
                 const name = goalElement.querySelector('.goal-name-input').value;
                 const amount = parseFloat(goalElement.querySelector('.goal-amount-input').value.replace(/,/g, ''));
-                const yearsInput = parseInt(goalElement.querySelector('.goal-years-input').value);
+                const years = parseInt(goalElement.querySelector('.goal-years-input').value);
                 const goalTiming = goalElement.getAttribute('data-goal-timing') || 'onetime';
                 
-                console.log('Processing goal:', { name, amount, yearsInput, goalTiming });
+                console.log('Processing goal:', { name, amount, years, goalTiming });
                 
                 if (name && amount > 0) {
                     if (goalTiming === 'recurring') {
                         let duration = parseInt(goalElement.querySelector('.goal-duration-input').value) || 10;
                         let annualIncrease = 0; // No additional increase - inflation is already applied
-                        // Add 1 to convert "starts in X years" to actual year number
-                        let startYear = yearsInput + 1;
+                        let startYear = years + 1; // Goal starts AFTER the specified working years
                         
                         // Special handling for living expenses - starts at retirement (year after retirement age)
                         if (name.toLowerCase().includes('living') || name.toLowerCase().includes('expense')) {
@@ -462,10 +461,8 @@
                             isLivingExpense: name.toLowerCase().includes('living') || name.toLowerCase().includes('expense')
                         });
                     } else {
-                        if (yearsInput > 0) {
-                            // One-time goal - add 1 to convert "starts in X years" to actual year number
-                            const years = yearsInput + 1;
-                            // Adjust for inflation
+                        if (years > 0) {
+                            // One-time goal - adjust for inflation
                             const futureValue = amount * Math.pow(1 + inflationRate, years);
                             goals.push({
                                 name,
