@@ -278,6 +278,11 @@
             let totalRecurringGoalExpenses = 0;
             recurringGoals.forEach(goal => {
                 if (year >= goal.startYear && year < goal.endYear) {
+                    // Skip living expenses in recurring goals - they're handled separately via params.monthlyExpenses
+                    if (goal.isLivingExpense) {
+                        return;
+                    }
+                    
                     const yearsIntoGoal = year - goal.startYear;
                     const monthlyAmountAtStart = goal.monthlyAmount * Math.pow(1 + inflationRate, goal.startYear);
                     const monthlyAmountThisYear = monthlyAmountAtStart * Math.pow(1 + goal.annualIncrease, yearsIntoGoal);
@@ -287,8 +292,21 @@
             
             if (!isRetired) {
                 // Accumulation phase
-                const yearlyInvestment = monthlySavings * 12;
-                portfolioValue = (portfolioValue * (1 + returnRate)) + yearlyInvestment;
+                // For monthly contributions, use the future value of annuity formula
+                // This accounts for contributions happening throughout the year
+                const monthlyRate = returnRate / 12;
+                let yearlyInvestmentValue;
+                
+                if (monthlyRate === 0) {
+                    // If no returns, just add the yearly amount
+                    yearlyInvestmentValue = monthlySavings * 12;
+                } else {
+                    // Future value of monthly contributions made throughout the year
+                    // FV = PMT × [(1 + r)^n - 1] / r
+                    yearlyInvestmentValue = monthlySavings * (Math.pow(1 + monthlyRate, 12) - 1) / monthlyRate;
+                }
+                
+                portfolioValue = (portfolioValue * (1 + returnRate)) + yearlyInvestmentValue;
                 
                 const grossOnetimeGoalExpenses = totalOnetimeGoalExpenses / (1 - taxRate);
                 const grossRecurringGoalExpenses = totalRecurringGoalExpenses / (1 - taxRate);
@@ -297,15 +315,6 @@
                 portfolioValue -= grossRecurringGoalExpenses;
             } else {
                 // Retirement phase
-                if (portfolioValue <= 0) {
-                    // Money ran out
-                    return {
-                        success: false,
-                        moneyRunsOutAge: currentAgeInYear,
-                        portfolioAtRetirement: null
-                    };
-                }
-                
                 const netMonthlyExpensesThisYear = futureMonthlyExpensesAtRetirement * Math.pow(1 + inflationRate, yearsIntoRetirement);
                 const netAnnualExpensesThisYear = netMonthlyExpensesThisYear * 12;
                 
@@ -314,14 +323,22 @@
                 const grossRecurringGoalExpenses = totalRecurringGoalExpenses / (1 - taxRate);
                 
                 const totalNeededWithdrawal = grossAnnualExpenses + grossOnetimeGoalExpenses + grossRecurringGoalExpenses;
-                const maxAvailableAfterReturns = portfolioValue * (1 + postRetirementReturn);
                 
-                let actualTotalWithdrawal = totalNeededWithdrawal;
-                if (totalNeededWithdrawal > maxAvailableAfterReturns) {
-                    actualTotalWithdrawal = maxAvailableAfterReturns;
+                // Apply returns first
+                portfolioValue = portfolioValue * (1 + postRetirementReturn);
+                
+                // Check if we can cover this year's expenses
+                if (portfolioValue < totalNeededWithdrawal) {
+                    // Money runs out this year
+                    return {
+                        success: false,
+                        moneyRunsOutAge: currentAgeInYear,
+                        portfolioAtRetirement: null
+                    };
                 }
                 
-                portfolioValue = (portfolioValue * (1 + postRetirementReturn)) - actualTotalWithdrawal;
+                // Withdraw expenses
+                portfolioValue -= totalNeededWithdrawal;
             }
             
             // Store portfolio at retirement
@@ -341,37 +358,72 @@
 
     // Binary search to find required monthly savings
     function findRequiredMonthlySavings(goals, params) {
-        let low = 0;
-        let high = 10000000; // 1 crore max
-        let bestSavings = high;
-        const tolerance = 1000; // ₹1000 tolerance
-        
-        // First check if even max savings is enough
-        const maxResult = simulateRetirementWithSavings(goals, params, high);
-        if (!maxResult.success) {
-            // Even max savings isn't enough - goals are unrealistic
-            return high;
-        }
-        
-        // Binary search for minimum required savings
-        let iterations = 0;
-        while (low <= high && iterations < 30) {
-            iterations++;
-            const mid = Math.floor((low + high) / 2);
-            const result = simulateRetirementWithSavings(goals, params, mid);
+            // Currency-aware settings
+            const currentCurrency = window.currentCurrency || 'INR';
+            const isUSD = currentCurrency === 'USD';
             
-            if (result.success) {
-                // This amount works, try lower
-                bestSavings = mid;
-                high = mid - tolerance;
-            } else {
-                // This amount doesn't work, need more
-                low = mid + tolerance;
+            let low = 0;
+            let high = isUSD ? 100000 : 10000000; // $100k max for USD, ₹1 crore for INR
+            let bestSavings = high;
+
+            // First check if even max savings is enough
+            const maxResult = simulateRetirementWithSavings(goals, params, high);
+            if (!maxResult.success) {
+                // Even max savings isn't enough - goals are unrealistic
+                return high;
             }
+
+            // Binary search for minimum required savings
+            let iterations = 0;
+            const maxIterations = 100;
+
+            while (low <= high && iterations < maxIterations) {
+                iterations++;
+                const mid = Math.floor((low + high) / 2);
+                const result = simulateRetirementWithSavings(goals, params, mid);
+
+                if (result.success) {
+                    // This amount works, try lower
+                    bestSavings = mid;
+                    high = mid - 1;
+                } else {
+                    // This amount doesn't work, need more
+                    low = mid + 1;
+                }
+
+                // Early exit if we've converged
+                if (high - low <= 0) {
+                    break;
+                }
+            }
+
+            // Fine-tuning: try to reduce by 1 rupee/dollar at a time
+            // This ensures we find the absolute minimum
+            const maxLimit = isUSD ? 100000 : 10000000;
+            
+            // First make sure bestSavings works
+            while (bestSavings <= maxLimit && !simulateRetirementWithSavings(goals, params, bestSavings).success) {
+                bestSavings += 1;
+            }
+            
+            // Then try to reduce it as much as possible
+            let testValue = bestSavings - 1;
+            let consecutiveFailures = 0;
+            const maxConsecutiveFailures = 10; // Stop after 10 consecutive failures
+            
+            while (testValue >= 0 && consecutiveFailures < maxConsecutiveFailures) {
+                if (simulateRetirementWithSavings(goals, params, testValue).success) {
+                    bestSavings = testValue;
+                    testValue -= 1;
+                    consecutiveFailures = 0; // Reset counter on success
+                } else {
+                    consecutiveFailures++;
+                    testValue -= 1;
+                }
+            }
+
+            return bestSavings;
         }
-        
-        return bestSavings;
-    }
 
     // Retirement Calculator
     window.calculateRetirement = function() {
