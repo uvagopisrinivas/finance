@@ -695,8 +695,11 @@
             let displayAccumulatedCorpus = actualCorpusAtRetirement;
             let displayTotalCorpusNeeded = actualTotalCorpusNeeded;
             
-            if (tableResults && tableResults.moneyRunsOut && tableResults.moneyRunsOutAge < lifeExpectancy) {
-                // Money runs out BEFORE life expectancy - this is bad
+            // Check if money runs out significantly before life expectancy (more than 1 year early)
+            const yearsShortOfLifeExpectancy = tableResults.moneyRunsOut ? (lifeExpectancy - tableResults.moneyRunsOutAge) : 0;
+            
+            if (tableResults && tableResults.moneyRunsOut && yearsShortOfLifeExpectancy > 1) {
+                // Money runs out MORE than 1 year before life expectancy - this is a problem
                 displaySurplus = 0; // No surplus if money runs out
                 
                 // Use binary search to find the ACTUAL required monthly savings
@@ -739,8 +742,30 @@
                 displayTotalCorpusNeeded = corpusWithRequiredSavings;
                 displayAccumulatedCorpus = actualCorpusAtRetirement; // Keep actual accumulated
                 
+            } else if (tableResults && tableResults.moneyRunsOut && yearsShortOfLifeExpectancy <= 1) {
+                // Money runs out within 1 year of life expectancy - this is acceptable!
+                // Treat as "close enough" - show minimal shortfall instead of triggering binary search
+                console.log(`Money runs out at age ${tableResults.moneyRunsOutAge}, only ${yearsShortOfLifeExpectancy} year(s) short - treating as acceptable`);
+                
+                // Calculate a small additional savings needed (proportional to years short)
+                const avgAnnualWithdrawal = corpusNeededForRetirementPhase / yearsInRetirement;
+                const smallShortfall = avgAnnualWithdrawal * yearsShortOfLifeExpectancy;
+                
+                // Convert to additional monthly savings needed
+                const monthlyReturn = Math.pow(1 + returnRate, 1 / 12) - 1;
+                const totalMonths = yearsToRetirement * 12;
+                const sipFactor = totalMonths > 0 && monthlyReturn > 0 
+                    ? (Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn 
+                    : 0;
+                
+                const additionalMonthlySavings = sipFactor > 0 ? smallShortfall / sipFactor : 0;
+                displayRequiredSavings = monthlySavings + additionalMonthlySavings;
+                
+                // Keep other values as calculated
+                displaySurplus = 0; // Small shortfall, show as 0 surplus
+                
             } else if (tableResults && tableResults.moneyRunsOut && tableResults.moneyRunsOutAge >= lifeExpectancy) {
-                // Money lasts until life expectancy - this is good!
+                // Money lasts until life expectancy or beyond - this is good!
                 // Surplus remains as calculated: actualCorpusAtRetirement - actualTotalCorpusNeeded
                 // (displaySurplus already has the correct value from actualSurplus)
             }
@@ -762,8 +787,8 @@
             const surplusElement = document.getElementById('retirementSurplus');
             const surplusLabel = surplusElement.parentElement.querySelector('.detail-label');
             
-            if (tableResults && tableResults.moneyRunsOut && tableResults.moneyRunsOutAge < lifeExpectancy) {
-                // Money runs out BEFORE life expectancy - show warning
+            if (tableResults && tableResults.moneyRunsOut && yearsShortOfLifeExpectancy > 1) {
+                // Money runs out MORE than 1 year before life expectancy - show warning
                 
                 // 1. Total Corpus Needed - Orange
                 corpusNeededLabel.textContent = `📊 Total Corpus Needed by ${targetRetirementAge}`;
@@ -791,6 +816,48 @@
                 surplusElement.parentElement.classList.remove('highlight');
                 
                 // 5. Hide Legacy Amount (money runs out before death)
+                const legacyItem = document.querySelector('.legacy-item');
+                if (legacyItem) {
+                    legacyItem.style.display = 'none';
+                }
+                
+            } else if (tableResults && tableResults.moneyRunsOut && yearsShortOfLifeExpectancy <= 1) {
+                // Money runs out within 1 year of life expectancy - show as "close to goal"
+                
+                // 1. Total Corpus Needed - Green (close enough)
+                corpusNeededLabel.textContent = `📊 Total Corpus Needed by ${targetRetirementAge}`;
+                corpusNeededElement.textContent = formatCurrencyReadable(displayTotalCorpusNeeded);
+                corpusNeededElement.style.color = 'var(--color-success)';
+                corpusNeededElement.parentElement.classList.add('highlight');
+                
+                // 2. Accumulated Corpus - Green (close enough)
+                accumulatedLabel.textContent = `📈 Accumulated Corpus by ${targetRetirementAge}`;
+                accumulatedElement.textContent = formatCurrencyReadable(displayAccumulatedCorpus);
+                accumulatedElement.style.color = 'var(--color-success)';
+                accumulatedElement.parentElement.classList.remove('highlight');
+                
+                // 3. Required Monthly Savings - Show small additional amount needed
+                requiredSavingsLabel.textContent = `💳 Required Monthly Savings by ${targetRetirementAge}`;
+                const additionalNeeded = displayRequiredSavings - monthlySavings;
+                if (additionalNeeded > 0 && additionalNeeded < monthlySavings * 0.1) {
+                    // Less than 10% more needed - show in orange
+                    requiredSavingsElement.textContent = formatCurrencyReadable(displayRequiredSavings);
+                    requiredSavingsElement.style.color = 'var(--color-warning)';
+                    requiredSavingsElement.title = `Add ₹${formatNumber(Math.round(additionalNeeded))} more per month to last full ${lifeExpectancy} years`;
+                } else {
+                    requiredSavingsElement.textContent = formatCurrencyReadable(displayRequiredSavings);
+                    requiredSavingsElement.style.color = 'var(--color-success)';
+                    requiredSavingsElement.title = 'Very close to goal!';
+                }
+                requiredSavingsElement.parentElement.classList.add('highlight');
+                
+                // 4. Show "Nearly There" message
+                surplusLabel.textContent = `✅ Status`;
+                surplusElement.textContent = `Nearly There! (Lasts ${tableResults.moneyRunsOutAge} yrs)`;
+                surplusElement.style.color = 'var(--color-warning)';
+                surplusElement.parentElement.classList.remove('highlight');
+                
+                // 5. Hide Legacy Amount (money runs out just before death)
                 const legacyItem = document.querySelector('.legacy-item');
                 if (legacyItem) {
                     legacyItem.style.display = 'none';
@@ -938,7 +1005,7 @@
                         ${recurringGoals.map(goal => {
                             const startAge = currentAge + goal.startYear;
                             const endAge = currentAge + goal.endYear - 1; // endYear is exclusive, so subtract 1 for display
-                            const futureMonthlyStart = goal.monthlyAmount * Math.pow(1 + params.inflationRate, goal.startYear);
+                            const futureMonthlyStart = goal.monthlyAmount * Math.pow(1 + params.inflationRate, goal.startYear - 1); // Inflate to END of working years, not start of retirement
                             const yearsOfIncrease = goal.duration - 1;
                             const futureMonthlyEnd = futureMonthlyStart * Math.pow(1 + goal.annualIncrease, yearsOfIncrease);
                             return `
@@ -1197,13 +1264,15 @@
         
         // Find the actual corpus at retirement (portfolio value at retirement age)
         let corpusAtRetirement = params.totalAccumulatedCorpus; // Default to theoretical value
-        const retirementYearIndex = yearlyData.findIndex(row => row.age === params.retirementAge);
-        if (retirementYearIndex >= 0) {
-            // Get portfolio value at the END of the year before retirement (or start of retirement year)
-            if (retirementYearIndex > 0) {
-                corpusAtRetirement = yearlyData[retirementYearIndex - 1].portfolioValue;
-            } else {
-                corpusAtRetirement = yearlyData[retirementYearIndex].portfolioValue;
+        const retirementYearIndex = yearlyData.findIndex(row => row.age === params.retirementAge + 1);
+        if (retirementYearIndex >= 0 && retirementYearIndex > 0) {
+            // Get portfolio value at the END of the last working year (start of retirement)
+            corpusAtRetirement = yearlyData[retirementYearIndex - 1].portfolioValue;
+        } else {
+            // Fallback: find the last accumulation year
+            const lastAccumulationYear = yearlyData.findIndex(row => row.phase === 'retirement');
+            if (lastAccumulationYear > 0) {
+                corpusAtRetirement = yearlyData[lastAccumulationYear - 1].portfolioValue;
             }
         }
 
