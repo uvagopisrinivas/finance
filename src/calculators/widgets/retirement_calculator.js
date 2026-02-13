@@ -17,16 +17,16 @@
         
         if (currentCurrency === 'USD') {
             return [
-                { name: "Monthly Living Expenses", amount: 3000, years: yearsToRetirement, duration: yearsInRetirement, annualIncrease: 3, goalType: 'recurring', isLivingExpense: true },
+                { name: "Monthly Living Expenses", amount: 3000, years: yearsToRetirement, duration: yearsInRetirement, annualIncrease: 0, goalType: 'recurring', isLivingExpense: true },
                 { name: "Child's Wedding", amount: 50000, years: 25, goalType: 'onetime' },
-                { name: "Child's Education", amount: 2000, years: 5, duration: 20, annualIncrease: 10, goalType: 'recurring' },
+                { name: "Child's Education", amount: 2000, years: 5, duration: 20, annualIncrease: 0, goalType: 'recurring' },
                 { name: "Dream House", amount: 500000, years: 10, goalType: 'onetime' }
             ];
         } else {
             return [
-                { name: "Monthly Living Expenses", amount: 90000, years: yearsToRetirement, duration: yearsInRetirement, annualIncrease: 3, goalType: 'recurring', isLivingExpense: true },
+                { name: "Monthly Living Expenses", amount: 90000, years: yearsToRetirement, duration: yearsInRetirement, annualIncrease: 0, goalType: 'recurring', isLivingExpense: true },
                 { name: "Child's Wedding", amount: 10000000, years: 25, goalType: 'onetime' },
-                { name: "Child's Education", amount: 8000, years: 5, duration: 20, annualIncrease: 10, goalType: 'recurring' },
+                { name: "Child's Education", amount: 8000, years: 5, duration: 20, annualIncrease: 0, goalType: 'recurring' },
                 { name: "Dream House", amount: 20000000, years: 10, goalType: 'onetime' }
             ];
         }
@@ -60,10 +60,10 @@
     window.addNewGoal = function() {
         const currentCurrency = window.currentCurrency || 'INR';
         const defaultAmount = currentCurrency === 'USD' ? 20000 : 500000;
-        addGoalItem('', defaultAmount, 10, 'onetime', 10, 5);
+        addGoalItem('', defaultAmount, 10, 'onetime', 10, 0);
     };
 
-    function addGoalItem(name = '', amount = 500000, years = 10, goalType = 'onetime', duration = 10, annualIncrease = 5) {
+    function addGoalItem(name = '', amount = 500000, years = 10, goalType = 'onetime', duration = 10, annualIncrease = 0) {
         goalCounter++;
         const container = document.getElementById('goalsContainer');
         
@@ -95,9 +95,6 @@
                 </td>
                 <td class="goal-cell recurring-only" style="display: ${goalType === 'recurring' ? 'table-cell' : 'none'};">
                     <input type="number" class="form-input goal-duration-input" value="${duration}" min="1" max="50" placeholder="Duration">
-                </td>
-                <td class="goal-cell recurring-only" style="display: ${goalType === 'recurring' ? 'table-cell' : 'none'};">
-                    <input type="number" class="form-input goal-increase-input" value="${annualIncrease}" min="0" max="20" step="0.5" placeholder="Increase %">
                 </td>
             </tr>
         `;
@@ -152,11 +149,9 @@
             if (name.toLowerCase().includes('living') || name.toLowerCase().includes('expense')) {
                 const startsInput = row.querySelector('.goal-years-input');
                 const durationInput = row.querySelector('.goal-duration-input');
-                const increaseInput = row.querySelector('.goal-increase-input');
                 
                 if (startsInput) startsInput.value = yearsToRetirement;
                 if (durationInput) durationInput.value = yearsInRetirement;
-                // Keep the user's increase percentage - don't override it
             }
         });
     };
@@ -272,8 +267,8 @@
         
         for (let year = 1; year <= totalYears; year++) {
             const currentAgeInYear = params.currentAge + year;
-            const isRetired = currentAgeInYear >= params.retirementAge;
-            const yearsIntoRetirement = Math.max(0, currentAgeInYear - params.retirementAge);
+            const isRetired = currentAgeInYear > params.retirementAge;
+            const yearsIntoRetirement = Math.max(0, currentAgeInYear - params.retirementAge - 1);
             
             // One-time goals this year
             const onetimeGoalsThisYear = onetimeGoals.filter(goal => goal.years === year);
@@ -437,22 +432,22 @@
             goalElements.forEach(goalElement => {
                 const name = goalElement.querySelector('.goal-name-input').value;
                 const amount = parseFloat(goalElement.querySelector('.goal-amount-input').value.replace(/,/g, ''));
-                const years = parseInt(goalElement.querySelector('.goal-years-input').value);
+                const yearsInput = parseInt(goalElement.querySelector('.goal-years-input').value);
                 const goalTiming = goalElement.getAttribute('data-goal-timing') || 'onetime';
                 
-                console.log('Processing goal:', { name, amount, years, goalTiming });
+                console.log('Processing goal:', { name, amount, yearsInput, goalTiming });
                 
                 if (name && amount > 0) {
                     if (goalTiming === 'recurring') {
                         let duration = parseInt(goalElement.querySelector('.goal-duration-input').value) || 10;
-                        let annualIncrease = parseFloat(goalElement.querySelector('.goal-increase-input').value) || 0;
-                        let startYear = years;
+                        let annualIncrease = 0; // No additional increase - inflation is already applied
+                        // Add 1 to convert "starts in X years" to actual year number
+                        let startYear = yearsInput + 1;
                         
-                        // Special handling for living expenses - starts at retirement
+                        // Special handling for living expenses - starts at retirement (year after retirement age)
                         if (name.toLowerCase().includes('living') || name.toLowerCase().includes('expense')) {
-                            startYear = yearsToRetirement;
+                            startYear = yearsToRetirement + 1;
                             duration = yearsInRetirement;
-                            // Keep the user's annualIncrease value - it will be applied on top of inflation
                         }
                         
                         // For recurring goals, store monthly amount and duration
@@ -467,8 +462,10 @@
                             isLivingExpense: name.toLowerCase().includes('living') || name.toLowerCase().includes('expense')
                         });
                     } else {
-                        if (years > 0) {
-                            // One-time goal - adjust for inflation
+                        if (yearsInput > 0) {
+                            // One-time goal - add 1 to convert "starts in X years" to actual year number
+                            const years = yearsInput + 1;
+                            // Adjust for inflation
                             const futureValue = amount * Math.pow(1 + inflationRate, years);
                             goals.push({
                                 name,
@@ -487,7 +484,7 @@
             // Calculate corpus needed at retirement using simulation logic
             // We need to figure out: if we had X corpus at retirement, would it last until life expectancy?
             
-            const postRetirementReturn = Math.max(returnRate - 0.02, 0.06); // Conservative return in retirement
+            const postRetirementReturn = returnRate; // Use same return rate as accumulation phase
             
             // Calculate corpus needed for ALL retirement phase expenses (goals + living)
             let corpusNeededForRetirementPhase = 0;
@@ -943,7 +940,7 @@
                         `}).join('')}
                         ${recurringGoals.map(goal => {
                             const startAge = currentAge + goal.startYear;
-                            const endAge = currentAge + goal.endYear;
+                            const endAge = currentAge + goal.endYear - 1; // endYear is exclusive, so subtract 1 for display
                             const futureMonthlyStart = goal.monthlyAmount * Math.pow(1 + params.inflationRate, goal.startYear);
                             const yearsOfIncrease = goal.duration - 1;
                             const futureMonthlyEnd = futureMonthlyStart * Math.pow(1 + goal.annualIncrease, yearsOfIncrease);
@@ -953,7 +950,7 @@
                                 <td class="table__year"><span class="badge badge--warning">Recurring</span></td>
                                 <td class="table__year">Age ${startAge}-${endAge}<br><small>(${goal.duration} years)</small></td>
                                 <td class="table__balance">${formatCurrency(futureMonthlyStart)}/mo<br><small>to ${formatCurrency(futureMonthlyEnd)}/mo</small></td>
-                                <td class="table__percent">Today: ${formatCurrency(goal.monthlyAmount)}/mo<br><small>+${(goal.annualIncrease * 100).toFixed(1)}% yearly</small></td>
+                                <td class="table__percent">Today: ${formatCurrency(goal.monthlyAmount)}/mo<br><small>Adjusted for inflation</small></td>
                             </tr>
                         `}).join('')}
                     </tbody>
@@ -1403,11 +1400,11 @@
                                     row.activeRecurringGoals.filter(g => !g.isLivingExpense).forEach(g => {
                                         let icon = '💰';
                                         const nameLower = g.name.toLowerCase();
-                                        if (nameLower.includes('education')) icon = '📚';
-                                        else if (nameLower.includes('health')) icon = '🏥';
-                                        else if (nameLower.includes('travel')) icon = '✈️';
-                                        else if (nameLower.includes('car')) icon = '🚗';
-                                        else if (nameLower.includes('insurance')) icon = '🛡️';
+                                        if (nameLower.includes('education') || nameLower.includes('edu') || nameLower.includes('school') || nameLower.includes('studies') || nameLower.includes('college')) icon = '📚';
+                                        else if (nameLower.includes('insurance') || nameLower.includes('policy')) icon = '🛡️';
+                                        else if (nameLower.includes('health') || nameLower.includes('medical') || nameLower.includes('hospital')) icon = '🏥';
+                                        else if (nameLower.includes('travel') || nameLower.includes('vacation') || nameLower.includes('trip')) icon = '✈️';
+                                        else if (nameLower.includes('car') || nameLower.includes('vehicle') || nameLower.includes('auto')) icon = '�';
                                         
                                         withdrawalItems.push({
                                             label: `${icon} ${g.name}`,
@@ -1422,12 +1419,13 @@
                                     row.onetimeGoalsThisYear.forEach(goal => {
                                         let icon = '🎯';
                                         const nameLower = goal.name.toLowerCase();
-                                        if (nameLower.includes('wedding')) icon = '💍';
-                                        else if (nameLower.includes('house')) icon = '🏡';
-                                        else if (nameLower.includes('car')) icon = '🚗';
-                                        else if (nameLower.includes('business')) icon = '💼';
-                                        else if (nameLower.includes('travel')) icon = '✈️';
-                                        else if (nameLower.includes('education')) icon = '🎓';
+                                        if (nameLower.includes('wedding') || nameLower.includes('marriage') || nameLower.includes('shaadi')) icon = '💍';
+                                        else if (nameLower.includes('house') || nameLower.includes('home') || nameLower.includes('property') || nameLower.includes('flat')) icon = '🏡';
+                                        else if (nameLower.includes('car') || nameLower.includes('vehicle') || nameLower.includes('auto')) icon = '🚗';
+                                        else if (nameLower.includes('business') || nameLower.includes('startup') || nameLower.includes('venture')) icon = '💼';
+                                        else if (nameLower.includes('travel') || nameLower.includes('vacation') || nameLower.includes('trip') || nameLower.includes('tour')) icon = '✈️';
+                                        else if (nameLower.includes('education') || nameLower.includes('edu') || nameLower.includes('school') || nameLower.includes('college')) icon = '🎓';
+                                        else if (nameLower.includes('cash') || nameLower.includes('emergency') || nameLower.includes('fund') || nameLower.includes('reserve')) icon = '💰';
                                         
                                         withdrawalItems.push({
                                             label: `${icon} ${goal.name}`,
