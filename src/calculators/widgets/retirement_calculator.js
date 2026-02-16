@@ -709,43 +709,44 @@
             // Get actual corpus at retirement from the table (after paying for goals during accumulation)
             const actualCorpusAtRetirement = tableResults.corpusAtRetirement || totalAccumulatedCorpus;
             
-            // If money runs out, we need to recalculate the ACTUAL total corpus needed
-            let actualTotalCorpusNeeded = totalCorpusNeeded;
+            // Calculate the ACTUAL minimum corpus needed using binary search
+            // Do this ONCE to avoid multiple expensive calculations
+            console.log('=== Calculating actual corpus needed via binary search ===');
+            const searchParams = {
+                currentCorpus,
+                returnRate,
+                postRetirementReturn,
+                inflationRate,
+                taxRate,
+                yearsToRetirement,
+                yearsInRetirement,
+                currentAge,
+                retirementAge: targetRetirementAge,
+                lifeExpectancy,
+                monthlyExpenses
+            };
             
-            if (tableResults && tableResults.moneyRunsOut) {
-                // Money runs out, so our calculation of totalCorpusNeeded was wrong
-                // We need to calculate: what corpus at retirement would prevent money from running out?
-                
-                // The simulation shows money runs out, which means we need more corpus
-                // Calculate the shortfall from the simulation
-                const yearsShort = lifeExpectancy - tableResults.moneyRunsOutAge;
-                
-                // Estimate how much more corpus we need at retirement
-                // Use the average annual withdrawal rate from the simulation
-                const avgAnnualWithdrawal = corpusNeededForRetirementPhase / yearsInRetirement;
-                const additionalCorpusNeeded = avgAnnualWithdrawal * yearsShort * 1.3; // 30% buffer
-                
-                // The actual total corpus needed at retirement
-                actualTotalCorpusNeeded = actualCorpusAtRetirement + additionalCorpusNeeded;
-                
-                console.log('Money runs out - recalculating corpus needed:', {
-                    originalTotalCorpusNeeded: totalCorpusNeeded,
-                    actualCorpusAtRetirement,
-                    yearsShort,
-                    avgAnnualWithdrawal,
-                    additionalCorpusNeeded,
-                    actualTotalCorpusNeeded
-                });
-            }
+            const minRequiredMonthlySavings = findRequiredMonthlySavings(goals, searchParams);
+            console.log('Binary search result - min required monthly savings:', minRequiredMonthlySavings);
+            
+            // Calculate what corpus that would give us (reuse monthlyReturn and totalMonths from above)
+            const futureValueOfMinSavings = minRequiredMonthlySavings > 0 
+                ? minRequiredMonthlySavings * ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn) * (1 + monthlyReturn)
+                : 0;
+            
+            const actualTotalCorpusNeeded = futureValueOfCurrentCorpus + futureValueOfMinSavings;
+            console.log('Actual total corpus needed:', actualTotalCorpusNeeded);
+            console.log('Actual corpus at retirement:', actualCorpusAtRetirement);
+            console.log('Difference (surplus/shortfall):', actualCorpusAtRetirement - actualTotalCorpusNeeded);
             
             // Recalculate surplus based on actual corpus needed
             const actualSurplus = actualCorpusAtRetirement - actualTotalCorpusNeeded;
 
             // Adjust surplus and required savings based on whether money runs out
             let displaySurplus = actualSurplus;
-            let displayRequiredSavings = requiredMonthlySavings;
+            let displayRequiredSavings = minRequiredMonthlySavings; // Use the pre-calculated value
             let displayAccumulatedCorpus = actualCorpusAtRetirement;
-            let displayTotalCorpusNeeded = actualTotalCorpusNeeded;
+            let displayTotalCorpusNeeded = actualTotalCorpusNeeded; // Use the pre-calculated value
             
             // Check if money runs out significantly before life expectancy (more than 1 year early)
             const yearsShortOfLifeExpectancy = tableResults.moneyRunsOut ? (lifeExpectancy - tableResults.moneyRunsOutAge) : 0;
@@ -753,46 +754,8 @@
             if (tableResults && tableResults.moneyRunsOut && yearsShortOfLifeExpectancy > 1) {
                 // Money runs out MORE than 1 year before life expectancy - this is a problem
                 displaySurplus = 0; // No surplus if money runs out
-                
-                // Use binary search to find the ACTUAL required monthly savings
-                console.log('Money runs out - using binary search to find required savings...');
-                
-                const searchParams = {
-                    currentCorpus,
-                    returnRate,
-                    postRetirementReturn,
-                    inflationRate,
-                    taxRate,
-                    yearsToRetirement,
-                    yearsInRetirement,
-                    currentAge,
-                    retirementAge: targetRetirementAge,
-                    lifeExpectancy,
-                    monthlyExpenses
-                };
-                
-                displayRequiredSavings = findRequiredMonthlySavings(goals, searchParams);
-                
-                console.log('Binary search result:', {
-                    currentSavings: monthlySavings,
-                    requiredSavings: displayRequiredSavings,
-                    difference: displayRequiredSavings - monthlySavings
-                });
-                
-                // Calculate what corpus WOULD be accumulated with required savings
-                const monthlyReturn = Math.pow(1 + returnRate, 1 / 12) - 1;
-                const totalMonths = yearsToRetirement * 12;
-                const futureValueOfRequiredSavings = displayRequiredSavings > 0 
-                    ? displayRequiredSavings * ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn)
-                    : 0;
-                
-                const corpusWithRequiredSavings = futureValueOfCurrentCorpus + futureValueOfRequiredSavings;
-                
-                // Display values:
-                // - Total Corpus Needed = what you'd have with required savings (this would last until 70)
-                // - Accumulated Corpus = what you actually have with current savings (this runs out early)
-                displayTotalCorpusNeeded = corpusWithRequiredSavings;
-                displayAccumulatedCorpus = actualCorpusAtRetirement; // Keep actual accumulated
+                console.log('Money runs out at age', tableResults.moneyRunsOutAge, '- showing shortfall');
+                // displayRequiredSavings and displayTotalCorpusNeeded already set from binary search above
                 
             } else if (tableResults && tableResults.moneyRunsOut && yearsShortOfLifeExpectancy <= 1) {
                 // Money runs out within 1 year of life expectancy - this is acceptable!
@@ -803,9 +766,7 @@
                 const avgAnnualWithdrawal = corpusNeededForRetirementPhase / yearsInRetirement;
                 const smallShortfall = avgAnnualWithdrawal * yearsShortOfLifeExpectancy;
                 
-                // Convert to additional monthly savings needed
-                const monthlyReturn = Math.pow(1 + returnRate, 1 / 12) - 1;
-                const totalMonths = yearsToRetirement * 12;
+                // Convert to additional monthly savings needed (reuse monthlyReturn and totalMonths)
                 const sipFactor = totalMonths > 0 && monthlyReturn > 0 
                     ? (Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn 
                     : 0;
@@ -816,10 +777,8 @@
                 // Keep other values as calculated
                 displaySurplus = 0; // Small shortfall, show as 0 surplus
                 
-            } else if (tableResults && tableResults.moneyRunsOut && tableResults.moneyRunsOutAge >= lifeExpectancy) {
-                // Money lasts until life expectancy or beyond - this is good!
-                // Surplus remains as calculated: actualCorpusAtRetirement - actualTotalCorpusNeeded
-                // (displaySurplus already has the correct value from actualSurplus)
+            } else {
+                // Money lasts or doesn't run out - values already calculated from binary search above
             }
             
             // Get legacy amount (money left at death)
@@ -1026,6 +985,9 @@
         const recurringGoals = goals.filter(g => g.goalTiming === 'recurring');
         
         // Create goals breakdown table
+        const currentCurrency = window.currentCurrency || 'INR';
+        const currencySymbol = currentCurrency === 'USD' ? '$' : '₹';
+        
         const goalsTableHtml = `
             <div class="table-container">
                 <h4 style="margin: var(--space-lg) 0 var(--space-md) 0; color: var(--color-text-primary);">
@@ -1037,7 +999,7 @@
                             <th><i class="fas fa-tag"></i> Goal</th>
                             <th><i class="fas fa-clock"></i> Type</th>
                             <th><i class="fas fa-calendar-alt"></i> Timeline</th>
-                            <th><i class="fas fa-rupee-sign"></i> Amount</th>
+                            <th>💰 Amount (${currencySymbol})</th>
                             <th><i class="fas fa-chart-line"></i> Details</th>
                         </tr>
                     </thead>
@@ -1342,9 +1304,7 @@
                             <div class="cashflow-grid__cell cashflow-grid__cell--tax">TAX ON WITHDRAWALS</div>
                             <div class="cashflow-grid__cell cashflow-grid__cell--balance">PORTFOLIO END</div>
                         </div>
-                    </div>
                     <div class="cashflow-grid-scroll">
-                        <div class="cashflow-grid">
                             ${yearlyData.map((row, index) => {
                             // Use pre-calculated values from row data
                             let portfolioStart, totalWithdrawals, totalTax, portfolioEnd;
@@ -1748,7 +1708,7 @@
                                 <div class="cashflow-grid__cell cashflow-grid__cell--balance">${portfolioEndDisplay}</div>
                             </div>
                         `}).join('')}
-                        </div>
+                    </div>
                     </div>
                 </div>
             </div>

@@ -194,7 +194,7 @@
         const symbol = config.symbol;
         
         // Update all labels that contain currency symbols
-        document.querySelectorAll('label, .form-hint, .summary-label').forEach(element => {
+        document.querySelectorAll('label, .form-hint, .summary-label, th').forEach(element => {
             let text = element.textContent;
             // Replace ₹ with current symbol
             if (text.includes('₹')) {

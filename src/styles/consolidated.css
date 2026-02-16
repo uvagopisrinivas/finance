@@ -5075,13 +5075,17 @@ input.form-input[type="text"] {
 .cashflow-grid-wrapper {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 500px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cashflow-grid {
   width: 100%;
   display: grid;
   grid-template-columns: 6% 14% 26% 24% 30%;
+  min-width: 100%;
 }
 
 .cashflow-grid__header {
@@ -5089,7 +5093,7 @@ input.form-input[type="text"] {
 }
 
 .cashflow-grid__header .cashflow-grid__cell {
-  background: var(--color-bg-secondary);
+  background: var(--color-table-header);
   font-weight: var(--font-weight-bold);
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -5097,6 +5101,9 @@ input.form-input[type="text"] {
   padding: var(--space-md) var(--space-sm);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   border-right: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .cashflow-grid__header .cashflow-grid__cell:last-child {
@@ -5105,14 +5112,16 @@ input.form-input[type="text"] {
 
 /* Scrollable body container */
 .cashflow-grid-scroll {
-  max-height: 400px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: contents;
+}
+
+.table-container:not(.has-scroll) .cashflow-grid-wrapper {
+  max-height: none;
+  overflow-y: visible;
 }
 
 .table-container:not(.has-scroll) .cashflow-grid-scroll {
-  max-height: none;
-  overflow: visible;
+  display: contents;
 }
 
 .cashflow-grid__body {
@@ -5231,21 +5240,42 @@ input.form-input[type="text"] {
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
+  .cashflow-grid-wrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 450px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  
+  .table-container:not(.has-scroll) .cashflow-grid-wrapper {
+    max-height: 450px;
+    overflow-y: auto;
+  }
+  
   .cashflow-grid {
     font-size: 0.75rem;
+    min-width: 650px;
+    width: 650px;
+    grid-template-columns: 50px 90px 170px 150px 190px;
   }
   
   .cashflow-grid__cell {
     padding: var(--space-xs);
   }
   
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .cashflow-grid__header .cashflow-grid__cell {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .table-container:has(.cashflow-grid-wrapper) {
+    overflow: visible;
   }
   
   .cashflow-grid-scroll {
-    max-height: 350px;
+    display: contents;
   }
   
   .cashflow-grid-scroll::-webkit-scrollbar {
