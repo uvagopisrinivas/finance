@@ -3841,6 +3841,8 @@ input.form-input[type="text"] {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
+  grid-auto-rows: auto; /* Allow rows to have independent heights */
+  align-items: start; /* Align items to the start instead of stretching */
 }
 
 .retirement-detail-item {
@@ -3881,6 +3883,28 @@ input.form-input[type="text"] {
 .retirement-detail-item.highlight .detail-value {
   color: var(--color-primary);
   font-size: var(--font-size-lg);
+}
+
+/* Special styling for savings panel with progress bar */
+.retirement-detail-item.has-progress {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-xs);
+  min-height: auto;
+  padding: var(--space-md);
+}
+
+.retirement-detail-item.has-progress > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Savings progress bar styling */
+.savings-progress {
+  width: 100%;
+  margin-top: var(--space-xs);
 }
 
 /* Mobile responsiveness for retirement results */

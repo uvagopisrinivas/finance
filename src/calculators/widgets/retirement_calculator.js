@@ -734,8 +734,22 @@
                 ? minRequiredMonthlySavings * ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn) * (1 + monthlyReturn)
                 : 0;
             
-            const actualTotalCorpusNeeded = futureValueOfCurrentCorpus + futureValueOfMinSavings;
-            console.log('Actual total corpus needed:', actualTotalCorpusNeeded);
+            // CRITICAL: To get the TRUE "Total Corpus Needed" (which should be constant),
+            // we need to calculate it as if starting from ZERO corpus
+            // This represents the total amount needed at retirement regardless of current corpus
+            const searchParamsZeroCorpus = {
+                ...searchParams,
+                currentCorpus: 0  // Start from zero to get the true total needed
+            };
+            
+            const minRequiredSavingsFromZero = findRequiredMonthlySavings(goals, searchParamsZeroCorpus);
+            const futureValueOfMinSavingsFromZero = minRequiredSavingsFromZero > 0 
+                ? minRequiredSavingsFromZero * ((Math.pow(1 + monthlyReturn, totalMonths) - 1) / monthlyReturn) * (1 + monthlyReturn)
+                : 0;
+            
+            // This is the TRUE total corpus needed - constant regardless of current corpus
+            const actualTotalCorpusNeeded = futureValueOfMinSavingsFromZero;
+            console.log('Actual total corpus needed (from zero):', actualTotalCorpusNeeded);
             console.log('Actual corpus at retirement:', actualCorpusAtRetirement);
             console.log('Difference (surplus/shortfall):', actualCorpusAtRetirement - actualTotalCorpusNeeded);
             
@@ -747,6 +761,10 @@
             let displayRequiredSavings = minRequiredMonthlySavings; // Use the pre-calculated value
             let displayAccumulatedCorpus = actualCorpusAtRetirement;
             let displayTotalCorpusNeeded = actualTotalCorpusNeeded; // Use the pre-calculated value
+            
+            // For progress bar: always use the baseline from zero corpus
+            // This gives users a consistent target to compare against
+            const baselineRequiredSavings = minRequiredSavingsFromZero;
             
             // Check if money runs out significantly before life expectancy (more than 1 year early)
             const yearsShortOfLifeExpectancy = tableResults.moneyRunsOut ? (lifeExpectancy - tableResults.moneyRunsOutAge) : 0;
@@ -820,6 +838,55 @@
                 requiredSavingsElement.title = `This is the monthly savings needed to last until age ${lifeExpectancy}`;
                 requiredSavingsElement.parentElement.classList.remove('highlight');
                 
+                // Add progress bar for money runs out case
+                let progressBarHtml = '';
+                if (monthlySavings > 0 && displayRequiredSavings > 0) {
+                    const percentage = Math.round((monthlySavings / displayRequiredSavings) * 100);
+                    const progressWidth = Math.min(percentage, 100);
+                    
+                    let progressColor, statusIcon;
+                    if (percentage >= 100) {
+                        progressColor = '#10b981';
+                        statusIcon = '✅';
+                    } else if (percentage >= 80) {
+                        progressColor = '#f59e0b';
+                        statusIcon = '⚠️';
+                    } else {
+                        progressColor = '#ef4444';
+                        statusIcon = '❌';
+                    }
+                    
+                    progressBarHtml = `
+                        <div style="margin-top: 6px; font-size: 0.75em; line-height: 1.2;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: ${progressWidth}%; height: 100%; background: ${progressColor}; transition: width 0.3s ease;"></div>
+                                </div>
+                                <span style="color: ${progressColor}; font-weight: 600; font-size: 0.9em;">${statusIcon} ${percentage}%</span>
+                            </div>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 0.85em; margin-top: 2px;">
+                                Saving: ${formatCurrencyReadable(monthlySavings)}/mo
+                            </div>
+                        </div>
+                    `;
+                    
+                    requiredSavingsElement.parentElement.classList.add('has-progress');
+                } else {
+                    requiredSavingsElement.parentElement.classList.remove('has-progress');
+                }
+                
+                const existingProgress = requiredSavingsElement.parentElement.querySelector('.savings-progress');
+                if (existingProgress) {
+                    existingProgress.remove();
+                }
+                
+                if (progressBarHtml) {
+                    const progressDiv = document.createElement('div');
+                    progressDiv.className = 'savings-progress';
+                    progressDiv.innerHTML = progressBarHtml;
+                    requiredSavingsElement.parentElement.appendChild(progressDiv);
+                }
+                
                 // 4. Money Runs Out - Red
                 surplusLabel.textContent = '⚠️ Money Runs Out';
                 surplusElement.textContent = `Age ${tableResults.moneyRunsOutAge}`;
@@ -890,19 +957,98 @@
                 accumulatedElement.parentElement.classList.remove('highlight');
                 
                 // 3. Required Monthly Savings
-                requiredSavingsLabel.textContent = `💳 Required Monthly Savings by ${targetRetirementAge}`;
+                requiredSavingsLabel.textContent = `💳 Min Monthly Savings by ${targetRetirementAge}`;
                 
-                // Simple logic: Show 0 if goal is met, otherwise show what's needed
-                if (displayRequiredSavings <= monthlySavings) {
-                    // Goal is met or exceeded
+                // Determine what to show based on whether user has enough corpus
+                if (minRequiredMonthlySavings === 0) {
+                    // User has enough corpus - show ₹0 (they don't need to save)
                     requiredSavingsElement.textContent = formatCurrencyReadable(0);
-                    requiredSavingsElement.style.color = 'var(--color-success)';
-                    requiredSavingsElement.title = 'Goal met! Money will last until life expectancy.';
                 } else {
-                    // Need to save more
-                    requiredSavingsElement.textContent = formatCurrencyReadable(displayRequiredSavings);
+                    // User needs to save - show what they actually need
+                    requiredSavingsElement.textContent = formatCurrencyReadable(minRequiredMonthlySavings);
+                }
+                
+                // Add progress bar if user has entered monthly savings
+                let progressBarHtml = '';
+                if (monthlySavings > 0 && displayRequiredSavings > 0) {
+                    // Compare user's savings to what they actually need
+                    const percentage = Math.round((monthlySavings / displayRequiredSavings) * 100);
+                    const progressWidth = Math.min(percentage, 100); // Cap at 100% for visual
+                    
+                    let progressColor, statusIcon;
+                    if (percentage >= 100) {
+                        progressColor = '#10b981'; // Green
+                        statusIcon = '✅';
+                    } else if (percentage >= 80) {
+                        progressColor = '#f59e0b'; // Orange
+                        statusIcon = '⚠️';
+                    } else {
+                        progressColor = '#ef4444'; // Red
+                        statusIcon = '❌';
+                    }
+                    
+                    progressBarHtml = `
+                        <div style="margin-top: 6px; font-size: 0.75em; line-height: 1.2;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: ${progressWidth}%; height: 100%; background: ${progressColor}; transition: width 0.3s ease;"></div>
+                                </div>
+                                <span style="color: ${progressColor}; font-weight: 600; font-size: 0.9em;">${statusIcon} ${percentage}%</span>
+                            </div>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 0.85em; margin-top: 2px;">
+                                Saving: ${formatCurrencyReadable(monthlySavings)}/mo
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add has-progress class to this panel only
+                    requiredSavingsElement.parentElement.classList.add('has-progress');
+                } else if (monthlySavings > 0 && displayRequiredSavings === 0) {
+                    // User has enough corpus - they don't need to save anything
+                    // Any savings they make is EXTRA, so show 100%+ green
+                    progressBarHtml = `
+                        <div style="margin-top: 6px; font-size: 0.75em; line-height: 1.2;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: 100%; height: 100%; background: #10b981; transition: width 0.3s ease;"></div>
+                                </div>
+                                <span style="color: #10b981; font-weight: 600; font-size: 0.9em;">✅ 100%+</span>
+                            </div>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 0.85em; margin-top: 2px;">
+                                Saving: ${formatCurrencyReadable(monthlySavings)}/mo (Extra!)
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add has-progress class to this panel only
+                    requiredSavingsElement.parentElement.classList.add('has-progress');
+                } else {
+                    // Remove has-progress class if no progress bar
+                    requiredSavingsElement.parentElement.classList.remove('has-progress');
+                }
+                
+                // Remove any existing progress bar
+                const existingProgress = requiredSavingsElement.parentElement.querySelector('.savings-progress');
+                if (existingProgress) {
+                    existingProgress.remove();
+                }
+                
+                // Add new progress bar if we have one
+                if (progressBarHtml) {
+                    const progressDiv = document.createElement('div');
+                    progressDiv.className = 'savings-progress';
+                    progressDiv.innerHTML = progressBarHtml;
+                    requiredSavingsElement.parentElement.appendChild(progressDiv);
+                }
+                
+                if (baselineRequiredSavings <= monthlySavings) {
+                    // Goal is met or exceeded - show in green
+                    requiredSavingsElement.style.color = 'var(--color-success)';
+                    requiredSavingsElement.title = `You're saving ₹${formatNumber(Math.round(monthlySavings))}/month, which exceeds the baseline of ₹${formatNumber(Math.round(baselineRequiredSavings))}/month. Goal met!`;
+                } else {
+                    // Need to save more - show in default color
                     requiredSavingsElement.style.color = '';
-                    requiredSavingsElement.title = '';
+                    requiredSavingsElement.title = `Baseline target: ₹${formatNumber(Math.round(baselineRequiredSavings))}/month (if starting from zero corpus)`;
                 }
                 requiredSavingsElement.parentElement.classList.add('highlight');
                 
