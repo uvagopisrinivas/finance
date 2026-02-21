@@ -1,0 +1,24 @@
+Contact: https://www.linkedin.com/in/uva-kondisetty-b74517131/
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://finance.uvagopisrinivas.com/.well-known/security.txt
+
+# Security Policy
+# If you discover a security vulnerability, please report it responsibly.
+# We appreciate your efforts to improve the security of our platform.
+
+# Scope
+# This security policy applies to:
+# - https://finance.uvagopisrinivas.com
+# - All subdomains and related services
+
+# Out of Scope
+# - Social engineering attacks
+# - Physical security issues
+# - Denial of Service (DoS) attacks
+
+# Safe Harbor
+# We consider security research conducted in accordance with this policy
+# to be authorized and will not pursue legal action.
+
+# Thank you for helping keep our users safe!

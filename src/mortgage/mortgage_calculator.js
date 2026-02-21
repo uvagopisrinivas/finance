@@ -419,7 +419,7 @@
                 }
             }
         } catch (error) {
-            console.error('Error applying mortgage currency defaults:', error);
+            Logger.error('Error applying mortgage currency defaults:', error);
         }
     }
     
@@ -796,7 +796,7 @@
                             updateUSDHelperText(inputConfig.helperId, 0);
                         }
                     } catch (error) {
-                        console.error('Error in input handler:', error);
+                        Logger.error('Error in input handler:', error);
                     }
                 });
 
@@ -812,7 +812,7 @@
                             updateUSDHelperText(inputConfig.helperId, 0);
                         }
                     } catch (error) {
-                        console.error('Error in blur handler:', error);
+                        Logger.error('Error in blur handler:', error);
                     }
                 });
             });
@@ -842,7 +842,7 @@
                         // Check mortgage insurance requirement
                         updateMortgageInsuranceStatus();
                     } catch (error) {
-                        console.error('Error in home price input handler:', error);
+                        Logger.error('Error in home price input handler:', error);
                     }
                 });
                 
@@ -859,7 +859,7 @@
                             }
                         }
                     } catch (error) {
-                        console.error('Error in home price blur handler:', error);
+                        Logger.error('Error in home price blur handler:', error);
                     }
                 });
                 
@@ -877,7 +877,7 @@
                         // Check mortgage insurance requirement
                         updateMortgageInsuranceStatus();
                     } catch (error) {
-                        console.error('Error in down payment blur handler:', error);
+                        Logger.error('Error in down payment blur handler:', error);
                     }
                 });
                 
@@ -896,7 +896,7 @@
                         // Check mortgage insurance requirement
                         updateMortgageInsuranceStatus();
                     } catch (error) {
-                        console.error('Error in down payment percent handler:', error);
+                        Logger.error('Error in down payment percent handler:', error);
                     }
                 });
                 
@@ -908,7 +908,7 @@
                             userModifiedDownPaymentPercent = false;
                         }
                     } catch (error) {
-                        console.error('Error in down payment percent blur handler:', error);
+                        Logger.error('Error in down payment percent blur handler:', error);
                     }
                 });
             }
@@ -929,7 +929,7 @@
                             updateUSDHelperText('propertyTax', tax);
                         }
                     } catch (error) {
-                        console.error('Error in property tax calculation:', error);
+                        Logger.error('Error in property tax calculation:', error);
                     }
                 });
                 
@@ -943,7 +943,7 @@
                             updateUSDHelperText('propertyTax', tax);
                         }
                     } catch (error) {
-                        console.error('Error in property tax calculation:', error);
+                        Logger.error('Error in property tax calculation:', error);
                     }
                 });
                 
@@ -957,7 +957,7 @@
                             propertyTaxPercent.value = percent.toFixed(2);
                         }
                     } catch (error) {
-                        console.error('Error in property tax percent calculation:', error);
+                        Logger.error('Error in property tax percent calculation:', error);
                     }
                 });
                 
@@ -972,7 +972,7 @@
                             updateUSDHelperText('propertyTax', tax);
                         }
                     } catch (error) {
-                        console.error('Error in property tax amount calculation:', error);
+                        Logger.error('Error in property tax amount calculation:', error);
                     }
                 });
             }
@@ -993,7 +993,7 @@
                         loanAmountInput.value = formattedValue;
                         updateLoanAmountWords(parseFloat(this.value));
                     } catch (error) {
-                        console.error('Error in loan amount slider handler:', error);
+                        Logger.error('Error in loan amount slider handler:', error);
                     }
                 });
                 
@@ -1053,7 +1053,7 @@
                             updateLoanAmountWords(0);
                         }
                     } catch (error) {
-                        console.error('Error in loan amount input handler:', error);
+                        Logger.error('Error in loan amount input handler:', error);
                     }
                 });
 
@@ -1076,7 +1076,7 @@
                             updateLoanAmountWords(parseFloat(defaultValue));
                         }
                     } catch (error) {
-                        console.error('Error in loan amount blur handler:', error);
+                        Logger.error('Error in loan amount blur handler:', error);
                     }
                 });
             }
@@ -1101,7 +1101,7 @@
                 });
             }
         } catch (error) {
-            console.error('Error setting up mortgage input validation:', error);
+            Logger.error('Error setting up mortgage input validation:', error);
         }
     }
     
@@ -1149,7 +1149,7 @@
                 }
             }
         } catch (error) {
-            console.error('Error updating mortgage insurance status:', error);
+            Logger.error('Error updating mortgage insurance status:', error);
         }
     }
     

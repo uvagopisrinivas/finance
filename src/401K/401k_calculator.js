@@ -202,7 +202,7 @@
                 helper.textContent = `(${formatUSNumber(numValue)})`;
             }
         } catch (error) {
-            console.error('Error converting number to words:', error);
+            Logger.error('Error converting number to words:', error);
             helper.textContent = `(${formatUSNumber(numValue)})`;
         }
     }

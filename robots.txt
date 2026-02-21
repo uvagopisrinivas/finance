@@ -1,0 +1,17 @@
+# robots.txt for https://finance.uvagopisrinivas.com/
+
+User-agent: *
+Allow: /
+Allow: /src/
+Allow: /index.html
+
+# Disallow admin or private areas (if any)
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.kiro/
+
+# Sitemap location
+Sitemap: https://finance.uvagopisrinivas.com/sitemap.xml
+
+# Crawl-delay (optional, helps prevent server overload)
+Crawl-delay: 1
