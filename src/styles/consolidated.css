@@ -710,6 +710,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
+  align-self: start;
 }
 
 .form-label {
@@ -720,6 +721,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  min-height: 24px;
 }
 
 .form-label i {
@@ -1076,6 +1078,36 @@ body {
 /* SEPP Table Specific Styles */
 .table--sepp .table__age-col { width: 8%; }
 .table--sepp .table__method-col { width: 10.2%; }
+
+/* SEPP Form Alignment Fixes */
+.form-label {
+  min-height: 24px;
+}
+
+.form-label .btn--info {
+  flex-shrink: 0;
+  margin-left: var(--space-xs);
+}
+
+.form-group {
+  min-width: 0; /* Prevent grid blowout */
+}
+
+/* Ensure all inputs align at the same vertical position */
+.form-grid .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-grid .form-group .form-label {
+  height: 24px;
+  margin-bottom: var(--space-sm);
+}
+
+.form-grid .form-group .form-input,
+.form-grid .form-group select {
+  margin-bottom: 0;
+}
 
 .table--sepp .table__age-header {
   background-color: var(--color-table-header);
