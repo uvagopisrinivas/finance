@@ -1,10 +1,32 @@
-# 🎯 Financial Planning Calculators by Uva Kondisetty
+# 🎯 Free Financial Calculators by Uva Kondisetty
 
-A sophisticated web-based platform for retirement planning, investment analysis, and financial calculations, featuring advanced SEPP analysis, 401k projections, multi-currency financial planning tools, and live financial data access.
+A comprehensive web-based financial planning platform featuring SEPP 72(t) calculator, 401k projector, SIP/SWP calculators, lumpsum investment calculator, retirement planner, mortgage/EMI calculator, expense tracker, and live financial data. Multi-currency support (USD/INR) for US and Indian markets.
 
 ![Platform Preview](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
+## ✨ Key Features
+
+### 💰 Investment & Retirement Calculators
+- **SEPP 72(t) Calculator** - Early retirement withdrawal planning
+- **401k Projector** - Retirement account growth projections
+- **SIP Calculator** - Systematic Investment Plan with step-up
+- **SWP Calculator** - Systematic Withdrawal Plan with tax planning
+- **Lumpsum Calculator** - One-time investment growth analysis
+- **Retirement Planner** - Goal-based retirement planning
+
+### 🏠 Mortgage & Budget Tools
+- **Mortgage Calculator (US)** - Home loan with PMI, taxes, insurance
+- **EMI Calculator (India)** - Home loan amortization schedule
+- **Expense Tracker** - Monthly budget and savings calculator
+
+### 📊 Live Financial Data
+- **Metals Prices** - Gold, Silver, Platinum, Palladium (USA & India)
+- **Currency Rates** - Live USD to INR exchange rates
+- **Tax Brackets** - USA & India income tax slabs
+- **Mortgage Rates** - Current home loan interest rates
+- **Federal Reserve** - Interest rate predictions and calendar
 
 ## ✨ Features
 
