@@ -1,4 +1,4 @@
-# 🎯 Comprehensive Financial Planning Platform
+# 🎯 Financial Planning Calculators by Uva Kondisetty
 
 A sophisticated web-based platform for retirement planning, investment analysis, and financial calculations, featuring advanced SEPP analysis, 401k projections, multi-currency financial planning tools, and live financial data access.
 
