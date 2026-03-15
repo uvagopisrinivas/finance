@@ -613,9 +613,26 @@
             emi = loanAmount / numPayments;
         }
         
-        // Calculate totals
-        const totalPayment = emi * numPayments;
-        const totalInterest = totalPayment - loanAmount;
+        // Calculate totals without prepayment
+        const totalPaymentNoPrepay = emi * numPayments;
+        const totalInterestNoPrepay = totalPaymentNoPrepay - loanAmount;
+        
+        // Check for prepayment
+        const includePrepayment = document.getElementById('includePrepayment');
+        const hasPrepayment = includePrepayment && includePrepayment.checked;
+        let prepayResult = null;
+        
+        if (hasPrepayment) {
+            const extraInstallments = parseInt(document.getElementById('prepaymentCountInput').value) || 0;
+            const prepayTypeEl = document.getElementById('prepaymentType');
+            const prepayType = prepayTypeEl ? prepayTypeEl.value : 'principal';
+            
+            if (extraInstallments > 0) {
+                prepayResult = calculatePrepayment(loanAmount, monthlyRate, emi, numPayments, extraInstallments, prepayType);
+            }
+        }
+        
+        const totalInterest = prepayResult ? prepayResult.totalInterest : totalInterestNoPrepay;
         
         // Update results
         document.getElementById('resultsTitle').textContent = 'Your EMI Details';
@@ -626,7 +643,7 @@
         
         // Update summary
         const summaryItems = document.getElementById('summaryItems');
-        summaryItems.innerHTML = `
+        let summaryHtml = `
             <div class="mortgage-summary-item">
                 <span class="mortgage-summary-label">
                     <i class="fas fa-money-bill-wave"></i>
@@ -650,11 +667,95 @@
             </div>
         `;
         
-        // Generate simple EMI breakdown
-        generateIndianEMIBreakdown(loanAmount, emi, interestRate, numPayments);
+        if (prepayResult) {
+            summaryHtml += `
+            <div class="mortgage-summary-item" style="border-top: 1px solid var(--color-border); padding-top: var(--space-sm); margin-top: var(--space-sm);">
+                <span class="mortgage-summary-label">
+                    <i class="fas fa-piggy-bank" style="color: var(--color-primary);"></i>
+                    Interest Saved
+                </span>
+                <span class="mortgage-summary-highlight" style="color: var(--color-text-primary);">${formatMortgageCurrency(prepayResult.interestSaved)}</span>
+            </div>
+            `;
+        }
+        
+        summaryItems.innerHTML = summaryHtml;
+        
+        // Generate EMI breakdown
+        generateIndianEMIBreakdown(loanAmount, emi, interestRate, numPayments, prepayResult);
         
         // Show results
         document.getElementById('mortgageResults').style.display = 'block';
+    }
+    
+    // Calculate prepayment impact by simulating month-by-month amortization
+    function calculatePrepayment(loanAmount, monthlyRate, emi, numPayments, extraInstallmentsPerYear, prepayType) {
+        let balance = loanAmount;
+        let totalInterestWithPrepay = 0;
+        let totalMonthsPaid = 0;
+        let currentEmi = emi;
+        
+        // Extra payment amount per occurrence = one EMI worth, spread across the year
+        // e.g., 2 extra installments means every (12/2)=6 months, pay one extra EMI
+        const prepayInterval = Math.floor(12 / extraInstallmentsPerYear);
+        
+        for (let month = 1; month <= numPayments && balance > 0; month++) {
+            const interestForMonth = balance * monthlyRate;
+            let principalForMonth = currentEmi - interestForMonth;
+            
+            // If remaining balance is less than EMI
+            if (balance + interestForMonth <= currentEmi) {
+                totalInterestWithPrepay += interestForMonth;
+                totalMonthsPaid = month;
+                balance = 0;
+                break;
+            }
+            
+            totalInterestWithPrepay += interestForMonth;
+            balance -= principalForMonth;
+            
+            // Apply prepayment at regular intervals
+            if (prepayInterval > 0 && month % prepayInterval === 0) {
+                if (prepayType === 'principal') {
+                    // Reduce principal: apply extra EMI directly to principal, keep EMI same, tenure shortens
+                    const extraPayment = Math.min(currentEmi, balance);
+                    balance -= extraPayment;
+                } else {
+                    // Reduce EMI: apply extra EMI to principal, then recalculate EMI for remaining tenure
+                    const extraPayment = Math.min(currentEmi, balance);
+                    balance -= extraPayment;
+                    
+                    // Recalculate EMI for remaining balance and remaining months
+                    const remainingMonths = numPayments - month;
+                    if (remainingMonths > 0 && balance > 0 && monthlyRate > 0) {
+                        currentEmi = balance * (monthlyRate * Math.pow(1 + monthlyRate, remainingMonths)) /
+                                     (Math.pow(1 + monthlyRate, remainingMonths) - 1);
+                    }
+                }
+            }
+            
+            totalMonthsPaid = month;
+            if (balance <= 0) {
+                balance = 0;
+                break;
+            }
+        }
+        
+        const totalPaymentNoPrepay = emi * numPayments;
+        const totalInterestNoPrepay = totalPaymentNoPrepay - loanAmount;
+        const interestSaved = totalInterestNoPrepay - totalInterestWithPrepay;
+        const newTenureYears = Math.ceil(totalMonthsPaid / 12);
+        const newTenureMonths = totalMonthsPaid;
+        
+        return {
+            totalInterest: totalInterestWithPrepay,
+            interestSaved: Math.max(0, interestSaved),
+            newTenureMonths: newTenureMonths,
+            newTenureYears: newTenureYears,
+            originalTenureMonths: numPayments,
+            reducedEmi: prepayType === 'emi' ? currentEmi : null,
+            prepayType: prepayType
+        };
     }
     
     // Generate US payment breakdown table
@@ -701,11 +802,11 @@
     }
     
     // Generate Indian EMI breakdown table
-    function generateIndianEMIBreakdown(loanAmount, emi, annualRate, numPayments) {
-        const totalPayment = emi * numPayments;
-        const totalInterest = totalPayment - loanAmount;
+    function generateIndianEMIBreakdown(loanAmount, emi, annualRate, numPayments, prepayResult) {
+        const totalPaymentNoPrepay = emi * numPayments;
+        const totalInterestNoPrepay = totalPaymentNoPrepay - loanAmount;
         
-        const breakdownHtml = `
+        let breakdownHtml = `
             <div class="mortgage-breakdown-item">
                 <span class="mortgage-breakdown-label">COMPONENT</span>
                 <span class="mortgage-breakdown-value">AMOUNT</span>
@@ -719,10 +820,46 @@
                 <span class="mortgage-breakdown-value">${Math.ceil(numPayments / 12)} Years</span>
             </div>
             <div class="mortgage-breakdown-item">
-                <span class="mortgage-breakdown-label">Total Interest</span>
-                <span class="mortgage-breakdown-value">${formatMortgageCurrency(totalInterest)}</span>
+                <span class="mortgage-breakdown-label">Total Interest (No Prepay)</span>
+                <span class="mortgage-breakdown-value">${formatMortgageCurrency(totalInterestNoPrepay)}</span>
             </div>
         `;
+        
+        if (prepayResult) {
+            breakdownHtml += `
+            <div class="mortgage-breakdown-item" style="border-top: 2px solid var(--color-primary); padding-top: var(--space-sm); margin-top: var(--space-sm);">
+                <span class="mortgage-breakdown-label" style="color: var(--color-primary);">WITH PREPAYMENT</span>
+                <span class="mortgage-breakdown-value"></span>
+            </div>
+            <div class="mortgage-breakdown-item">
+                <span class="mortgage-breakdown-label">New Tenure</span>
+                <span class="mortgage-breakdown-value">${Math.floor(prepayResult.newTenureMonths / 12)}Y ${prepayResult.newTenureMonths % 12}M</span>
+            </div>
+            `;
+            
+            if (prepayResult.reducedEmi !== null) {
+                breakdownHtml += `
+            <div class="mortgage-breakdown-item">
+                <span class="mortgage-breakdown-label">Reduced EMI (approx.)</span>
+                <span class="mortgage-breakdown-value">${formatMortgageCurrency(prepayResult.reducedEmi)}</span>
+            </div>
+                `;
+            }
+            
+            breakdownHtml += `
+            <div class="mortgage-breakdown-item">
+                <span class="mortgage-breakdown-label">Total Interest (With Prepay)</span>
+                <span class="mortgage-breakdown-value">${formatMortgageCurrency(prepayResult.totalInterest)}</span>
+            </div>
+            <div class="mortgage-breakdown-item" style="background: rgba(0, 200, 83, 0.1); border-radius: var(--border-radius-sm); padding: var(--space-sm);">
+                <span class="mortgage-breakdown-label" style="color: var(--color-primary);">
+                    <i class="fas fa-piggy-bank"></i> Interest Saved
+                </span>
+                <span class="mortgage-breakdown-value" style="color: var(--color-primary);">${formatMortgageCurrency(prepayResult.interestSaved)}</span>
+            </div>
+            `;
+        }
+        
         document.getElementById('mortgageTableContainer').innerHTML = breakdownHtml;
     }
     
@@ -1098,6 +1235,32 @@
                 
                 loanTermInput.addEventListener('input', function() {
                     loanTermSlider.value = this.value;
+                });
+            }
+            
+            // Prepayment checkbox toggle and slider sync
+            const includePrepayment = document.getElementById('includePrepayment');
+            const prepaymentOptions = document.getElementById('prepaymentOptions');
+            
+            if (includePrepayment && prepaymentOptions) {
+                includePrepayment.addEventListener('change', function() {
+                    const show = this.checked;
+                    prepaymentOptions.style.display = show ? 'block' : 'none';
+                    const typeGroup = document.getElementById('prepaymentTypeGroup');
+                    if (typeGroup) typeGroup.style.display = show ? '' : 'none';
+                });
+            }
+            
+            const prepaymentCountSlider = document.getElementById('prepaymentCountSlider');
+            const prepaymentCountInput = document.getElementById('prepaymentCountInput');
+            
+            if (prepaymentCountSlider && prepaymentCountInput) {
+                prepaymentCountSlider.addEventListener('input', function() {
+                    prepaymentCountInput.value = this.value;
+                });
+                
+                prepaymentCountInput.addEventListener('input', function() {
+                    prepaymentCountSlider.value = this.value;
                 });
             }
         } catch (error) {

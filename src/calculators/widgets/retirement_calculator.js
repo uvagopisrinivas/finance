@@ -1673,7 +1673,7 @@
                                     const displayTotal = withdrawalItems.reduce((sum, item) => sum + item.annual, 0);
                                     
                                     if (withdrawalItems.length > 1) {
-                                        withdrawalsDisplay = `${itemsHtml}<div style="border-top: 2px dashed rgba(255,255,255,0.4); margin-top: 8px; padding-top: 8px;"><strong>Total:</strong> ${formatCurrency(displayTotal)}</div>`;
+                                        withdrawalsDisplay = `${itemsHtml}<div class="cashflow-total-separator"><strong>Total:</strong> ${formatCurrency(displayTotal)}</div>`;
                                     } else {
                                         withdrawalsDisplay = itemsHtml;
                                     }
@@ -1726,7 +1726,7 @@
                                 
                                 portfolioEndDisplay = `
                                     ${breakdownItems.join('')}
-                                    <div style="border-top: 2px dashed rgba(255,255,255,0.4); margin-top: 8px; padding-top: 8px;"><strong>Total:</strong> ${formatCurrency(Math.max(0, portfolioEnd))}</div>
+                                    <div class="cashflow-total-separator"><strong>Total:</strong> ${formatCurrency(Math.max(0, portfolioEnd))}</div>
                                 `;
                             } else if (row.phase === 'retirement') {
                                 const returns = portfolioStart * postRetirementReturn;
@@ -1747,7 +1747,7 @@
                                 if (breakdownItems.length > 0) {
                                     portfolioEndDisplay = `
                                         ${breakdownItems.join('')}
-                                        <div style="border-top: 2px dashed rgba(255,255,255,0.4); margin-top: 8px; padding-top: 8px;"><strong>Total:</strong> ${formatCurrency(Math.max(0, portfolioEnd))}</div>
+                                        <div class="cashflow-total-separator"><strong>Total:</strong> ${formatCurrency(Math.max(0, portfolioEnd))}</div>
                                     `;
                                 }
                             }
@@ -1840,7 +1840,7 @@
                                 `.replace(/\n\s+/g, ' ');
                                 
                                 // Show total tax - make entire cell hoverable with dotted line separator
-                                breakdownItems.push(`<div style="margin-top: 8px; padding-top: 8px; border-top: 2px dashed rgba(255,255,255,0.4);"><span style="color: #FF6B6B; font-weight: 600;">Tax (${(params.taxRate * 100).toFixed(0)}%): ${formatCurrency(totalTax)}</span></div>`);
+                                breakdownItems.push(`<div class="cashflow-total-separator"><span style="color: #FF6B6B; font-weight: 600;">Tax (${(params.taxRate * 100).toFixed(0)}%): ${formatCurrency(totalTax)}</span></div>`);
                                 
                                 taxDisplay = `<div class="tax-hover-cell" data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}">${breakdownItems.join('')}</div>`;
                             }

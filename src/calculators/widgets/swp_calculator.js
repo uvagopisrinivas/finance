@@ -10,7 +10,6 @@
             const annualRate = parseFloat(document.getElementById('swpReturnRate').value) / 100;
             const taxRate = parseFloat(document.getElementById('swpTaxRate').value) / 100;
             const years = parseInt(document.getElementById('swpTimePeriod').value, 10);
-            const isActiveTrading = document.getElementById('swpActiveTrading').checked;
 
             if (
                 isNaN(totalInvestment) || isNaN(withdrawalAmount) ||
@@ -22,70 +21,64 @@
             }
 
             const frequencyMultiplier = getFrequencyMultiplier(frequency);
-            // Use effective rate per period, similar to SIP calculators:
-            // r_period = (1 + r_annual)^(1/frequency) - 1
             const periodicRate = Math.pow(1 + annualRate, 1 / frequencyMultiplier) - 1;
 
+            // Fixed 12% annual rate for the comparison column
+            const annualRate12 = 0.12;
+            const periodicRate12 = Math.pow(1 + annualRate12, 1 / frequencyMultiplier) - 1;
+
             let remainingBalance = totalInvestment;
+            let remainingBalance12 = totalInvestment;
             let totalWithdrawn = 0;
             let totalTaxPaid = 0;
             let totalNetReceived = 0;
 
-            // Calculate year-wise data
             const yearlyData = [];
 
             for (let year = 1; year <= years; year++) {
                 let yearStartBalance = remainingBalance;
+                let yearStartBalance12 = remainingBalance12;
                 let yearWithdrawal = 0;
                 let yearTaxPaid = 0;
                 let yearNetReceived = 0;
-                let yearGains = 0;
 
-                if (isActiveTrading) {
-                    // Active Trading: Tax on all capital gains for the year
-                    const annualGains = yearStartBalance * annualRate;
-                    yearGains = annualGains;
-                    
-                    // Tax on all gains
-                    const annualTax = annualGains * taxRate;
-                    yearTaxPaid = annualTax;
-                    
-                    // Net gains after tax
-                    const netGains = annualGains - annualTax;
-                    
-                    // Update balance with net gains
-                    remainingBalance = yearStartBalance + netGains;
-                    
-                    // Now handle withdrawals (no additional tax since already paid on gains)
-                    const annualWithdrawal = Math.min(withdrawalAmount * frequencyMultiplier, remainingBalance);
-                    yearWithdrawal = annualWithdrawal;
-                    yearNetReceived = annualWithdrawal; // No additional tax on withdrawal
-                    
-                    remainingBalance -= annualWithdrawal;
+                // SWP: periodic compounding + tax on each withdrawal
+                // Gross up the withdrawal so the user receives the full requested amount after tax
+                for (let period = 1; period <= frequencyMultiplier; period++) {
+                    if (remainingBalance <= 0) break;
 
-                } else {
-                    // Regular SWP: periodic compounding + tax on each withdrawal
-                    for (let period = 1; period <= frequencyMultiplier; period++) {
-                        if (remainingBalance <= 0) break;
+                    // Apply periodic return on remaining balance
+                    const periodicReturn = remainingBalance * periodicRate;
+                    remainingBalance += periodicReturn;
+                    
+                    // Gross up the withdrawal to cover tax so user receives full amount
+                    let grossWithdrawal;
+                    if (taxRate > 0 && taxRate < 1) {
+                        grossWithdrawal = withdrawalAmount / (1 - taxRate);
+                    } else {
+                        grossWithdrawal = withdrawalAmount;
+                    }
+                    
+                    // Cap at remaining balance
+                    grossWithdrawal = Math.min(grossWithdrawal, remainingBalance);
+                    
+                    // Tax calculation
+                    const periodicTax = grossWithdrawal * taxRate;
+                    const netWithdrawal = grossWithdrawal - periodicTax;
+                    
+                    remainingBalance -= grossWithdrawal;
+                    yearWithdrawal += grossWithdrawal;
+                    yearTaxPaid += periodicTax;
+                    yearNetReceived += netWithdrawal;
 
-                        // Apply periodic return on remaining balance
-                        const periodicReturn = remainingBalance * periodicRate;
-                        remainingBalance += periodicReturn;
-                        yearGains += periodicReturn;
-                        
-                        // Withdraw amount (but not more than remaining balance)
-                        const grossWithdrawal = Math.min(withdrawalAmount, remainingBalance);
-                        
-                        // Tax calculation: apply tax rate to the withdrawal amount
-                        const periodicTax = grossWithdrawal * taxRate;
-                        const netWithdrawal = grossWithdrawal - periodicTax;
-                        
-                        remainingBalance -= grossWithdrawal;
-                        yearWithdrawal += grossWithdrawal;
-                        yearTaxPaid += periodicTax;
-                        yearNetReceived += netWithdrawal;
+                    if (remainingBalance <= 0) break;
 
-                        if (remainingBalance <= 0) break;
+                    // 12% parallel tracking
+                    if (remainingBalance12 > 0) {
+                        const periodicReturn12 = remainingBalance12 * periodicRate12;
+                        remainingBalance12 += periodicReturn12;
+                        const gross12 = Math.min(grossWithdrawal, remainingBalance12);
+                        remainingBalance12 -= gross12;
                     }
                 }
 
@@ -100,14 +93,21 @@
                     yearlyTax: yearTaxPaid,
                     yearlyNetReceived: yearNetReceived,
                     endBalance: remainingBalance,
+                    endBalance12: remainingBalance12,
                     cumulativeWithdrawal: totalWithdrawn,
                     cumulativeTax: totalTaxPaid,
-                    cumulativeNetReceived: totalNetReceived,
-                    isActiveTrading: isActiveTrading
+                    cumulativeNetReceived: totalNetReceived
                 });
 
-                if (remainingBalance <= 0) break;
+                if (remainingBalance <= 0 && remainingBalance12 <= 0) break;
             }
+
+            // Filter out rows where corpus is already fully depleted (start balance is 0)
+            const filteredData = yearlyData.filter(row => row.startBalance > 0);
+
+            // Check if money ran out before the requested period
+            const moneyDepleted = remainingBalance <= 0;
+            const depletionYear = moneyDepleted ? filteredData[filteredData.length - 1].year : null;
 
             // Update summary
             document.getElementById('swpInitialInvestment').textContent = formatCurrencyReadable(totalInvestment);
@@ -116,8 +116,19 @@
             document.getElementById('swpNetReceived').textContent = formatCurrencyReadable(totalNetReceived);
             document.getElementById('swpFinalValue').textContent = formatCurrencyReadable(remainingBalance);
 
-            // Generate table
-            generateSWPTable(yearlyData);
+            // Show or hide depletion warning
+            const warningEl = document.getElementById('swpDepletionWarning');
+            if (moneyDepleted) {
+                const shortfall = years - depletionYear;
+                document.getElementById('swpDepletionMessage').textContent =
+                    `Your corpus got depleted in year ${depletionYear} — ${shortfall} year${shortfall !== 1 ? 's' : ''} short of your ${years}-year plan. Consider reducing withdrawals or increasing your investment.`;
+                warningEl.style.display = 'flex';
+            } else {
+                warningEl.style.display = 'none';
+            }
+
+            // Generate table (only rows with activity)
+            generateSWPTable(filteredData);
 
             // Show results
             document.getElementById('swpResults').style.display = 'block';
@@ -142,9 +153,8 @@
                             <th><i class="fas fa-wallet"></i> Start Balance</th>
                             <th><i class="fas fa-hand-holding-usd"></i> Gross Withdrawal</th>
                             <th><i class="fas fa-receipt"></i> Tax Paid</th>
-                            <th><i class="fas fa-hand-holding-heart"></i> Net Received</th>
                             <th><i class="fas fa-calendar-check"></i> Monthly Net</th>
-                            <th><i class="fas fa-piggy-bank"></i> End Balance</th>
+                            <th><i class="fas fa-chart-line"></i> End Bal @12%</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,9 +166,8 @@
                                 <td class="table__balance">${formatCurrency(row.startBalance)}</td>
                                 <td class="table__withdrawal">${formatCurrency(row.yearlyWithdrawal)}</td>
                                 <td class="table__tax">${formatCurrency(row.yearlyTax)}</td>
-                                <td class="table__net">${formatCurrency(row.yearlyNetReceived)}</td>
                                 <td class="table__monthly-net">${formatCurrency(monthlyNet)}</td>
-                                <td class="table__balance">${formatCurrency(row.endBalance)}</td>
+                                <td class="table__balance">${formatCurrency(row.endBalance12)}</td>
                             </tr>
                         `}).join('')}
                     </tbody>
@@ -168,7 +177,6 @@
         document.getElementById('swpTableContainer').innerHTML = tableHtml;
     }
 
-    // Ensure this helper exists and matches your SIP widget
     function getFrequencyMultiplier(freq) {
         switch (freq) {
             case 'monthly':

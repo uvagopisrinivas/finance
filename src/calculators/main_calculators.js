@@ -21,9 +21,9 @@
             numberSystem: 'indian', // Uses Indian comma system (x,xx,xxx)
             defaults: {
                 sipAmount: '25000',
-                swpTotalInvestment: '500000',
-                swpWithdrawal: '10000',
-                swpTaxRate: '10',
+                swpTotalInvestment: '5000000',
+                swpWithdrawal: '50000',
+                swpTaxRate: '0',
                 lumpsumAmount: '25000',
                 lumpsumTimePeriod: '10',
                 retirementMonthlySavings: '270000',

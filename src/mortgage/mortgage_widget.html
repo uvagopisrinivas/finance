@@ -220,6 +220,40 @@
                 <input type="range" id="loanTermSlider" min="5" max="30" step="1" value="20" class="form-slider">
                 <input type="number" id="loanTermInput" value="20" min="5" max="30" class="form-input">
             </div>
+
+            <!-- Prepayment Section (Optional) -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-forward"></i>
+                    Prepayment (Optional)
+                </label>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="includePrepayment">
+                    <label for="includePrepayment">Include prepayment installments</label>
+                </div>
+
+                <div id="prepaymentOptions" style="display: none; margin-top: var(--space-md);">
+                    <label class="form-label" style="font-size: var(--font-size-sm);">
+                        <i class="fas fa-plus-circle"></i>
+                        Extra Installments Per Year
+                    </label>
+                    <input type="range" id="prepaymentCountSlider" min="1" max="12" step="1" value="2" class="form-slider">
+                    <input type="number" id="prepaymentCountInput" value="2" min="1" max="12" class="form-input">
+                    <small class="form-hint">Number of additional EMI-equivalent payments per year (e.g., 2 means 14 total installments instead of 12).</small>
+                </div>
+            </div>
+
+            <div class="form-group" id="prepaymentTypeGroup" style="display: none;">
+                <label class="form-label">
+                    <i class="fas fa-bullseye"></i>
+                    Prepayment Applied Towards
+                </label>
+                <select id="prepaymentType" class="form-input">
+                    <option value="principal">Reduce Principal (shorten tenure)</option>
+                    <option value="emi">Reduce EMI (lower monthly payment)</option>
+                </select>
+                <small class="form-hint">Choose whether extra payments reduce your loan tenure or your monthly EMI.</small>
+            </div>
         </div>
 
         <div class="form-actions">
