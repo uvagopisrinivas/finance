@@ -23,9 +23,9 @@
             const frequencyMultiplier = getFrequencyMultiplier(frequency);
             const periodicRate = Math.pow(1 + annualRate, 1 / frequencyMultiplier) - 1;
 
-            // Fixed 12% annual rate for the comparison column
-            const annualRate12 = 0.12;
-            const periodicRate12 = Math.pow(1 + annualRate12, 1 / frequencyMultiplier) - 1;
+            // Use the user's input rate for the end balance comparison column
+            const displayRatePercent = parseFloat(document.getElementById('swpReturnRate').value);
+            const periodicRate12 = periodicRate; // Same as the main rate
 
             let remainingBalance = totalInvestment;
             let remainingBalance12 = totalInvestment;
@@ -128,7 +128,7 @@
             }
 
             // Generate table (only rows with activity)
-            generateSWPTable(filteredData);
+            generateSWPTable(filteredData, displayRatePercent);
 
             // Show results
             document.getElementById('swpResults').style.display = 'block';
@@ -143,7 +143,7 @@
         }
     };
 
-    function generateSWPTable(data) {
+    function generateSWPTable(data, ratePercent) {
         const tableHtml = `
             <div class="table-container ${data.length > 6 ? 'has-scroll' : ''}">
                 <table class="table table--indian">
@@ -154,7 +154,7 @@
                             <th><i class="fas fa-hand-holding-usd"></i> Gross Withdrawal</th>
                             <th><i class="fas fa-receipt"></i> Tax Paid</th>
                             <th><i class="fas fa-calendar-check"></i> Monthly Net</th>
-                            <th><i class="fas fa-chart-line"></i> End Bal @12%</th>
+                            <th><i class="fas fa-chart-line"></i> End Bal @${ratePercent}%</th>
                         </tr>
                     </thead>
                     <tbody>

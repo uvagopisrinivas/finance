@@ -1042,15 +1042,6 @@
                     this.value = 0;
                 }
                 
-                // Enforce return rate ranges (10-15%)
-                if (this.id.includes('ReturnRate')) {
-                    if (this.value > 15) {
-                        this.value = 15;
-                    } else if (this.value < 10 && this.value !== '') {
-                        this.value = 10;
-                    }
-                }
-                
                 // Tax rate validation (max 50%)
                 if (this.id === 'swpTaxRate' && this.value > 50) {
                     this.value = 50;
@@ -1065,15 +1056,6 @@
                         this.value = '12';
                     } else {
                         this.value = this.getAttribute('value') || '0';
-                    }
-                }
-                
-                // Enforce return rate ranges on blur
-                if (this.id.includes('ReturnRate')) {
-                    if (value > 15) {
-                        this.value = '15';
-                    } else if (value < 10) {
-                        this.value = '10';
                     }
                 }
                 
